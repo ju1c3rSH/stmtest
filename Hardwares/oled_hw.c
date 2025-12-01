@@ -1,0 +1,114 @@
+#include <stdint.h>
+#include <string.h>
+#include "stm32f1xx_hal.h"
+#include "oled.h"
+#include "oled_hw.h"
+#include "main.h"
+
+extern I2C_HandleTypeDef hi2c1;
+
+static uint32_t i2c_reset_cnt = 0;
+#if I2C_USE_DMA
+extern DMA_HandleTypeDef hdma_i2c2_tx;
+#endif
+
+void delay_ms(uint32_t ms)
+{
+    HAL_Delay(ms);
+}
+
+// has been initialized by hal.
+
+void i2c_hw_reset(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+    HAL_Delay(1);
+
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+    HAL_Delay(1);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+    HAL_Delay(1);
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    hi2c1.Instance->CR1 |= I2C_CR1_SWRST;
+    hi2c1.Instance->CR1 &= ~I2C_CR1_SWRST;
+    // i2c_hw_reset();
+    HAL_I2C_Init(&hi2c1);
+    i2c_reset_cnt++;
+}
+
+void oled_reset(void)
+{
+    // 发送复位命令序列
+    oled_write_cmd(0xAE); // 关闭显示
+    delay_ms(10);
+    
+    oled_write_cmd(0x20); // 内存地址模式
+    oled_write_cmd(0x00);
+
+    oled_write_cmd(0x21); // 设置列地址
+    oled_write_cmd(0x00);
+    oled_write_cmd(0x7F);
+
+    oled_write_cmd(0x22); // 设置页地址
+    oled_write_cmd(0x00);
+    oled_write_cmd(0x07);
+
+    delay_ms(200);
+
+    // 重新初始化显示
+    oled_init();
+    delay_ms(100);
+}
+void oled_write_cmd(uint8_t cmd)
+{
+    uint8_t _data[2] = {0x00, cmd};
+    HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, 2, 100);
+    /*
+    if (HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, 2, 100) != HAL_OK)
+    {
+        i2c_hw_reset();
+    }
+    */
+
+}
+
+void oled_write_data(uint8_t data)
+{
+    uint8_t _data[2] = {0x40, data};
+    HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, 2, 100);
+    /*
+    if (HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, 2, 100) != HAL_OK)
+    {
+        i2c_hw_reset();
+    }
+    */
+}
+
+void oled_write_data_stream(uint8_t *data, uint32_t len)
+{
+    uint8_t _data[128];
+
+    if (len > (sizeof(_data) - 1))
+    {
+        return;
+    }
+    _data[0] = 0x40;
+    memcpy(&_data[1], data, len);
+    HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, len + 1, 100);
+    /*
+    if (HAL_I2C_Master_Transmit(&hi2c1, 0x78, _data, len + 1, 100) != HAL_OK)
+    {
+        i2c_hw_reset();
+    }
+    */
+}
+
+uint32_t i2c_reset_cnt_get(void) { return i2c_reset_cnt; }

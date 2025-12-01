@@ -1,0 +1,252 @@
+#include <stdint.h>
+#include <string.h>
+#include "main.h"
+#include "oled_hw.h"
+#include "oled.h"
+#include "ascii16.h"
+
+// 64*128
+#define OLED_H 64
+#define OLED_V 128
+
+#define OLED_X 128
+#define OLED_Y 64
+
+#define MAX_OLED_PAGES OLED_V / 8
+#define MAX_OLED_COLUMNS OLED_H
+
+enum
+{
+    OLED_DRAW_TYPE_CLEAR = 0,
+    OLED_DRAW_TYPE_FILL = 1,
+};
+
+// ug zhongwang
+
+ uint8_t oled_bufferp[MAX_OLED_PAGES][MAX_OLED_COLUMNS] = {0};
+
+void oled_init(void)
+{
+
+    oled_reset();
+
+    oled_write_cmd(0xAE); // set display display ON/OFF,AFH/AEH
+
+    oled_write_cmd(0xDC); // set display start line
+    oled_write_cmd(0x00); //
+
+    oled_write_cmd(0x81); // set contrast control
+    oled_write_cmd(0x2F);
+
+    oled_write_cmd(0x20); // set memory addressing mode: 20H page addressing mode
+
+    oled_write_cmd(0xA0); // set segment re-map
+    oled_write_cmd(0xA4); // entire display on: A4H:OFF/A5H:ON
+
+    oled_write_cmd(0xA6); // set normal/inverse display: A6H:normal/A7H:inverse
+
+    oled_write_cmd(0xA8); // set multiplex ratio
+    oled_write_cmd(0x3F); // 1/64duty
+
+    oled_write_cmd(0xC0); // set com output scan direction
+
+    oled_write_cmd(0xD3); // set display  offset
+    oled_write_cmd(0x60); // 60
+
+    oled_write_cmd(0xD5); // set display  clock divide ratio/oscillator frequency
+    oled_write_cmd(0x51); // 105Hz
+
+    oled_write_cmd(0xD9); // Dis-charge /Pre-charge Period Mode Set
+    oled_write_cmd(0x22); //
+
+    oled_write_cmd(0xDB); // set vcomh deselect level
+    oled_write_cmd(0x35);
+
+    oled_write_cmd(0xAD); // DC-DC Control Mode Set
+    oled_write_cmd(0x8A); // disable charge pump,external VPP=9.0V
+
+    oled_write_cmd(0xAF); //--turn on oled panel
+}
+
+/**
+ * 函    数：OLED设置显示光标位置
+ * 参    数：Page 指定光标所在的页，范围：0~7
+ * 参    数：X 指定光标所在的X轴坐标，范围：0~127
+ * 返 回 值：无
+ * 说    明：OLED默认的Y轴，只能8个Bit为一组写入，即1页等于8个Y轴坐标
+ */
+void OLED_SetCursor(uint8_t Page, uint8_t X)
+{
+    /*如果使用此程序驱动1.3寸的OLED显示屏，则需要解除此注释*/
+    /*因为1.3寸的OLED驱动芯片（SH1106）有132列*/
+    /*屏幕的起始列接在了第2列，而不是第0列*/
+    /*所以需要将X加2，才能正常显示*/
+    //	X += 2;
+
+    /*通过指令设置页地址和列地址*/
+    oled_write_cmd(0xB0 | Page);              // 设置页位置
+    oled_write_cmd(0x10 | ((X & 0xF0) >> 4)); // 设置X位置高4位
+    oled_write_cmd(0x00 | (X & 0x0F));        // 设置X位置低4位
+}
+
+/**
+ * 函    数：OLED显示字符串
+ * 参    数：X 指定字符串左上角的横坐标，范围：0~127
+ * 参    数：Y 指定字符串左上角的纵坐标，范围：0~63
+ * 参    数：String 指定要显示的字符串，范围：ASCII码可见字符组成的字符串
+ * 参    数：FontSize 指定字体大小
+ *           范围：OLED_8X16		宽8像素，高16像素
+ *                 OLED_6X8		宽6像素，高8像素
+ * 返 回 值：无
+ * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
+ */
+void OLED_ShowString(uint8_t X, uint8_t Y, char *String, uint8_t FontSize)
+{
+    uint8_t i;
+    for (i = 0; String[i] != '\0'; i++)
+    {
+        /*调用OLED_ShowChar函数，依次显示每个字符*/
+        OLED_ShowChar(X + i * FontSize, Y, String[i], FontSize);
+    }
+}
+/**
+ * 函    数：OLED显示一个字符
+ * 参    数：X 指定字符左上角的横坐标，范围：0~127
+ * 参    数：Y 指定字符左上角的纵坐标，范围：0~63
+ * 参    数：Char 指定要显示的字符，范围：ASCII码可见字符
+ * 参    数：FontSize 指定字体大小
+ *           范围：OLED_8X16		宽8像素，高16像素
+ *                 OLED_6X8		宽6像素，高8像素
+ * 返 回 值：无
+ * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
+ */
+void OLED_ShowChar(uint8_t X, uint8_t Y, char Char, uint8_t FontSize)
+{
+    if (FontSize == OLED_8X16) // 字体为宽8像素，高16像素
+    {
+        /*将ASCII字模库OLED_F8x16的指定数据以8*16的图像格式显示*/
+        OLED_ShowImage(X, Y, 8, 16, get_ascii16_code(Char));
+    }
+    else if (FontSize == OLED_8X12) // 字体为宽6像素，高8像素
+    {
+        OLED_ShowImage(X, Y, 8, 12, get_ascii12_code(Char));
+    }
+}
+
+/**
+ * 函    数：OLED显示图像
+ * 参    数：X 指定图像左上角的横坐标，范围：0~127
+ * 参    数：Y 指定图像左上角的纵坐标，范围：0~63
+ * 参    数：Width 指定图像的宽度，范围：0~128
+ * 参    数：Height 指定图像的高度，范围：0~64
+ * 参    数：Image 指定要显示的图像
+ * 返 回 值：无
+ * 说    明：调用此函数后，要想真正地呈现在屏幕上，还需调用更新函数
+ */
+void OLED_ShowImage(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image)
+{
+    uint8_t i, j;
+
+    /*参数检查，保证指定图像不会超出屏幕范围*/
+    if (X > 127)
+    {
+        return;
+    }
+    if (Y > 63)
+    {
+        return;
+    }
+
+    /*将图像所在区域清空*/
+    OLED_ClearArea(X, Y, Width, Height);
+
+    /*遍历指定图像涉及的相关页*/
+    /*(Height - 1) / 8 + 1的目的是Height / 8并向上取整*/
+    for (j = 0; j < (Height - 1) / 8 + 1; j++)
+    {
+        /*遍历指定图像涉及的相关列*/
+        for (i = 0; i < Width; i++)
+        {
+            /*超出边界，则跳过显示*/
+            if (X + i > 127)
+            {
+                break;
+            }
+            if (Y / 8 + j > 7)
+            {
+                return;
+            }
+
+            /*显示图像在当前页的内容*/
+            oled_bufferp[Y / 8 + j][X + i] |= Image[j * Width + i] << (Y % 8);
+
+            /*超出边界，则跳过显示*/
+            /*使用continue的目的是，下一页超出边界时，上一页的后续内容还需要继续显示*/
+            if (Y / 8 + j + 1 > 7)
+            {
+                continue;
+            }
+
+            /*显示图像在下一页的内容*/
+            oled_bufferp[Y / 8 + j + 1][X + i] |= Image[j * Width + i] >> (8 - Y % 8);
+        }
+    }
+}
+
+void OLED_ClearArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height)
+{
+    uint8_t i, j;
+
+    /*参数检查，保证指定区域不会超出屏幕范围*/
+    if (X > 127)
+    {
+        return;
+    }
+    if (Y > 63)
+    {
+        return;
+    }
+    if (X + Width > 128)
+    {
+        Width = 128 - X;
+    }
+    if (Y + Height > 64)
+    {
+        Height = 64 - Y;
+    }
+
+    for (j = Y; j < Y + Height; j++) // 遍历指定页
+    {
+        for (i = X; i < X + Width; i++) // 遍历指定列
+        {
+            oled_bufferp[j / 8][i] &= ~(0x01 << (j % 8)); // 将显存数组指定数据清零
+        }
+    }
+}
+
+/*********************工具函数*/
+
+/*功能函数*********************/
+
+/**
+ * 函    数：将OLED显存数组更新到OLED屏幕
+ * 参    数：无
+ * 返 回 值：无
+ * 说    明：所有的显示函数，都只是对OLED显存数组进行读写
+ *           随后调用OLED_Update函数或OLED_UpdateArea函数
+ *           才会将显存数组的数据发送到OLED硬件，进行显示
+ *           故调用显示函数后，要想真正地呈现在屏幕上，还需调用更新函数
+ */
+void OLED_Update(void)
+{
+    uint8_t j;
+    /*遍历每一页*/
+    for (j = 0; j < 8; j++)
+    {
+        // TODO:移植cursor
+        /*设置光标位置为每一页的第一列*/
+        OLED_SetCursor(j, 0);
+        /*连续写入128个数据，将显存数组的数据写入到OLED硬件*/
+        void oled_write_data_stream(oled_bufferp[j], 128);
+    }
+}
