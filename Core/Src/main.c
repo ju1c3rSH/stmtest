@@ -19,16 +19,20 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include "text_utils.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #define PI 3.14159265358979323846f
 #include "oled.h"
 #include <stdio.h>
+#include <stdbool.h>
 #include "mpu9250.h"
 #include <math.h>
 #include <stdarg.h >
 #include <string.h>
+#include "atgm336h.h"
+#include "semphr.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,7 +42,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+GPS_PropTypeDef g_gps_data = {0};
+extern SemaphoreHandle_t xGnssMutex;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,18 +52,31 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
-DMA_HandleTypeDef hdma_i2c1_tx;
-
 SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for oledInitTask */
+osThreadId_t oledInitTaskHandle;
+const osThreadAttr_t oledInitTask_attributes = {
+  .name = "oledInitTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for sensorDataColle */
+osThreadId_t sensorDataColleHandle;
+const osThreadAttr_t sensorDataColle_attributes = {
+  .name = "sensorDataColle",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
@@ -69,10 +87,12 @@ const osThreadAttr_t defaultTask_attributes = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
+void OledInitTask(void *argument);
+void SensorDataCollection(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -88,38 +108,36 @@ MPU9250 mpu;
 uint8_t mpu9250_WhoAmI = 0;
 uint8_t ak8963_WhoAmI = 0;
 
+void Test_SPI_Communication(void)
+{
+  uint8_t test_data = 0x75; // WHO_AM_I register address
+  uint8_t rx_data = 0;
 
-void Test_SPI_Communication(void) {
-    uint8_t test_data = 0x75; // WHO_AM_I register address
-    uint8_t rx_data = 0;
-    
-    u1_printf("=== SPI Communication Test ===\r\n");
-    
-    // Test 1: Direct HAL_SPI_TransmitReceive test
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS LOW
-    
-    HAL_StatusTypeDef status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
-    
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS HIGH
-    
-    u1_printf("SPI transmit status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
-    u1_printf("Sent: 0x%02X, Received: 0x%02X\r\n", test_data, rx_data);
-    
-    // Test 2: Read WHO_AM_I register
-    u1_printf("--- Reading WHO_AM_I Register ---\r\n");
-    test_data = 0x75 | 0x80; // Read operation, set MSB
-    
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS LOW
-    status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS HIGH
-    
-    u1_printf("WHO_AM_I read status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
-    u1_printf("WHO_AM_I value: 0x%02X\r\n", rx_data);
-    
-    u1_printf("=== SPI Test Complete ===\r\n\r\n");
+  u1_printf("=== SPI Communication Test ===\r\n");
+
+  // Test 1: Direct HAL_SPI_TransmitReceive test
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
+
+  HAL_StatusTypeDef status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
+
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
+
+  u1_printf("SPI transmit status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
+  u1_printf("Sent: 0x%02X, Received: 0x%02X\r\n", test_data, rx_data);
+
+  // Test 2: Read WHO_AM_I register
+  u1_printf("--- Reading WHO_AM_I Register ---\r\n");
+  test_data = 0x75 | 0x80; // Read operation, set MSB
+
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
+  status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
+
+  u1_printf("WHO_AM_I read status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
+  u1_printf("WHO_AM_I value: 0x%02X\r\n", rx_data);
+
+  u1_printf("=== SPI Test Complete ===\r\n\r\n");
 }
-
-
 
 /* USER CODE END 0 */
 
@@ -153,26 +171,26 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_I2C1_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   // 测试SPI基本功能
   u1_printf("Testing SPI...\r\n");
 
   // 先简单测试GPIO控制
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS高
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS高
   u1_printf("CS HIGH\r\n");
-  //HAL_Delay(100);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS低
+  // HAL_Delay(100);
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS低
   u1_printf("CS LOW\r\n");
-  //HAL_Delay(100);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS高
+  // HAL_Delay(100);
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS高
   u1_printf("CS TEST DONE\r\n");
-	Test_SPI_Communication();
+  //Test_SPI_Communication();
   // 尝试初始化
-  if (MPU9250_Init(&mpu, &hspi1, GPIOB, GPIO_PIN_14))
+  if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
   {
     u1_printf("MPU9250 init SUCCESSFUL\r\n");
   }
@@ -180,6 +198,24 @@ int main(void)
   {
     u1_printf("MPU9250 init FAILED\r\n");
   }
+  ATGM336H_Init(&g_gps_data);
+  /*
+     OLED_PropTypeDef oled_cfg = {
+          .scl_gpio_port = OLED_SCL_GPIO_Port,
+          .scl_gpio_pin  = OLED_SCL_Pin,
+          .sda_gpio_port = OLED_SDA_GPIO_Port,
+          .sda_gpio_pin  = OLED_SDA_Pin
+      };
+
+      // 初始化 OLED（内部会创建 mutex + 发送初始化命令）
+      OLED_InitWithConfig(&oled_cfg);
+      OLED_Init();        // 发送 SSD1306 初始化序列
+
+      OLED_Clear();
+      OLED_ShowString(0, 0, "OLED OK!", 8);
+      OLED_Update();
+    */
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -205,6 +241,12 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
+  /* creation of oledInitTask */
+  oledInitTaskHandle = osThreadNew(OledInitTask, NULL, &oledInitTask_attributes);
+
+  /* creation of sensorDataColle */
+  sensorDataColleHandle = osThreadNew(SensorDataCollection, NULL, &sensorDataColle_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -224,7 +266,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  
+
   /* USER CODE END 3 */
 }
 
@@ -240,13 +282,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -256,54 +295,15 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-#if I2C_USE_DMA
-  __HAL_RCC_DMA1_CLK_ENABLE();
-#endif
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 400000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-#if I2C_USE_DMA
-  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
-#endif
-  /* USER CODE END I2C1_Init 2 */
-
 }
 
 /**
@@ -378,6 +378,39 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -415,7 +448,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -424,11 +460,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB14 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  /*Configure GPIO pin : PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : OLED_SCL_Pin OLED_SDA_Pin */
+  GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -450,32 +493,34 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-	#define SAMPLE_RATE 0.05f 
-	  static uint32_t last_time = 0;
-	float yaw = 0.00f; // 需要磁力计或陀螺积分计算
-   for (;;)
+/* Infinite loop */
+#define SAMPLE_RATE 0.05f
+  static uint32_t last_time = 0;
+  float yaw = 0.00f; // 需要磁力计或陀螺积分计算
+  for (;;)
   {
     mpu9250_WhoAmI = mpu_r_WhoAmI(&mpu);
     MPU9250_ReadAccel(&mpu);
     MPU9250_ReadGyro(&mpu);
-    
 
-    float pitch = atan2(-mpu.mpu_data.Accel[0], sqrt(mpu.mpu_data.Accel[1]*mpu.mpu_data.Accel[1] + mpu.mpu_data.Accel[2]*mpu.mpu_data.Accel[2])) * 180/ PI;
-    float roll = atan2(mpu.mpu_data.Accel[1], mpu.mpu_data.Accel[2]) * 180/PI;
-    
+    float pitch = atan2(-mpu.mpu_data.Accel[0], sqrt(mpu.mpu_data.Accel[1] * mpu.mpu_data.Accel[1] + mpu.mpu_data.Accel[2] * mpu.mpu_data.Accel[2])) * 180 / PI;
+    float roll = atan2(mpu.mpu_data.Accel[1], mpu.mpu_data.Accel[2]) * 180 / PI;
+
     float dt = SAMPLE_RATE;
-    
-    float gyro_yaw = mpu.mpu_data.Gyro[2] - 
-                    (mpu.mpu_data.Gyro[0] * sinf(roll * PI/180) + 
-                     mpu.mpu_data.Gyro[1] * sinf(pitch * PI/180) * cosf(roll * PI/180) + 
-                     mpu.mpu_data.Gyro[2] * cosf(pitch * PI/180) * cosf(roll * PI/180)) * tanf(pitch * PI/180);
-    
+
+    float gyro_yaw = mpu.mpu_data.Gyro[2] -
+                     (mpu.mpu_data.Gyro[0] * sinf(roll * PI / 180) +
+                      mpu.mpu_data.Gyro[1] * sinf(pitch * PI / 180) * cosf(roll * PI / 180) +
+                      mpu.mpu_data.Gyro[2] * cosf(pitch * PI / 180) * cosf(roll * PI / 180)) *
+                         tanf(pitch * PI / 180);
 
     yaw += gyro_yaw * dt;
-    
-    if (yaw >= 360.0f) yaw -= 360.0f;
-    if (yaw < 0.0f) yaw += 360.0f;
+
+    if (yaw >= 360.0f)
+      yaw -= 360.0f;
+    if (yaw < 0.0f)
+      yaw += 360.0f;
+		
     u1_printf("{\"sensor\":\"mpu9250\",\"timestamp\":%lu,\"data\":{",
               HAL_GetTick());
     u1_printf("\"accel\":{\"x\":%.3f,\"y\":%.3f,\"z\":%.3f},",
@@ -484,12 +529,118 @@ void StartDefaultTask(void *argument)
               mpu.mpu_data.Gyro[0], mpu.mpu_data.Gyro[1], mpu.mpu_data.Gyro[2]);
     u1_printf("\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}",
               pitch, roll, yaw);
-    u1_printf("}}\r\n"); 
-
+    u1_printf("}}\r\n");
+		
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    //osDelay(1); 
+
+    // osDelay(1);
+    osDelay(100);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_OledInitTask */
+/**
+ * @brief Function implementing the oledInitTask thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_OledInitTask */
+void OledInitTask(void *argument)
+{
+  /* USER CODE BEGIN OledInitTask */
+  /* Infinite loop
+
+    */
+
+  static bool initialized = false;
+
+  // osDelay(1);
+
+  OLED_PropTypeDef oled_cfg = {
+      .scl_gpio_port = OLED_SCL_GPIO_Port,
+      .scl_gpio_pin = OLED_SCL_Pin,
+      .sda_gpio_port = OLED_SDA_GPIO_Port,
+      .sda_gpio_pin = OLED_SDA_Pin};
+
+  if (!initialized)
+  {
+    OLED_InitWithConfig(&oled_cfg);
+    OLED_Init();
+    OLED_Clear();
+    OLED_ShowString(0, 0, "System OK", OLED_6X8);
+    OLED_Update();
+    initialized = true;
+  }
+
+  for (;;)
+  {
+    vTaskDelay(pdMS_TO_TICKS(500)); // 每 500ms 刷新一次
+
+    GPS_PropTypeDef local_copy;
+    if (xSemaphoreTake(xGnssMutex, pdMS_TO_TICKS(10)) == pdTRUE)
+    {
+      local_copy = g_gps_data;
+      xSemaphoreGive(xGnssMutex);
+    }
+    else
+    {
+      continue;
+    }
+
+    
+
+    if (local_copy.is_available)
+    {
+      OLED_Clear();
+      char buf[32];
+
+      OLED_Printf(0, 0, OLED_6X8, "Lat: %.5f", local_copy.latitude);
+
+      // 显示经度
+      OLED_Printf(0, 9, OLED_6X8, "Lon: %.5f", local_copy.longitude);
+
+      // 显示时间
+      OLED_Printf(0, 19, OLED_6X8, "UTC: %s", local_copy.UTC_time);
+
+      // 显示速度
+      OLED_Printf(0, 29, OLED_6X8, "Spd: %.1f kt", local_copy.speed);
+
+      // 显示航向
+      OLED_Printf(0, 39, OLED_6X8, "Hdg: %.1f", local_copy.heading);
+
+      // 显示卫星数
+      OLED_Printf(0, 49, OLED_6X8, "Sat: %d", local_copy.satellites);
+    }
+    else
+    {
+      //OLED_SetCursor(0, 0);
+      OLED_ShowString(0,9, "NMEA Not available.", OLED_6X8);
+    }
+
+    OLED_Update(); // 刷新屏幕
+  }
+  // osThreadExit();
+
+  /* USER CODE END OledInitTask */
+}
+
+/* USER CODE BEGIN Header_SensorDataCollection */
+/**
+ * @brief Function implementing the sensorDataColle thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_SensorDataCollection */
+void SensorDataCollection(void *argument)
+{
+  /* USER CODE BEGIN SensorDataCollection */
+  /* Infinite loop */
+  for (;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END SensorDataCollection */
 }
 
 /**

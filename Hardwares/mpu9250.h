@@ -10,8 +10,8 @@ extern "C" {
 extern SPI_HandleTypeDef hspi1;
 
 #include <stdlib.h>
-#define mpuselect()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET)
-#define mpudeselect()  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET)
+#define mpuselect()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET)
+#define mpudeselect()  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET)
 #define MPU9250_CS_GPIO    GY_CS_GPIO_Port
 #define MPU9250_CS_PIN     GY_CS_Pin
 //#define MPU9250_SPI        hspi1

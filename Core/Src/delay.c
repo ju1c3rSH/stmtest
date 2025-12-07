@@ -1,0 +1,25 @@
+#include "stm32f1xx.h"
+
+//Based on Hal!! And change the head before you move it to another project / MCU!
+static uint32_t current_freq = 0; 
+//Need to be called once after the HAL was loaded.
+
+void DWT_Delay_Init(void)
+{
+	current_freq = HAL_RCC_GetSysClockFreq();
+    /* Enable TRC */
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    /* Enable counter */
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
+void DWT_Delay_us(uint32_t us)
+{
+    if(us == 0 ) return;
+    
+
+    uint32_t clk_cycle_start = DWT->CYCCNT;
+    /* Go to number of cycles for system */
+    us *= (current_freq / 1000000);
+    /* Delay till end */
+    while ((DWT->CYCCNT - clk_cycle_start) < us);
+}

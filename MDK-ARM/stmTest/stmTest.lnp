@@ -1,11 +1,12 @@
 --cpu Cortex-M3
 "stmtest\startup_stm32f103xb.o"
+"stmtest\text_utils.o"
+"stmtest\delay.o"
 "stmtest\main.o"
 "stmtest\freertos.o"
 "stmtest\stm32f1xx_it.o"
 "stmtest\stm32f1xx_hal_msp.o"
 "stmtest\stm32f1xx_hal_timebase_tim.o"
-"stmtest\text_utils.o"
 "stmtest\stm32f1xx_hal_gpio_ex.o"
 "stmtest\stm32f1xx_hal_tim.o"
 "stmtest\stm32f1xx_hal_tim_ex.o"
@@ -19,7 +20,6 @@
 "stmtest\stm32f1xx_hal_flash.o"
 "stmtest\stm32f1xx_hal_flash_ex.o"
 "stmtest\stm32f1xx_hal_exti.o"
-"stmtest\stm32f1xx_hal_i2c.o"
 "stmtest\stm32f1xx_hal_spi.o"
 "stmtest\stm32f1xx_hal_uart.o"
 "stmtest\system_stm32f1xx.o"
@@ -34,9 +34,10 @@
 "stmtest\heap_4.o"
 "stmtest\port.o"
 "stmtest\oled.o"
-"stmtest\oled_hw.o"
 "stmtest\ascii16.o"
 "stmtest\mpu9250.o"
+"stmtest\oled_data.o"
+"stmtest\atgm336h.o"
 --library_type=microlib --strict --scatter "stmTest\stmTest.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

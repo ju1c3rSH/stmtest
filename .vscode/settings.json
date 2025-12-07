@@ -8,6 +8,8 @@
         "type_traits": "c",
         "xutility": "c",
         "main.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "oled.h": "c",
+        "vcruntime.h": "c"
     }
 }

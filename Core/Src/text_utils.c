@@ -6,10 +6,11 @@
 #include "text_utils.h"
 
 
-void Log_Print(const char *message)
+void Log_Print(const char *message, uint16_t len)
 {
-	
-  HAL_UART_Transmit(&huart1, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
+    if (len > 0) {
+        HAL_UART_Transmit(&huart1, (uint8_t *)message, len, HAL_MAX_DELAY);
+    }
 }
 void SWO_PrintChar(char ch)
 {
@@ -32,5 +33,5 @@ void u1_printf(const char *format, ...)
   vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
-  Log_Print(buffer);
+  Log_Print(buffer,strlen(buffer));
 }

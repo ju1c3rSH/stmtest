@@ -396,6 +396,21 @@
           <GroupName>Application/User/Core</GroupName>
           <Files>
             <File>
+              <FileName>text_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\text_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>text_utils.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\text_utils.h</FilePath>
+            </File>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\delay.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
@@ -419,16 +434,6 @@
               <FileName>stm32f1xx_hal_timebase_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f1xx_hal_timebase_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>text_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\text_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>text_utils.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\text_utils.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -499,11 +504,6 @@
               <FileName>stm32f1xx_hal_exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c</FilePath>
             </File>
             <File>
               <FileName>stm32f1xx_hal_spi.c</FileName>
@@ -591,19 +591,9 @@
               <FilePath>..\Hardwares\oled.c</FilePath>
             </File>
             <File>
-              <FileName>oled_hw.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\oled_hw.c</FilePath>
-            </File>
-            <File>
               <FileName>oled.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Hardwares\oled.h</FilePath>
-            </File>
-            <File>
-              <FileName>oled_hw.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardwares\oled_hw.h</FilePath>
             </File>
             <File>
               <FileName>ascii16.c</FileName>
@@ -619,6 +609,16 @@
               <FileName>mpu9250.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\mpu9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardwares\OLED_Data.c</FilePath>
+            </File>
+            <File>
+              <FileName>atgm336h.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardwares\atgm336h.c</FilePath>
             </File>
           </Files>
         </Group>

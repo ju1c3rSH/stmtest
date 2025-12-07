@@ -1,0 +1,31 @@
+#ifndef __ATGM336H_H__````````````
+#define __ATGM336H_H__
+#define GPS_UART_RX_BUF_SIZE 1024
+#include <stdint.h>
+static uint8_t s_uart_rx_buf[GPS_UART_RX_BUF_SIZE];
+typedef struct GPS_Prop{
+    float latitude;   // 纬度
+    float longitude;  // 经度
+    float altitude;   // 高度
+    float speed;      // 速度
+    float heading;    // 航向
+    int fix_type;    // 定位类型
+    int satellites;   // 可见卫星数
+    char UTC_time[11]; // UTC时间，格式HHMMSS.SSS
+    uint32_t SYS_time[11]; // 系统时间，TICK时间戳
+    char EW;        // 东西经标志，E或W
+    char NS;        // 南北纬标志，N或S
+    //用枚举表示NS..
+    char GPS_status; // GPS状态，A=有效，V=无效
+    char GPS_Buffer[128]; // 原始NMEA数据缓存
+    uint8_t is_available; // 定位数据是否有效
+
+}GPS_PropTypeDef;
+
+
+void extract_gnrmc_line(const uint8_t* buf, uint16_t len);
+void parse_gnrmc(const char* line);
+void parse_uart_buffer(uint8_t* buf, uint16_t len);
+void ATGM336H_Init(GPS_PropTypeDef* gps_prop);
+void GPS_UART_IDLE_Callback(uint8_t *buf, uint16_t len);
+#endif // __ATGM336H_H__

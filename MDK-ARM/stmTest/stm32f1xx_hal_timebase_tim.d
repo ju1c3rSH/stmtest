@@ -23,7 +23,6 @@ stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
-stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\stm32f1xx_hal_timebase_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h

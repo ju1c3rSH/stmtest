@@ -1,24 +1,76 @@
-#ifndef __OLED_H__
-#define __OLED_H__
+#ifndef __OLED_H
+#define __OLED_H
 
 #include <stdint.h>
-#define I2C_USE_DMA 1
+#include "OLED_Data.h"
+#include "main.h"
+
+
+/*FontSize锟斤拷锟斤拷取�?*/
+
 #define OLED_8X16				8
-#define OLED_8X12				8
+#define OLED_8X12			    8
+#define OLED_6X8			    6
+#define OLED_UNFILLED			0
+#define OLED_FILLED				1
+
+/*
+typedef struct __MPU9250_PropTypDef {
+
+
+	SPI_HandleTypeDef *hspi;
+	GPIO_TypeDef *cs_gpio_port;
+	uint16_t cs_gpio_pin;
+} MPU9250_PropTypeDef;
+ */
+
+
+typedef struct __OLED_PropTypDef
+{
+    GPIO_TypeDef *sda_gpio_port;
+    uint16_t sda_gpio_pin;
+    GPIO_TypeDef *scl_gpio_port;
+    uint16_t scl_gpio_pin;
+} OLED_PropTypeDef;
+
+
+/*********************/
+ void OLED_GPIO_Init(void);
+void OLED_InitWithConfig(OLED_PropTypeDef *OLED_Prop);
+void OLED_Init(void);
+
+
+void OLED_Update(void);
+void OLED_UpdateArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
+
 
 void OLED_Clear(void);
-void oled_refresh(void);
-void oled_init(void);
-
-void oled_draw_point(uint8_t x, uint8_t y, uint8_t type);
-void oled_draw_hline(uint8_t x, uint8_t y, uint8_t len);
-void oled_fill(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t type);
-
-
-void OLED_ShowImage(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image);
-void OLED_ShowChar(uint8_t X, uint8_t Y, char Char, uint8_t FontSize);
 void OLED_ClearArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
-void OLED_ShowString(uint8_t X, uint8_t Y, char *String, uint8_t FontSize);
-void OLED_Update(void);
+void OLED_Reverse(void);
+void OLED_ReverseArea(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height);
 
-#endif /* __OLED_H__ */
+
+void OLED_ShowChar(uint8_t X, uint8_t Y, char Char, uint8_t FontSize);
+void OLED_ShowString(uint8_t X, uint8_t Y, char *String, uint8_t FontSize);
+void OLED_ShowNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize);
+void OLED_ShowSignedNum(uint8_t X, uint8_t Y, int32_t Number, uint8_t Length, uint8_t FontSize);
+void OLED_ShowHexNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize);
+void OLED_ShowBinNum(uint8_t X, uint8_t Y, uint32_t Number, uint8_t Length, uint8_t FontSize);
+void OLED_ShowFloatNum(uint8_t X, uint8_t Y, double Number, uint8_t IntLength, uint8_t FraLength, uint8_t FontSize);
+void OLED_ShowChinese(uint8_t X, uint8_t Y, char *Chinese);
+void OLED_ShowImage(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, const uint8_t *Image);
+void OLED_Printf(uint8_t X, uint8_t Y, uint8_t FontSize, char *format, ...);
+
+
+void OLED_DrawPoint(uint8_t X, uint8_t Y);
+uint8_t OLED_GetPoint(uint8_t X, uint8_t Y);
+void OLED_DrawLine(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1);
+void OLED_DrawRectangle(uint8_t X, uint8_t Y, uint8_t Width, uint8_t Height, uint8_t IsFilled);
+void OLED_DrawTriangle(uint8_t X0, uint8_t Y0, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2, uint8_t IsFilled);
+void OLED_DrawCircle(uint8_t X, uint8_t Y, uint8_t Radius, uint8_t IsFilled);
+void OLED_DrawEllipse(uint8_t X, uint8_t Y, uint8_t A, uint8_t B, uint8_t IsFilled);
+void OLED_DrawArc(uint8_t X, uint8_t Y, uint8_t Radius, int16_t StartAngle, int16_t EndAngle, uint8_t IsFilled);
+
+
+
+#endif

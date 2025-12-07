@@ -24,7 +24,6 @@ stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
-stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
@@ -41,11 +40,15 @@ stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.
 stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
-stmtest\main.o: ../Core/Inc/text_utils.h
 stmtest\main.o: ../Hardwares/oled.h
+stmtest\main.o: ../Hardwares/OLED_Data.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\main.o: ../Hardwares/mpu9250.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h 
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\main.o: ../Hardwares/atgm336h.h
+stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
+stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
