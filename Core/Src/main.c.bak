@@ -116,11 +116,11 @@ void Test_SPI_Communication(void)
   u1_printf("=== SPI Communication Test ===\r\n");
 
   // Test 1: Direct HAL_SPI_TransmitReceive test
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS LOW
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
 
   HAL_StatusTypeDef status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
 
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS HIGH
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
 
   u1_printf("SPI transmit status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
   u1_printf("Sent: 0x%02X, Received: 0x%02X\r\n", test_data, rx_data);
@@ -129,9 +129,9 @@ void Test_SPI_Communication(void)
   u1_printf("--- Reading WHO_AM_I Register ---\r\n");
   test_data = 0x75 | 0x80; // Read operation, set MSB
 
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS LOW
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
   status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS HIGH
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
 
   u1_printf("WHO_AM_I read status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
   u1_printf("WHO_AM_I value: 0x%02X\r\n", rx_data);
@@ -180,24 +180,26 @@ int main(void)
   u1_printf("Testing SPI...\r\n");
 
   // 先简单测试GPIO控制
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS高
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS高
   u1_printf("CS HIGH\r\n");
   // HAL_Delay(100);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // CS低
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS低
   u1_printf("CS LOW\r\n");
   // HAL_Delay(100);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // CS高
+  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS高
   u1_printf("CS TEST DONE\r\n");
-  Test_SPI_Communication();
+  
   // 尝试初始化
-  if (MPU9250_Init(&mpu, &hspi1, GPIOB, GPIO_PIN_14))
+  if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
   {
     u1_printf("MPU9250 init SUCCESSFUL\r\n");
+    
   }
   else
   {
     u1_printf("MPU9250 init FAILED\r\n");
   }
+  Test_SPI_Communication();
   ATGM336H_Init(&g_gps_data);
   /*
      OLED_PropTypeDef oled_cfg = {
@@ -284,7 +286,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV2;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
@@ -451,7 +453,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14|OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -460,8 +465,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB14 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  /*Configure GPIO pin : PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -469,7 +474,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : OLED_SCL_Pin OLED_SDA_Pin */
   GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -520,7 +525,7 @@ void StartDefaultTask(void *argument)
       yaw -= 360.0f;
     if (yaw < 0.0f)
       yaw += 360.0f;
-		/*
+		
     u1_printf("{\"sensor\":\"mpu9250\",\"timestamp\":%lu,\"data\":{",
               HAL_GetTick());
     u1_printf("\"accel\":{\"x\":%.3f,\"y\":%.3f,\"z\":%.3f},",
@@ -530,7 +535,7 @@ void StartDefaultTask(void *argument)
     u1_printf("\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}",
               pitch, roll, yaw);
     u1_printf("}}\r\n");
-		*/
+		
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
     // osDelay(1);

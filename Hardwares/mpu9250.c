@@ -63,6 +63,7 @@ static uint8_t spi_wr_byte(SPI_HandleTypeDef *hspi, uint8_t byte) {
 		;
 
 	if (HAL_SPI_TransmitReceive(hspi, &byte, &feedback, 1, 0x01f4) != HAL_OK) {
+		
 		return 0xff;
 	}
 
