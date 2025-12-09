@@ -47,7 +47,7 @@ float Angle_PID(PID_TypeDef *PID, float Target, float Gyro)
     return PID->Out;
 }
 
-float Distance_PID(PID_Typedef *PID,float Target){
+float Distance_PID(PID_TypeDef *PID,float Target){
     PID->Target = Target;
     PID->Error = PID->Target - PID->Current;
     PID->I_Out += PID->Error;
