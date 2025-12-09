@@ -34,6 +34,7 @@
 #include "atgm336h.h"
 #include "semphr.h"
 #include "oled.h"
+#include "Car.h"
 #include "uart_pid_parse.h"
 /* USER CODE END Includes */
 
@@ -72,14 +73,6 @@ const osThreadAttr_t defaultTask_attributes = {
     .stack_size = 256 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
-
-/* Definitions for oledInitTask */
-osThreadId_t oledInitTaskHandle;
-const osThreadAttr_t oledInitTask_attributes = {
-    .name = "oledInitTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
-};
 /* Definitions for uartRecvTask */
 osThreadId_t uartRecvTaskHandle;
 const osThreadAttr_t uartRecvTask_attributes = {
@@ -102,7 +95,6 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 void StartDefaultTask(void *argument);
-void OledInitTask(void *argument);
 void UartRecvTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -255,6 +247,26 @@ int main(void)
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS高
   u1_printf("CS TEST DONE\r\n");
 
+  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler(); // 检查是否启动失败
+  }
+  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler(); // 检查是否启动失败
+  }
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);  // AIN1 = 1
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
+  uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3); // 获取当前周期值 (ARR)
+  uint32_t pulse_value = (period + 1) / 2; // 50% 占空比 (CCR = ARR/2)
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value); // 设置电机 A PWM
+
+  // 空转 2 秒
+  HAL_Delay(2000);
+
+  // 空转结束，停止电机 A (设置 PWM 占空比为 0 或关闭方向)
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0); // 或者将 pulse_value 设为 0
+
   // 尝试初始化
   if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
   {
@@ -265,6 +277,7 @@ int main(void)
     u1_printf("MPU9250 init FAILED\r\n");
   }
   Test_SPI_Communication();
+  Car_Init(&mpu);
   ATGM336H_Init(&g_gps_data);
   /*
      OLED_PropTypeDef oled_cfg = {
@@ -315,9 +328,6 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
-  /* creation of oledInitTask */
-  oledInitTaskHandle = osThreadNew(OledInitTask, NULL, &oledInitTask_attributes);
 
   /* creation of uartRecvTask */
   uartRecvTaskHandle = osThreadNew(UartRecvTask, NULL, &uartRecvTask_attributes);
@@ -734,8 +744,11 @@ void StartDefaultTask(void *argument)
 
   for (;;)
   {
+    // u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     Get_Data_SubTask();
     Normal_Balance_SubTask();
+    vTaskDelay(10);
   }
   /*
   for (;;)
@@ -781,90 +794,6 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_OledInitTask */
-/**
- * @brief Function implementing the oledInitTask thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_OledInitTask */
-void OledInitTask(void *argument)
-{
-  /* USER CODE BEGIN OledInitTask */
-  /* Infinite loop
-
-    */
-
-  static bool initialized = false;
-
-  // osDelay(1);
-
-  OLED_PropTypeDef oled_cfg = {
-      .scl_gpio_port = OLED_SCL_GPIO_Port,
-      .scl_gpio_pin = OLED_SCL_Pin,
-      .sda_gpio_port = OLED_SDA_GPIO_Port,
-      .sda_gpio_pin = OLED_SDA_Pin};
-
-  if (!initialized)
-  {
-    OLED_InitWithConfig(&oled_cfg);
-    OLED_Init();
-    OLED_Clear();
-    OLED_ShowString(0, 0, "System OK", OLED_6X8);
-    OLED_Update();
-    initialized = true;
-  }
-
-  for (;;)
-  {
-    vTaskDelay(pdMS_TO_TICKS(500)); // 每 500ms 刷新一次
-
-    GPS_PropTypeDef local_copy;
-    if (xSemaphoreTake(xGnssMutex, pdMS_TO_TICKS(10)) == pdTRUE)
-    {
-      local_copy = g_gps_data;
-      xSemaphoreGive(xGnssMutex);
-    }
-    else
-    {
-      continue;
-    }
-
-    if (local_copy.is_available)
-    {
-      OLED_Clear();
-      char buf[32];
-
-      OLED_Printf(0, 0, OLED_6X8, "Lat: %.5f", local_copy.latitude);
-
-      // 显示经度
-      OLED_Printf(0, 9, OLED_6X8, "Lon: %.5f", local_copy.longitude);
-
-      // 显示时间
-      OLED_Printf(0, 19, OLED_6X8, "UTC: %s", local_copy.UTC_time);
-
-      // 显示速度
-      OLED_Printf(0, 29, OLED_6X8, "Spd: %.1f kt", local_copy.speed);
-
-      // 显示航向
-      OLED_Printf(0, 39, OLED_6X8, "Hdg: %.1f", local_copy.heading);
-
-      // 显示卫星数
-      OLED_Printf(0, 49, OLED_6X8, "Sat: %d", local_copy.satellites);
-    }
-    else
-    {
-      // OLED_SetCursor(0, 0);
-      OLED_ShowString(0, 9, "NMEA Not available.", OLED_6X8);
-    }
-
-    OLED_Update(); // 刷新屏幕
-  }
-  // osThreadExit();
-
-  /* USER CODE END OledInitTask */
-}
-
 /* USER CODE BEGIN Header_UartRecvTask */
 /**
  * @brief Function implementing the uartRecvTask thread.
@@ -876,6 +805,7 @@ void UartRecvTask(void *argument)
 {
   /* USER CODE BEGIN UartRecvTask */
   /* Infinite loop */
+  UART1_DMA_Received_Data_t xReceivedData;
   for (;;)
   {
     if (xQueueReceive(xUART1ReceiveQueue, &xReceivedData, portMAX_DELAY) == pdPASS)
@@ -904,7 +834,7 @@ void UartRecvTask(void *argument)
           break;
         }
         // 注意128堆栈够不够
-        //this代码模块未审计
+        // this代码模块未审计
       }
       if (json_end)
       {
@@ -924,10 +854,11 @@ void UartRecvTask(void *argument)
             u1_printf("Resetting system...\r\n");
             vTaskDelay(pdMS_TO_TICKS(100));
             NVIC_SystemReset();
-          }else{
+          }
+          else
+          {
             u1_printf("Failed to save PID params to Flash.\r\n");
           }
-          
         }
         else
         {

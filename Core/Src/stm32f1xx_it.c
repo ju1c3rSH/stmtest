@@ -215,7 +215,7 @@ void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
   if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)) {
-    __HAL_UART_CLEAR_RXNEFLAG(&huart1);
+    __HAL_UART_CLEAR_FLAG(&huart1, UART_FLAG_RXNE);
     HAL_UART_DMAStop(&huart1);
     uint16_t len = GPS_UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
     GPS_UART_IDLE_Callback(s_uart_rx_buf, len);

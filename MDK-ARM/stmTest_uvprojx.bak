@@ -338,7 +338,7 @@
               <MiscControls />
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine />
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../Core/Inc/Obj</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -406,6 +406,16 @@
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>subtask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\subtask.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_pid_parse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\uart_pid_parse.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -583,16 +593,6 @@
           <GroupName>Hardwares</GroupName>
           <Files>
             <File>
-              <FileName>oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\oled.c</FilePath>
-            </File>
-            <File>
-              <FileName>oled.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardwares\oled.h</FilePath>
-            </File>
-            <File>
               <FileName>ascii16.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\ascii16.c</FilePath>
@@ -608,14 +608,29 @@
               <FilePath>..\Hardwares\mpu9250.c</FilePath>
             </File>
             <File>
-              <FileName>OLED_Data.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\OLED_Data.c</FilePath>
-            </File>
-            <File>
               <FileName>atgm336h.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\atgm336h.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardwares\motor.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/User/Core/Obj</GroupName>
+          <Files>
+            <File>
+              <FileName>PID.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\Obj\PID.c</FilePath>
+            </File>
+            <File>
+              <FileName>Car.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\Obj\Car.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -467,10 +467,9 @@ ares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/Fre
 eRTOS/Source/portable/RVDS/ARM_CM3 -I../Drivers/CMSIS/Device/ST/STM32F1xx/Inclu
 de -I../Drivers/CMSIS/Include -I.\RTE\_stmTest -IC:\Users\Episode\AppData\Local
 \Arm\Packs\ARM\CMSIS\6.2.0\CMSIS\Core\Include -IC:\Users\Episode\AppData\Local\
-Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include --predefine="__EVAL SETA 1" -
--predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 543" --prede
-fine="STM32F10X_MD SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f103x
-b.lst startup_stm32f103xb.s
+Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include --predefine="__MICROLIB SETA 
+1" --predefine="__UVISION_VERSION SETA 543" --predefine="STM32F10X_MD SETA 1" -
+-predefine="_RTE_ SETA 1" --list=startup_stm32f103xb.lst startup_stm32f103xb.s
 
 
 
@@ -1177,4 +1176,4 @@ Symbol: __main
       At line 134 in file startup_stm32f103xb.s
 Comment: __main used once
 2 symbols
-407 symbols in table
+406 symbols in table

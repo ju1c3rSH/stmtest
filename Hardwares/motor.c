@@ -1,6 +1,9 @@
 #include "motor.h"
-#include "gpio.h"
-#include "tim.h"
+//#include "gpio.h"
+#include "main.h"
+//#include "tim.h"
+#include "cmsis_os.h"
+
 void Motor_Init(void)
 {
     // Initialize motor control GPIOs
@@ -26,7 +29,7 @@ void Set_Motor_A_Speed(int16_t speed)
     }
 
     // Set PWM duty cycle based on speed (assuming speed is in range 0-1000)
-    __HAL_TIM_SET_COMPARE(&htimX, TIM_CHANNEL_Y, speed); // Replace htimX and TIM_CHANNEL_Y with actual timer and channel
+    //__HAL_TIM_SET_COMPARE(&htimX, TIM_CHANNEL_Y, speed); // Replace htimX and TIM_CHANNEL_Y with actual timer and channel
 }
 
 void Set_Motor_B_Speed(int16_t speed)
@@ -45,7 +48,7 @@ void Set_Motor_B_Speed(int16_t speed)
     }
 
     // Set PWM duty cycle based on speed (assuming speed is in range 0-1000)
-    __HAL_TIM_SET_COMPARE(&htimX, TIM_CHANNEL_Y, speed); // Replace htimX and TIM_CHANNEL_Y with actual timer and channel
+//__HAL_TIM_SET_COMPARE(&htimX, TIM_CHANNEL_Y, speed); // Replace htimX and TIM_CHANNEL_Y with actual timer and channel
 }
 
 uint32_t Encoder_Get_A(void)

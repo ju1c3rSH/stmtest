@@ -15,7 +15,7 @@ typedef struct
     // uint32_t checkSum;
 } PID_UART_PARSE_Params_t;
 
-
+extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
 typedef struct
 {
     uint32_t magic_number;

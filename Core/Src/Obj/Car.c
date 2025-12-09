@@ -1,11 +1,17 @@
 #include "Car.h"
 #include "motor.h"
 #include "math.h"
-#include "main.h"
+#include <stdbool.h>
 Car_TypeDef g_car;
 
-
-
+#define PI 3.14159265358979323846f
+static PID_TypeDef g_pitch_pid_instance;
+static PID_TypeDef g_speed_pid_instance;
+static PID_TypeDef g_yaw_pid_instance;
+static PID_TypeDef g_distance_pid_instance;
+static PID_TypeDef g_angle_pid_instance;
+static PID_TypeDef g_roll_pid_instance;
+static Car_FlagTypeDef  g_car_flag_instance;
 void CorrectDate(float ax, float ay, float az,
                  float gx, float gy, float gz,
                  float ACCrange, float GYROrange, float *Date)
@@ -24,9 +30,18 @@ void CorrectDate(float ax, float ay, float az,
     //	Date[5]=gz*0.0010652644f;
 }
 
-
 void Car_Init(MPU9250 *mpu)
 {
+    g_car.PitchPID = &g_pitch_pid_instance; // <--- 初始化指针
+    g_car.SpeedPID = &g_speed_pid_instance; // <--- 初始化指针
+    g_car.YawPID = &g_yaw_pid_instance;     // <--- 初始化指针
+    g_car.DistancePID = &g_distance_pid_instance;
+    g_car.AnglePID = &g_angle_pid_instance;
+    g_car.RollPID = &g_roll_pid_instance;
+    g_car.Flag = g_car_flag_instance;
+    /*初始化外设*/
+    g_car.Device.mpu = *mpu;
+
     g_car.SetSpeed = 0.0f;
     g_car.CurrentSpeed = 0.0f;
     g_car.SetTempSpeed = 0.0f;
@@ -34,17 +49,18 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     g_car.SetMid_Angle = 0.0f;
-    g.car.Prop.Mid_Angle = 20.6f;//TODO :测量机械中值！！！
+    g_car.Prop.Mid_Angle = 20.6f; // TODO :测量机械中值！！！
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
-    /*初始化外设*/
-    g_car.Device.mpu = *mpu;
 
     /* 初始化属性部分*/
     g_car.Prop.Velocity_Left = 0.0f;
     g_car.Prop.Velocity_Right = 0.0f;
     g_car.Prop.Velocity_Target = 0.0f;
+    g_car.Prop.Last_Velocity_Left = 0.0f;
+    g_car.Prop.Last_Velocity_Right = 0.0f;
+    g_car.Prop.Last_Velocity_Target = 0.0f;
     g_car.Prop.Distance_Left = 0.0f;
     g_car.Prop.Distance_Right = 0.0f;
     g_car.Prop.Distance_Target = 0.0f;
@@ -61,7 +77,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.Prop.Accel_Y = 0;
     g_car.Prop.Accel_Z = 0;
     g_car.Prop.LastDistance = 0.0f;
-    g_car.Prop.dt = 0.0f;
+    g_car.Prop.dt = 0.02f;
 
     /* 初始化PID部分*/
     // 角度环
@@ -76,6 +92,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.PitchPID->Target = 0;
     g_car.PitchPID->I_Max = 0.0f;
     g_car.PitchPID->Out_Max = 255.0f;
+    g_car.PitchPID->pid_type = PID_TYPE_BALANCE_PITCH;
     // 速度环
     g_car.SpeedPID->Kp = 1.0f;
     g_car.SpeedPID->Ki = 0.1f;
@@ -87,8 +104,9 @@ void Car_Init(MPU9250 *mpu)
     g_car.SpeedPID->Last_Error = 0;
     g_car.SpeedPID->Current = 0;
     g_car.SpeedPID->Target = 0;
+    g_car.SpeedPID->pid_type = PID_TYPE_SPEED;
     // Yaw角角度环
-    g_car.YawPID->Kp = -300f;
+    g_car.YawPID->Kp = -30.0f;
     g_car.YawPID->Ki = 0.0f;
     g_car.YawPID->Kd = -1.0f;
     g_car.YawPID->I_Max = 0.0f;
@@ -98,6 +116,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.YawPID->Last_Error = 0;
     g_car.YawPID->Current = 0;
     g_car.YawPID->Target = 0;
+    g_car.YawPID->pid_type = PID_TYPE_BALANCE_YAW;
 }
 float InfiniteYaw(float Now_Yaw)
 {
@@ -134,6 +153,10 @@ void Car_Get_Real_Value(float dt)
 
     g_car.Prop.Pulse_Left = Encoder_Get_A();
     g_car.Prop.Pulse_Right = Encoder_Get_B();
+
+    g_car.Prop.Last_Velocity_Left = g_car.Prop.Velocity_Left;
+    g_car.Prop.Last_Velocity_Right = g_car.Prop.Velocity_Right;
+    g_car.Prop.Last_Velocity_Target = g_car.Prop.Velocity_Target;
 
     g_car.Prop.Velocity_Left = (float)(g_car.Prop.Pulse_Left) * Wheel_Radius * __2PI / 2000.0f / dt / 30; // 假设每转2000脉冲 获取轮真实速度[m/s]
     g_car.Prop.Velocity_Right = (float)(g_car.Prop.Pulse_Right) * Wheel_Radius * __2PI / 2000.0f / dt / 30;
@@ -172,4 +195,5 @@ void Car_Get_Real_Value(float dt)
     g_car.Prop.Full_Yaw = InfiniteYaw(g_car.Prop.Yaw_Angle);
     g_car.YawPID->Current = g_car.Prop.Full_Yaw;
     g_car.SpeedPID->Current = (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f;
+    u1_printf("Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

@@ -4,7 +4,7 @@
 #include "main.h"
 #include "PID.h"
 #include "mpu9250.h"
-
+#include <stdbool.h>
 #define __2PI 6.28318531f
 //TODO: 调整小车半径参数
 
@@ -24,6 +24,9 @@ typedef struct
 {
     float Velocity_Left;
     float Velocity_Right;
+    float Last_Velocity_Left;
+    float Last_Velocity_Right;
+    float Last_Velocity_Target;
     float Velocity_Target;
     float Distance_Left;
     float Distance_Right;
@@ -80,6 +83,9 @@ extern Car_TypeDef g_car;
 微分项 (D): 误差的变化率 de(t)/dt 在离散系统中近似为 (e(t) - e(t-1)) / dt。*/
 void Car_Init(MPU9250 *mpu);
 void Car_SetSpeed(Car_TypeDef *car, float speed);
-void Car_Get_Real_Value(void);
-
+void Car_Get_Real_Value(float dt);
+void CorrectDate(float ax, float ay, float az,
+                 float gx, float gy, float gz,
+                 float ACCrange, float GYROrange, float *Date);
+float InfiniteYaw(float Now_Yaw);
 #endif /* __CAR_H__ */

@@ -1,6 +1,6 @@
 #ifndef __PID_H__
 #define __PID_H__
-
+#include <stdbool.h>
 #include "main.h"
 typedef enum
 {
@@ -32,12 +32,7 @@ typedef struct
 } PID_TypeDef;
 
 
-PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
-};
+
 // 只是处理func
 float Position_PID(PID_TypeDef *PID, float Target);
 float Distance_PID(PID_TypeDef *PID, float Target);

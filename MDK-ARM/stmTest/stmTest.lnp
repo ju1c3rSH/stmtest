@@ -2,6 +2,8 @@
 "stmtest\startup_stm32f103xb.o"
 "stmtest\text_utils.o"
 "stmtest\delay.o"
+"stmtest\subtask.o"
+"stmtest\uart_pid_parse.o"
 "stmtest\main.o"
 "stmtest\freertos.o"
 "stmtest\stm32f1xx_it.o"
@@ -33,11 +35,12 @@
 "stmtest\cmsis_os2.o"
 "stmtest\heap_4.o"
 "stmtest\port.o"
-"stmtest\oled.o"
 "stmtest\ascii16.o"
 "stmtest\mpu9250.o"
-"stmtest\oled_data.o"
 "stmtest\atgm336h.o"
+"stmtest\motor.o"
+"stmtest\pid.o"
+"stmtest\car.o"
 --library_type=microlib --strict --scatter "stmTest\stmTest.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
