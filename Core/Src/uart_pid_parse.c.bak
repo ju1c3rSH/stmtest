@@ -241,7 +241,7 @@ PID_UART_PARSE_Params_t GetPIDParams(void)
     }
     return params;
 }
-/*
+
 void Callback_ParsePID(uint8_t *buf, uint16_t len)
 {
     Log_Print("\r\n---START---\r\n", 15);
@@ -253,4 +253,3 @@ void Callback_ParsePID(uint8_t *buf, uint16_t len)
         Parse_(buf, len);
     }
 }
-    */

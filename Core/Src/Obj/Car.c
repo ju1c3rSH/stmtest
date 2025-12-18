@@ -5,13 +5,17 @@
 Car_TypeDef g_car;
 
 #define PI 3.14159265358979323846f
+static Car_WheelSpeedControlTypeDef SpeedControl;
 static PID_TypeDef g_pitch_pid_instance;
 static PID_TypeDef g_speed_pid_instance;
 static PID_TypeDef g_yaw_pid_instance;
 static PID_TypeDef g_distance_pid_instance;
 static PID_TypeDef g_angle_pid_instance;
 static PID_TypeDef g_roll_pid_instance;
-static Car_FlagTypeDef  g_car_flag_instance;
+static Car_FlagTypeDef g_car_flag_instance;
+
+uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
+
 void CorrectDate(float ax, float ay, float az,
                  float gx, float gy, float gz,
                  float ACCrange, float GYROrange, float *Date)
@@ -32,16 +36,17 @@ void CorrectDate(float ax, float ay, float az,
 
 void Car_Init(MPU9250 *mpu)
 {
-    g_car.PitchPID = &g_pitch_pid_instance; // <--- 初始化指针
-    g_car.SpeedPID = &g_speed_pid_instance; // <--- 初始化指针
-    g_car.YawPID = &g_yaw_pid_instance;     // <--- 初始化指针
+
+    g_car.SpeedControl = &SpeedControl;
+    g_car.PitchPID = &g_pitch_pid_instance;
+    g_car.SpeedPID = &g_speed_pid_instance;
+    g_car.YawPID = &g_yaw_pid_instance;
     g_car.DistancePID = &g_distance_pid_instance;
     g_car.AnglePID = &g_angle_pid_instance;
     g_car.RollPID = &g_roll_pid_instance;
     g_car.Flag = g_car_flag_instance;
     /*初始化外设*/
     g_car.Device.mpu = *mpu;
-
     g_car.SetSpeed = 0.0f;
     g_car.CurrentSpeed = 0.0f;
     g_car.SetTempSpeed = 0.0f;
@@ -49,7 +54,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = 20.6f; // TODO :测量机械中值！！！
+    g_car.Prop.Mid_Angle = -4.1f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -84,6 +89,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.PitchPID->Kp = -850.0f;
     // g_car.PitchPID->Ki = 0.5f;
     // out 应该不是浮点数
+    // TODO：后面写g_stored_pid_params和这里对接的逻辑
     g_car.PitchPID->Kd = -2.6f;
     g_car.PitchPID->Out = 0;
     g_car.PitchPID->Error = 0;
@@ -118,6 +124,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.YawPID->Target = 0;
     g_car.YawPID->pid_type = PID_TYPE_BALANCE_YAW;
 }
+
 float InfiniteYaw(float Now_Yaw)
 {
     static int32_t wrap_count = 0; // 记录偏航角突变次数

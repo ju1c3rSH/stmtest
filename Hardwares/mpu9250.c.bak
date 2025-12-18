@@ -34,11 +34,12 @@
  *
  * @refer   https://github.com/desertkun/MPU9250
  *          https://blog.csdn.net/liuyifanliu/article/details/99309839
- *
+ *deselect注释掉是为了测试
  */
 
 #include "mpu9250.h"
 #include "main.h"
+#include "text_utils.h"
 #define mpu_select()    HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET)
 #define mpu_deselect()  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET)
 
@@ -62,6 +63,7 @@ static uint8_t spi_wr_byte(SPI_HandleTypeDef *hspi, uint8_t byte) {
 		;
 
 	if (HAL_SPI_TransmitReceive(hspi, &byte, &feedback, 1, 0x01f4) != HAL_OK) {
+		
 		return 0xff;
 	}
 

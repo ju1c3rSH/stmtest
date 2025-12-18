@@ -3,11 +3,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "PID.h"
-#define UART1_PID_BUFFER_SIZE 256
-static uint8_t s_uart1_rx_buf[UART1_PID_BUFFER_SIZE];
+#include "Car.h"
+//统一引用上层上下文
+//#define UART1_PID_BUFFER_SIZE 256
+//static uint8_t s_uart1_rx_buf[UART1_PID_BUFFER_SIZE];
 typedef struct
 {
-    uint32_t buffer[UART1_PID_BUFFER_SIZE];
+    uint32_t buffer[PID_UART1_RX_BUF_SIZE];
     float kp;
     float ki;
     float kd;
@@ -30,7 +32,7 @@ static float g_ki = 0.1f;
 static float g_kd = 0.01f;
 
 
-
+//void Callback_ParsePID(uint8_t *buf, uint16_t len);;
 
 void LoadPIDParamsFromFlash(void);
 bool SavePIDParamsToFlash(PID_Type_t pid_type, float kp, float ki, float kd);

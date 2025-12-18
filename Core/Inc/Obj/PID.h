@@ -2,6 +2,10 @@
 #define __PID_H__
 #include <stdbool.h>
 #include "main.h"
+
+
+#include <stdint.h>
+
 typedef enum
 {
     PID_TYPE_BALANCE_PITCH,

@@ -23,7 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "atgm336h.h" 
+//#include "atgm336h.h" 
+#include "Car.h"
 #include "stdint.h"
 
 /* USER CODE END Includes */
@@ -60,9 +61,7 @@ extern void GPS_UART_IDLE_Callback(uint8_t* buf, uint16_t len);
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_usart1_rx;
-extern DMA_HandleTypeDef hdma_usart2_rx;
 extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
@@ -182,20 +181,6 @@ void DMA1_Channel5_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA1 channel6 global interrupt.
-  */
-void DMA1_Channel6_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel6_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart2_rx);
-  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel6_IRQn 1 */
-}
-
-/**
   * @brief This function handles TIM1 update interrupt.
   */
 void TIM1_UP_IRQHandler(void)
@@ -214,38 +199,24 @@ void TIM1_UP_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /*
   if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)) {
     __HAL_UART_CLEAR_FLAG(&huart1, UART_FLAG_RXNE);
     HAL_UART_DMAStop(&huart1);
-    uint16_t len = GPS_UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
-    GPS_UART_IDLE_Callback(s_uart_rx_buf, len);
-    HAL_UART_Receive_DMA(&huart1, s_uart_rx_buf, GPS_UART_RX_BUF_SIZE);
+    uint16_t len = PID_UART1_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
+    //GPS_UART_IDLE_Callback(s_uart_rx_buf, len);
+    HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE);
   }
+
+  NOTE:这里注释掉因为不需要手动管理DMA回调
+  */
+  //HAL_UART1_RxEventCallback(&huar1,PID_UART1_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx));
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USART2 global interrupt.
-  */
-void USART2_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART2_IRQn 0 */
-  if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE)) {
-    __HAL_UART_CLEAR_IDLEFLAG(&huart2);
-    HAL_UART_DMAStop(&huart2);
-    uint16_t len = GPS_UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart2.hdmarx);
-    GPS_UART_IDLE_Callback(s_uart_rx_buf, len);
-    HAL_UART_Receive_DMA(&huart2, s_uart_rx_buf, GPS_UART_RX_BUF_SIZE);
-  }
-  /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
-  /* USER CODE BEGIN USART2_IRQn 1 */
-
-  /* USER CODE END USART2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

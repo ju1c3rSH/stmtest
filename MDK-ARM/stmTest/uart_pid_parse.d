@@ -32,6 +32,9 @@ stmtest\uart_pid_parse.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.
 stmtest\uart_pid_parse.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\uart_pid_parse.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\uart_pid_parse.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+stmtest\uart_pid_parse.o: ../Core/Inc/Obj/Car.h
+stmtest\uart_pid_parse.o: ../Hardwares/mpu9250.h
+stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

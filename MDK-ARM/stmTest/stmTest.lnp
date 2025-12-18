@@ -37,7 +37,6 @@
 "stmtest\port.o"
 "stmtest\ascii16.o"
 "stmtest\mpu9250.o"
-"stmtest\atgm336h.o"
 "stmtest\motor.o"
 "stmtest\pid.o"
 "stmtest\car.o"

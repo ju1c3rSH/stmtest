@@ -608,11 +608,6 @@
               <FilePath>..\Hardwares\mpu9250.c</FilePath>
             </File>
             <File>
-              <FileName>atgm336h.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\atgm336h.c</FilePath>
-            </File>
-            <File>
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\motor.c</FilePath>

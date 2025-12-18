@@ -6,10 +6,14 @@
 #include "mpu9250.h"
 #include <stdbool.h>
 #define __2PI 6.28318531f
-//TODO: 调整小车半径参数
 
-#define Wheel_Radius 0.065f
-#define Car_Length 10  
+#define PID_UART1_RX_BUF_SIZE 128
+
+//在UART1使用的PID解析器
+//Example:   {"type":"balance_pitch","kp":1.5,"ki":0.2,"kd":0.05}
+
+#define Wheel_Radius 0.032f
+#define Car_Length 10
 #define Car_Width 0
 #define Car_Hight 0
 
@@ -22,6 +26,7 @@ typedef struct
 
 typedef struct
 {
+    float Max_Accelerate;
     float Velocity_Left;
     float Velocity_Right;
     float Last_Velocity_Left;
@@ -37,7 +42,7 @@ typedef struct
     float Yaw_Angle;
     float Pitch_Angle;
     float Roll_Angle;
-    float Mid_Angle;//机械中值
+    float Mid_Angle; // 机械中值
     short Gyro_X;
     short Gyro_Y;
     short Gyro_Z;
@@ -50,10 +55,32 @@ typedef struct
 } Car_PropTypeDef;
 
 
-typedef struct 
+typedef enum SpeedCurveTypeDef
 {
-   MPU9250 mpu;
-}Car_DeviceTypeDef;
+    CURVE_NONE = 0, // 直启
+    CURVE_TRAP = 1, // 梯形曲线
+    CURVE_SPTA = 2  // S型曲线
+} SpeedCurveTypeDef;
+
+
+typedef struct
+{
+    float Velocity_Start;
+    float Velocity_Current;
+    float Velocity_Target;
+    float Velocity_Max;
+    float Velocity_Min;
+    uint32_t aTimes; //（加速）步数计数
+    uint32_t Max_Time;
+    SpeedCurveTypeDef Curve_Type;
+    float Accelerate;
+    float Flexible;
+} Car_WheelSpeedControlTypeDef;
+
+typedef struct
+{
+    MPU9250 mpu;
+} Car_DeviceTypeDef;
 
 typedef struct
 {
@@ -71,7 +98,7 @@ typedef struct
     PID_TypeDef *PitchPID;
     PID_TypeDef *RollPID;
     PID_TypeDef *YawPID;
-
+    Car_WheelSpeedControlTypeDef *SpeedControl;
     Car_DeviceTypeDef Device;
     Car_PropTypeDef Prop;
     Car_FlagTypeDef Flag;

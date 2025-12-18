@@ -50,7 +50,6 @@ stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\main.o: ../Core/Inc/subtask.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h 
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
-stmtest\main.o: ../Hardwares/atgm336h.h
 stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 stmtest\main.o: ../Core/Inc/Obj/Car.h
