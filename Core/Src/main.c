@@ -857,7 +857,7 @@ void UartRecvTask(void *argument)
       {
 
         u1_printf("[UartRecvTask]Received JSON");
-        printf("Now Processing JSON: %s\r\n", local_buffer);
+        printf("[UartRecvTask]Now Processing JSON: %s\r\n", local_buffer);
         PID_UART_PARSE_Params_t pid_params;
         if (UART1_ParsePIDData(local_buffer, copy_length, &pid_params))
         {
@@ -866,12 +866,17 @@ void UartRecvTask(void *argument)
           //  = pid_params.kd;
           if (SavePIDParamsToFlash(pid_params.pid_type, pid_params.kp, pid_params.ki, pid_params.kd))
           {
-            u1_printf("Updated PID params from JSON and saved to Flash: Type=%d, Kp=%.3f, Ki=%.3f, Kd=%.3f\r\n",
+            u1_printf("[UartRecvTask]Updated PID params from JSON and saved to Flash: Type=%d, Kp=%.3f, Ki=%.3f, Kd=%.3f\r\n",
                       pid_params.pid_type, pid_params.kp, pid_params.ki, pid_params.kd);
-            u1_printf("Resetting system...\r\n");
-            while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
-              ;
+            
+            //while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY);
+            //while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET);
+            u1_printf("[UartRecvTask]Resetting system...\r\n");
+            HAL_Delay(10); 
+            __disable_irq();
+
             vTaskDelay(pdMS_TO_TICKS(100));
+            
             NVIC_SystemReset();
           }
           else
