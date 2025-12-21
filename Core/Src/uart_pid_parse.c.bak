@@ -102,35 +102,37 @@ bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid
 
     // 1. 解析 type
     char *type_start = strstr(json, "\"type\":\"");
-    if (!type_start) return false;
+    if (!type_start)
+        return false;
     type_start += 8; // 跳过 "\"type\":\""
     char *type_end = strchr(type_start, '"');
-    if (!type_end) return false;
+    if (!type_end)
+        return false;
     int type_len = type_end - type_start;
-    if (type_len >= 20) return false;
+    if (type_len >= 20)
+        return false;
     char type_str[20] = {0};
     memcpy(type_str, type_start, type_len);
 
-    // 2. 解析 kp
     char *kp_start = strstr(json, "\"kp\":");
-    if (!kp_start) return false;
+    if (!kp_start)
+        return false;
     float kp = strtof(kp_start + 5, NULL);
 
-    // 3. 解析 ki
     char *ki_start = strstr(json, "\"ki\":");
-    if (!ki_start) return false;
+    if (!ki_start)
+        return false;
     float ki = strtof(ki_start + 5, NULL);
 
-    // 4. 解析 kd
     char *kd_start = strstr(json, "\"kd\":");
-    if (!kd_start) return false;
+    if (!kd_start)
+        return false;
     float kd = strtof(kd_start + 5, NULL);
 
-    // 5. 赋值
     pid_params->kp = kp;
     pid_params->ki = ki;
     pid_params->kd = kd;
-
+    /*
     if (strcmp(type_str, "balance_pitch") == 0)
         pid_params->pid_type = PID_TYPE_BALANCE_PITCH;
     else if (strcmp(type_str, "balance_yaw") == 0)
@@ -139,7 +141,15 @@ bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid
         pid_params->pid_type = PID_TYPE_SPEED;
     else
         return false;
-
+        */
+    for (int i = 0; i < sizeof(pid_type_map) / sizeof(pid_type_map[0]); i++)
+    {
+        if (strcmp(type_str, pid_type_map[i].name) == 0)
+        {
+            pid_params->pid_type = pid_type_map[i].type;
+            return true;
+        }
+    }
     printf("Parsed PID: type=%s, Kp=%.3f, Ki=%.3f, Kd=%.3f\n", type_str, kp, ki, kd);
     return true;
 }
@@ -253,6 +263,20 @@ void LoadPIDParamsFromFlash(void)
                     xSemaphoreGive(xParsePIDMutex);
                     loaded_count++;
                     printf("Loaded PID params from Flash for type %d: Kp=%.3f, Ki=%.3f, Kd=%.3f\n", type, page_buffer[i].kp, page_buffer[i].ki, page_buffer[i].kd);
+										u1_printf("{\"data\":{"
+              "\"pitch_kp\":%.3f,\"pitch_ki\":%.3f,\"pitch_kd\":%.3f,"
+              "\"yaw_kp\":%.3f,\"yaw_ki\":%.3f,\"yaw_kd\":%.3f,"
+              "\"speed_kp\":%.3f,\"speed_ki\":%.3f,\"speed_kd\":%.3f"
+              "}}\n",
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd,
+              g_stored_pid_params[PID_TYPE_SPEED].Kp,
+              g_stored_pid_params[PID_TYPE_SPEED].Ki,
+              g_stored_pid_params[PID_TYPE_SPEED].Kd);
                 }
                 else
                 {

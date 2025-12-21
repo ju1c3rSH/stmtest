@@ -264,6 +264,20 @@ int main(void)
   // initPIDMutex();
   xParsePIDMutex = xSemaphoreCreateMutex();
   LoadPIDParamsFromFlash();
+										u1_printf("{\"data\":{"
+              "\"pitch_kp\":%.3f,\"pitch_ki\":%.3f,\"pitch_kd\":%.3f,"
+              "\"yaw_kp\":%.3f,\"yaw_ki\":%.3f,\"yaw_kd\":%.3f,"
+              "\"speed_kp\":%.3f,\"speed_ki\":%.3f,\"speed_kd\":%.3f"
+              "}}\n",
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
+              g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
+              g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd,
+              g_stored_pid_params[PID_TYPE_SPEED].Kp,
+              g_stored_pid_params[PID_TYPE_SPEED].Ki,
+              g_stored_pid_params[PID_TYPE_SPEED].Kd);
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // AIN1 = 1
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
   uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
@@ -657,7 +671,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 14, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-
 }
 
 /**
