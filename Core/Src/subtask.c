@@ -11,17 +11,17 @@ void Get_Data_SubTask(void)
     //... other subtasks
 }
 
-void Normal_Balance_SubTask(void)
+void Normal_Balance_SubTask(Car_TypeDef *car)
 {
     //u1_printf("Normal Balance SubTask Running at time: %lu ms\r\n", HAL_GetTick());
-    Position_PID(g_car.SpeedPID, g_car.SetSpeed);
-    Angle_PID(g_car.PitchPID, g_car.Prop.Mid_Angle + g_car.SpeedPID->Out, (float)g_car.Prop.Gyro_Y);
-    Angle_PID(g_car.YawPID, g_car.SetYaw, g_car.Prop.Gyro_Z);
+    Position_PID(car->SpeedPID, car->SetSpeed);
+    Angle_PID(car->PitchPID, car->Prop.Mid_Angle + car->SpeedPID->Out, (float)car->Prop.Gyro_Y);
+    Angle_PID(car->YawPID, car->SetYaw, car->Prop.Gyro_Z);
 
-    M1_PWM_Out = (int)&g_car.PitchPID->Out + g_car.YawPID->Out;
-    M2_PWM_Out = (int)&g_car.PitchPID->Out - g_car.YawPID->Out;
+    M1_PWM_Out = (int)car->PitchPID->Out + car->YawPID->Out;
+    M2_PWM_Out = (int)car->PitchPID->Out - car->YawPID->Out;
 
-    if (g_car.Flag.Stop_PWM == false)
+    if (!car->Flag.Stop_PWM)
     {
         Set_Motor_A_Speed(M1_PWM_Out);
         Set_Motor_B_Speed(M2_PWM_Out);

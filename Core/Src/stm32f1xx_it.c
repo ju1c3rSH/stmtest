@@ -23,10 +23,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-//#include "atgm336h.h" 
+// #include "atgm336h.h"
 #include "Car.h"
 #include "stdint.h"
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "semphr.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +39,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-extern void GPS_UART_IDLE_Callback(uint8_t* buf, uint16_t len);
+// extern void GPS_UART_IDLE_Callback(uint8_t* buf, uint16_t len);
+extern QueueHandle_t xUART1ReceiveQueue;
+extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
+static volatile uint32_t g_queue_send_fail = 0;
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -199,7 +206,35 @@ void TIM1_UP_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+;
+  if ( __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE) != RESET)
+  {
+    __HAL_UART_CLEAR_IDLEFLAG(&huart1);
+    /*
+    temp = huart1.Instance->SR;
+    temp = huart1.Instance->DR;
+    //这两句和上面那句等效
+    */
+    HAL_UART_DMAStop(&huart1);
+    uint32_t remaining = __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+    uint16_t len = PID_UART1_RX_BUF_SIZE - remaining;
+    if (len > PID_UART1_RX_BUF_SIZE)
+      len = 0;
 
+    UART1_DMA_Received_Data_t rx_data;
+    rx_data.length = len;
+    memcpy(rx_data.buffer, s_pid_uart_rx_buf, len);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    if (xQueueSendFromISR(xUART1ReceiveQueue, &rx_data, &xHigherPriorityTaskWoken) != pdPASS)
+    {
+       g_queue_send_fail++;
+      // Process Queue Full Error>..
+    }
+
+    HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    return; //返回，避免再进 HAL_UART_IRQHandler
+  }
   /*
   if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)) {
     __HAL_UART_CLEAR_FLAG(&huart1, UART_FLAG_RXNE);
@@ -211,11 +246,11 @@ void USART1_IRQHandler(void)
 
   NOTE:这里注释掉因为不需要手动管理DMA回调
   */
-  //HAL_UART1_RxEventCallback(&huar1,PID_UART1_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx));
+  // HAL_UART1_RxEventCallback(&huar1,PID_UART1_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx));
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
-
+  // 如果不是 IDLE 中断，交给 HAL 处理其他中断（如错误）
   /* USER CODE END USART1_IRQn 1 */
 }
 

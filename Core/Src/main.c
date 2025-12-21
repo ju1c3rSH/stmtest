@@ -28,10 +28,11 @@
 #include <stdbool.h>
 #include "mpu9250.h"
 #include <math.h>
+#include "delay.h"
 #include "subtask.h"
 #include <stdarg.h >
 #include <string.h>
-//#include "atgm336h.h"
+// #include "atgm336h.h"
 #include "semphr.h"
 #include "oled.h"
 #include "Car.h"
@@ -45,9 +46,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//GPS_PropTypeDef g_gps_data = {0};
-extern  uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
-//extern SemaphoreHandle_t xGnssMutex;
+// GPS_PropTypeDef g_gps_data = {0};
+extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
+// extern SemaphoreHandle_t xGnssMutex;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -69,15 +70,15 @@ DMA_HandleTypeDef hdma_usart1_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 384 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for uartRecvTask */
 osThreadId_t uartRecvTaskHandle;
 const osThreadAttr_t uartRecvTask_attributes = {
   .name = "uartRecvTask",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* USER CODE BEGIN PV */
 
@@ -106,22 +107,17 @@ int fputc(int ch, FILE *file)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-typedef struct
-{
-  uint8_t buffer[PID_UART1_RX_BUF_SIZE];
-  uint16_t length;
-} UART1_DMA_Received_Data_t;
-
 MPU9250 mpu;
 uint8_t mpu9250_WhoAmI = 0;
 uint8_t ak8963_WhoAmI = 0;
-
+Car_TypeDef *car_instance;
+SemaphoreHandle_t xParsePIDMutex = NULL;
 QueueHandle_t xUART1ReceiveQueue = NULL;
 SemaphoreHandle_t xUART1ProcessingSemaphore = NULL;
 static volatile uint32_t ulCurrentDMATransferSize = 0;
 static volatile uint32_t ulLastDMATransferSize = 0;
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+/*void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
 {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
@@ -154,12 +150,25 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
 }
 
+*/
 void StartUART1DMAReceive(void)
 {
   // memset(s_uart_rx_buf, 0, UART1_PID_BUFFER_SIZE);
 
+  /*
+
   if (HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE) != HAL_OK)
   {
+    Error_Handler();
+  };
+  只能启动一次 DMA
+  */
+  HAL_UART_DMAStop(&huart1);
+  __HAL_UART_CLEAR_IDLEFLAG(&huart1);
+
+  if (HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE) != HAL_OK)
+  {
+    u1_printf("DMA Start Failed!\r\n");
     Error_Handler();
   };
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
@@ -234,8 +243,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-
-  
+  DWT_Delay_Init();
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
   u1_printf("CS HIGH\r\n");
   // HAL_Delay(100);
@@ -253,15 +261,16 @@ int main(void)
   {
     Error_Handler();
   }
-  //initPIDMutex();
+  // initPIDMutex();
+  xParsePIDMutex = xSemaphoreCreateMutex();
   LoadPIDParamsFromFlash();
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);  // AIN1 = 1
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // AIN1 = 1
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
-  uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3); // 获取当前周期值 (ARR)
-  uint32_t pulse_value = (period + 1) / 2; //(CCR = ARR/2)
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value); 
-	StartUART1DMAReceive();
-  HAL_Delay(2000);
+  uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
+  uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
+  StartUART1DMAReceive();
+  DWT_Delay_us(2000);
 
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
 
@@ -273,9 +282,10 @@ int main(void)
   {
     u1_printf("MPU9250 init FAILED\r\n");
   }
-  Test_SPI_Communication();
+  // Test_SPI_Communication();
   Car_Init(&mpu);
-  //ATGM336H_Init(&g_gps_data);
+  car_instance = Car_GetInstance();
+  // ATGM336H_Init(&g_gps_data);
   /*
      OLED_PropTypeDef oled_cfg = {
           .scl_gpio_port = OLED_SCL_GPIO_Port,
@@ -299,6 +309,7 @@ int main(void)
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
+
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
@@ -330,6 +341,14 @@ int main(void)
   uartRecvTaskHandle = osThreadNew(UartRecvTask, NULL, &uartRecvTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  if (defaultTaskHandle == NULL)
+  {
+    u1_printf("ERROR: StartDefaultTask create failed!\r\n");
+  }
+  if (uartRecvTaskHandle == NULL)
+  {
+    u1_printf("ERROR: UartRecvTask create failed!\r\n");
+  }
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -618,7 +637,9 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+
+  // HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE);
+  //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -716,7 +737,8 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-/* Infinite loop */
+  /* Infinite loop */
+  u1_printf("Queue is %s\n", (xUART1ReceiveQueue ? "OK" : "NULL"));
 #define SAMPLE_RATE 0.05f
   static uint32_t last_time = 0;
   float yaw = 0.00f;
@@ -724,9 +746,9 @@ void StartDefaultTask(void *argument)
   for (;;)
   {
     // u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET); 
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     Get_Data_SubTask();
-    Normal_Balance_SubTask();
+    Normal_Balance_SubTask(car_instance);
     vTaskDelay(10);
   }
   /*
@@ -782,9 +804,15 @@ void StartDefaultTask(void *argument)
 /* USER CODE END Header_UartRecvTask */
 void UartRecvTask(void *argument)
 {
-  /* USER CODE BEGIN UartRecvTask */
+  /* USER CODE BEGIN UartRecvTask
+  未处理粘包/多帧情况
+  当前逻辑假设一帧 = 一个 JSON + 换行。
+  如果一次 DMA 接收包含多个 JSON（如 "{"a":1}\n{"b":2}\n"），只会处理第一个. */
   /* Infinite loop */
-  UART1_DMA_Received_Data_t xReceivedData;
+  static UART1_DMA_Received_Data_t xReceivedData;
+  static char local_buffer[PID_UART1_RX_BUF_SIZE];
+  u1_printf("[UART TASK] Started!\r\n");
+
   for (;;)
   {
     if (xQueueReceive(xUART1ReceiveQueue, &xReceivedData, portMAX_DELAY) == pdPASS)
@@ -802,14 +830,21 @@ void UartRecvTask(void *argument)
         u1_printf("[UartRecvTask]Invalid PID command received.\r\n");
       }
 */
-      uint8_t *json_end = NULL;
-      for (int i = 0; i < xReceivedData.length; i++)
+      char *json_end = NULL;
+      
+      uint16_t copy_length = (xReceivedData.length < PID_UART1_RX_BUF_SIZE) ? xReceivedData.length : PID_UART1_RX_BUF_SIZE;
+      memcpy(local_buffer, xReceivedData.buffer, copy_length);
+      local_buffer[copy_length] = '\0'; // 确保字符串以 null 结尾
+      for (int i = 0; i < copy_length; i++)
       {
         // u1_printf("%02X ", xReceivedData.buffer[i]);
-        if (xReceivedData.buffer[i] == '\n' || xReceivedData.buffer[i] == '\r')
+        if (local_buffer[i] == '\n' || local_buffer[i] == '\r')
         {
-          xReceivedData.buffer[i] = '\0';
-          json_end = &xReceivedData.buffer[i];
+          // xReceivedData.buffer[i] = '\0';
+          // 不要直接修改DMA缓冲区内容，改为使用本地缓冲区
+
+          json_end = &local_buffer[i];
+
           break;
         }
         // 注意128堆栈够不够
@@ -819,9 +854,9 @@ void UartRecvTask(void *argument)
       {
 
         u1_printf("[UartRecvTask]Received JSON");
-        printf("Now Processing JSON: %s\r\n", xReceivedData.buffer);
+        printf("Now Processing JSON: %s\r\n", local_buffer);
         PID_UART_PARSE_Params_t pid_params;
-        if (UART1_ParsePIDData(xReceivedData.buffer, xReceivedData.length, &pid_params))
+        if (UART1_ParsePIDData(local_buffer, copy_length, &pid_params))
         {
           // g_kp = pid_params.kp;
           // g_ki = pid_params.ki;
@@ -831,6 +866,8 @@ void UartRecvTask(void *argument)
             u1_printf("Updated PID params from JSON and saved to Flash: Type=%d, Kp=%.3f, Ki=%.3f, Kd=%.3f\r\n",
                       pid_params.pid_type, pid_params.kp, pid_params.ki, pid_params.kd);
             u1_printf("Resetting system...\r\n");
+            while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY)
+              ;
             vTaskDelay(pdMS_TO_TICKS(100));
             NVIC_SystemReset();
           }

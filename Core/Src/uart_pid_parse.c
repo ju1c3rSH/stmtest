@@ -7,7 +7,7 @@
 #include <semphr.h>
 #include "Car.h"
 
-static SemaphoreHandle_t xParsePIDMutex = NULL; // 丢去main吧
+extern SemaphoreHandle_t xParsePIDMutex;
 // For 103C8T6 ONLLYY!!
 #define PID_PARAMS_FLASH_ADDR_BASE 0x0800FC00 // 64KB Flash的最后一页起始地址
 #define PID_PAGE_SIZE 1024                    // STM32F103 Flash 页大小通常是 1KB
@@ -25,6 +25,8 @@ void initPIDMutex(void)
 
 bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid_params)
 {
+    //测试用json:{"type":"balance_pitch","kp":850.0,"ki":0.0,"kd":2.6}
+    // 发送时记得加换行（\n）
     if (len < 12) // Minimum length check (3 floats = 12 bytes)
     {
         return false;
@@ -42,7 +44,13 @@ bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid
         printf("[UART1_ParsePIDData]: Buffer length %d exceeds temp buffer size %d. Truncating.\n", len, PID_UART1_RX_BUF_SIZE);
         len = PID_UART1_RX_BUF_SIZE - 1;
     }
-
+    /*
+    代码审计：
+    UART1_ParsePIDData 中重复拷贝
+    UartRecvTask 已拷贝到 local_buffer
+    UART1_ParsePIDData 又拷贝一次到 temp
+    浪费内存和 CPU
+    */
     memcpy(temp, buf, len);
     temp[len] = '\0';
     char pid_type_str[20];

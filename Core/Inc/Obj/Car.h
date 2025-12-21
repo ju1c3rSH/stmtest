@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #define __2PI 6.28318531f
 
-#define PID_UART1_RX_BUF_SIZE 128
+//#define PID_UART1_RX_BUF_SIZE 128
 
 //在UART1使用的PID解析器
 //Example:   {"type":"balance_pitch","kp":1.5,"ki":0.2,"kd":0.05}
@@ -109,8 +109,10 @@ extern Car_TypeDef g_car;
 积分项 (I): 误差 e(t) 需要对时间积分 ∫e(t)dt。在离散系统中，这通常近似为 sum_of_errors += e(t) * dt。
 微分项 (D): 误差的变化率 de(t)/dt 在离散系统中近似为 (e(t) - e(t-1)) / dt。*/
 void Car_Init(MPU9250 *mpu);
-void Car_SetSpeed(Car_TypeDef *car, float speed);
+void Car_SetSpeed(float speed);
 void Car_Get_Real_Value(float dt);
+Car_TypeDef* Car_GetInstance(void);
+float Car_GetPitchAngle(void);
 void CorrectDate(float ax, float ay, float az,
                  float gx, float gy, float gz,
                  float ACCrange, float GYROrange, float *Date);

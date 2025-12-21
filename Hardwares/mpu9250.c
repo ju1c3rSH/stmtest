@@ -39,6 +39,7 @@
 
 #include "mpu9250.h"
 #include "main.h"
+#include "delay.h"
 #include "text_utils.h"
 #define mpu_select()    HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET)
 #define mpu_deselect()  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET)
@@ -195,12 +196,12 @@ uint8_t MPU9250_Init(MPU9250 *mpu,SPI_HandleTypeDef *hspi,GPIO_TypeDef *cs_port,
 
 	u1_printf("Now Initializing MPU9250");
 	mpu_w_reg(PWR_MGMT_1, (uint8_t) 0x80); // reset MPU9250, reg107
-	HAL_Delay(10);
+	DWT_Delay_us(2000);
 	//mpu_w_reg(USER_CTRL, (uint8_t) 0x20); // enable I2C master mode, reg106
 	//mpu_w_reg(I2C_MST_CTRL, (uint8_t) 0x0D); // set I2C clock speed to 400kHz, reg36
 	//mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x00); // set AK8963 to power down
 	mpu_w_reg(PWR_MGMT_1, (uint8_t) 0x80); // reset MPU9250, Bit[7] will auto clear
-	HAL_Delay(10);
+	DWT_Delay_us(2000);
 	//mpu_w_ak8963_reg(AK8963_CNTL2_REG, AK8963_CNTL2_SRST); // reset AK8963
 	mpu_w_reg(PWR_MGMT_1, (uint8_t) 0x01); // select clock source
 	mpu_w_reg(PWR_MGMT_2, (uint8_t) 0x00); // enable accel and gyro

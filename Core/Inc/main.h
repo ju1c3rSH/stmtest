@@ -68,6 +68,14 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 #define GY_CS_Pin GPIO_PIN_15
 #define GY_CS_GPIO_Port GPIOB
+#define PID_UART1_RX_BUF_SIZE 128
+
+typedef struct
+{
+  uint8_t buffer[PID_UART1_RX_BUF_SIZE];
+  uint16_t length;
+} UART1_DMA_Received_Data_t;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

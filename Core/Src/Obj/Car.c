@@ -153,6 +153,17 @@ float InfiniteYaw(float Now_Yaw)
     last_yaw = Now_Yaw;
     return Now_Yaw + (float)(wrap_count * 360);
 }
+float Car_GetPitchAngle(void) {
+    return g_car.Prop.Pitch_Angle;
+}
+Car_TypeDef* Car_GetInstance(void) {
+    return &g_car; // 谨慎使用，仅在必要时（如初始化传参）
+}
+void Car_SetSpeed(float speed)
+{
+    g_car.SetSpeed = speed;
+    //对外只暴露操作接口
+}
 void Car_Get_Real_Value(float dt)
 {
     static char Status;

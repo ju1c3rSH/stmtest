@@ -1,5 +1,6 @@
 stmtest\subtask.o: ..\Core\Src\subtask.c
 stmtest\subtask.o: ../Core/Inc/subtask.h
+stmtest\subtask.o: ../Core/Inc/Obj/Car.h
 stmtest\subtask.o: ../Core/Inc/main.h
 stmtest\subtask.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 stmtest\subtask.o: ../Core/Inc/stm32f1xx_hal_conf.h
@@ -30,7 +31,6 @@ stmtest\subtask.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\subtask.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\subtask.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\subtask.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stmtest\subtask.o: ../Core/Inc/Obj/Car.h
 stmtest\subtask.o: ../Core/Inc/Obj/PID.h
 stmtest\subtask.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\subtask.o: ../Hardwares/mpu9250.h
