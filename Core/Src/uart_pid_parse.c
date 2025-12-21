@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "text_utils.h"
 #include "FreeRTOS.h"
 #include <semphr.h>
 #include "Car.h"
@@ -22,7 +23,9 @@ void initPIDMutex(void)
         xParsePIDMutex = xSemaphoreCreateMutex();
     }
 }
+/* 这个对浮点支持一般*/
 
+/*
 bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid_params)
 {
     //测试用json:{"type":"balance_pitch","kp":850.0,"ki":0.0,"kd":2.6}
@@ -34,23 +37,23 @@ bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid
 
     if (buf == NULL || pid_params == NULL || len == 0)
     {
-        printf("[UART1_ParsePIDData]: Invalid input parameters.\n");
+        u1_printf("[UART1_ParsePIDData]: Invalid input parameters.\n");
         return false;
     }
 
     char temp[PID_UART1_RX_BUF_SIZE + 1];
     if (len > PID_UART1_RX_BUF_SIZE)
     {
-        printf("[UART1_ParsePIDData]: Buffer length %d exceeds temp buffer size %d. Truncating.\n", len, PID_UART1_RX_BUF_SIZE);
+        u1_printf("[UART1_ParsePIDData]: Buffer length %d exceeds temp buffer size %d. Truncating.\n", len, PID_UART1_RX_BUF_SIZE);
         len = PID_UART1_RX_BUF_SIZE - 1;
     }
-    /*
+    /
     代码审计：
     UART1_ParsePIDData 中重复拷贝
     UartRecvTask 已拷贝到 local_buffer
     UART1_ParsePIDData 又拷贝一次到 temp
     浪费内存和 CPU
-    */
+    /
     memcpy(temp, buf, len);
     temp[len] = '\0';
     char pid_type_str[20];
@@ -76,18 +79,79 @@ bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid
         }
         else
         {
-            printf("Failed to parse PID type from JSON: %s\n", pid_type_str);
+            u1_printf("Failed to parse PID type from JSON: %s\n", pid_type_str);
             return false;
         }
 
-        printf("Parsed PID params from JSON - Kp: %.3f, Ki: %.3f, Kd: %.3f\n", pid_params->kp, pid_params->ki, pid_params->kd);
+        u1_printf("Parsed PID params from JSON - Kp: %.3f, Ki: %.3f, Kd: %.3f\n", pid_params->kp, pid_params->ki, pid_params->kd);
         return true;
     }
     else
     {
-        printf("Failed to parse PID params from JSON: %s\n", temp);
+        u1_printf("Failed to parse PID params from JSON: %s\n", temp);
         return false;
     }
+}
+*/
+bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid_params)
+{
+    if (buf == NULL || pid_params == NULL || len == 0 || len > PID_UART1_RX_BUF_SIZE)
+        return false;
+
+    char *json = (char *)buf;
+
+    // 1. 解析 type
+    char *type_start = strstr(json, "\"type\":\"");
+    if (!type_start)
+        return false;
+    type_start += 8; // 跳过 "\"type\":\""
+    char *type_end = strchr(type_start, '"');
+    if (!type_end)
+        return false;
+    int type_len = type_end - type_start;
+    if (type_len >= 20)
+        return false;
+    char type_str[20] = {0};
+    memcpy(type_str, type_start, type_len);
+
+    char *kp_start = strstr(json, "\"kp\":");
+    if (!kp_start)
+        return false;
+    float kp = strtof(kp_start + 5, NULL);
+
+    char *ki_start = strstr(json, "\"ki\":");
+    if (!ki_start)
+        return false;
+    float ki = strtof(ki_start + 5, NULL);
+
+    char *kd_start = strstr(json, "\"kd\":");
+    if (!kd_start)
+        return false;
+    float kd = strtof(kd_start + 5, NULL);
+
+    pid_params->kp = kp;
+    pid_params->ki = ki;
+    pid_params->kd = kd;
+    /*
+    if (strcmp(type_str, "balance_pitch") == 0)
+        pid_params->pid_type = PID_TYPE_BALANCE_PITCH;
+    else if (strcmp(type_str, "balance_yaw") == 0)
+        pid_params->pid_type = PID_TYPE_BALANCE_YAW;
+    else if (strcmp(type_str, "speed") == 0)
+        pid_params->pid_type = PID_TYPE_SPEED;
+    else
+        return false;
+        */
+    for (int i = 0; i < sizeof(pid_type_map) / sizeof(pid_type_map[0]); i++)
+    {
+        if (strcmp(type_str, pid_type_map[i].name) == 0)
+        {
+            pid_params->pid_type = pid_type_map[i].type;
+            return true;
+        }
+    }
+    printf("Parsed PID: type=%s, Kp=%.3f, Ki=%.3f, Kd=%.3f\n", type_str, kp, ki, kd);
+    return true;
 }
 bool SavePIDParamsToFlash(PID_Type_t pid_type, float kp, float ki, float kd)
 {

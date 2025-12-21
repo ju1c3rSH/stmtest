@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include "main.h"
 
-
 #include <stdint.h>
 
 typedef enum
@@ -15,8 +14,17 @@ typedef enum
     PID_TYPE_INVALID,
     PID_TYPE_COUNT
 } PID_Type_t;
+typedef struct
+{
+    const char *name;
+    PID_Type_t type;
+} PID_Type_Map_t;
 
-
+static const PID_Type_Map_t pid_type_map[] = {
+    {"balance_pitch", PID_TYPE_BALANCE_PITCH},
+    {"balance_yaw", PID_TYPE_BALANCE_YAW},
+    {"speed", PID_TYPE_SPEED},
+};
 typedef struct
 {
     float Kp;
@@ -34,8 +42,6 @@ typedef struct
     PID_Type_t pid_type;
 
 } PID_TypeDef;
-
-
 
 // 只是处理func
 float Position_PID(PID_TypeDef *PID, float Target);

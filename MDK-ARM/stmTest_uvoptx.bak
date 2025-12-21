@@ -157,34 +157,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>226</LineNumber>
+          <LineNumber>343</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134237902</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Core/Src/stm32f1xx_it.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>../Core/Src/main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../Core/Src/stm32f1xx_it.c\226</Expression>
+          <Expression></Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>343</LineNumber>
+          <LineNumber>226</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241950</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Core/Src/main.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>../Core/Src/stm32f1xx_it.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../Core/Src/main.c\343</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -222,6 +222,16 @@
           <count>6</count>
           <WinNumber>1</WinNumber>
           <ItemText>uartRecvTaskHandle</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>xReceivedData</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>local_buffer</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

@@ -77,7 +77,7 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t uartRecvTaskHandle;
 const osThreadAttr_t uartRecvTask_attributes = {
   .name = "uartRecvTask",
-  .stack_size = 512 * 4,
+  .stack_size = 384 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* USER CODE BEGIN PV */
@@ -804,10 +804,13 @@ void StartDefaultTask(void *argument)
 /* USER CODE END Header_UartRecvTask */
 void UartRecvTask(void *argument)
 {
-  /* USER CODE BEGIN UartRecvTask
+  /* USER CODE BEGIN UartRecvTask */
+  
+  /*
   未处理粘包/多帧情况
   当前逻辑假设一帧 = 一个 JSON + 换行。
-  如果一次 DMA 接收包含多个 JSON（如 "{"a":1}\n{"b":2}\n"），只会处理第一个. */
+  如果一次 DMA 接收包含多个 JSON（如 "{"a":1}\n{"b":2}\n"），只会处理第一个.
+   */
   /* Infinite loop */
   static UART1_DMA_Received_Data_t xReceivedData;
   static char local_buffer[PID_UART1_RX_BUF_SIZE];
@@ -831,7 +834,7 @@ void UartRecvTask(void *argument)
       }
 */
       char *json_end = NULL;
-      
+
       uint16_t copy_length = (xReceivedData.length < PID_UART1_RX_BUF_SIZE) ? xReceivedData.length : PID_UART1_RX_BUF_SIZE;
       memcpy(local_buffer, xReceivedData.buffer, copy_length);
       local_buffer[copy_length] = '\0'; // 确保字符串以 null 结尾

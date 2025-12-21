@@ -37,6 +37,7 @@ stmtest\uart_pid_parse.o: ../Hardwares/mpu9250.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+stmtest\uart_pid_parse.o: ../Core/Inc/text_utils.h
 stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 stmtest\uart_pid_parse.o: ../Core/Inc/FreeRTOSConfig.h
 stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
