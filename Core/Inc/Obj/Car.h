@@ -117,4 +117,6 @@ void CorrectDate(float ax, float ay, float az,
                  float gx, float gy, float gz,
                  float ACCrange, float GYROrange, float *Date);
 float InfiniteYaw(float Now_Yaw);
+float Car_GetPitchAngle(void);
+float Car_GetCurrentSpeed(void);
 #endif /* __CAR_H__ */

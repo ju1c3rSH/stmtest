@@ -48,6 +48,7 @@ stmtest\main.o: ../Hardwares/mpu9250.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\main.o: ../Core/Inc/delay.h
+stmtest\main.o: ../Core/Inc/MahonyAHRS.h
 stmtest\main.o: ../Core/Inc/subtask.h
 stmtest\main.o: ../Core/Inc/Obj/Car.h
 stmtest\main.o: ../Core/Inc/Obj/PID.h

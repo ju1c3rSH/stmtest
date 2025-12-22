@@ -36,3 +36,4 @@ stmtest\car.o: ../Hardwares/mpu9250.h
 stmtest\car.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\car.o: ../Hardwares/motor.h
 stmtest\car.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+stmtest\car.o: ../Core/Inc/MahonyAHRS.h

@@ -48,5 +48,6 @@ float Position_PID(PID_TypeDef *PID, float Target);
 float Distance_PID(PID_TypeDef *PID, float Target);
 float Angle_PID(PID_TypeDef *PID, float Target, float Gyro);
 void Set_PID(PID_TypeDef *PID, float Kp, float Ki, float Kd);
-
+void PID_Set_Current(PID_TypeDef *PID, float current);
+int PID_GetOutput(PID_TypeDef *PID);
 #endif /* __PID_H__ */

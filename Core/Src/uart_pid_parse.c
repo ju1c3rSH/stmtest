@@ -260,6 +260,7 @@ void LoadPIDParamsFromFlash(void)
                     g_stored_pid_params[type].Kp = page_buffer[i].kp;
                     g_stored_pid_params[type].Ki = page_buffer[i].ki;
                     g_stored_pid_params[type].Kd = page_buffer[i].kd;
+                    
                     xSemaphoreGive(xParsePIDMutex);
                     loaded_count++;
                     printf("Loaded PID params from Flash for type %d: Kp=%.3f, Ki=%.3f, Kd=%.3f\n", type, page_buffer[i].kp, page_buffer[i].ki, page_buffer[i].kd);

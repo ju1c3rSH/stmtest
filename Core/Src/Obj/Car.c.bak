@@ -2,6 +2,7 @@
 #include "motor.h"
 #include "math.h"
 #include <stdbool.h>
+#include "MahonyAHRS.h"
 Car_TypeDef g_car;
 
 #define PI 3.14159265358979323846f
@@ -153,16 +154,18 @@ float InfiniteYaw(float Now_Yaw)
     last_yaw = Now_Yaw;
     return Now_Yaw + (float)(wrap_count * 360);
 }
-float Car_GetPitchAngle(void) {
+float Car_GetPitchAngle(void)
+{
     return g_car.Prop.Pitch_Angle;
 }
-Car_TypeDef* Car_GetInstance(void) {
+Car_TypeDef *Car_GetInstance(void)
+{
     return &g_car; // 谨慎使用，仅在必要时（如初始化传参）
 }
 void Car_SetSpeed(float speed)
 {
     g_car.SetSpeed = speed;
-    //对外只暴露操作接口
+    // 对外只暴露操作接口
 }
 void Car_Get_Real_Value(float dt)
 {
@@ -195,23 +198,55 @@ void Car_Get_Real_Value(float dt)
     MPU9250_ReadGyro(&g_car.Device.mpu);
     MPU9250_ReadMag(&g_car.Device.mpu);
     // mpu->mpu_data.Gyro[0] = -mpu->mpu_data.Gyro[0]; //根据安装方向调整轴向
+    /*
     g_car.Prop.Gyro_X = (short)(g_car.Device.mpu.mpu_data.Gyro[0] * 16.384f);
     g_car.Prop.Gyro_Y = (short)(g_car.Device.mpu.mpu_data.Gyro[1] * 16.384f);
     g_car.Prop.Gyro_Z = (short)(g_car.Device.mpu.mpu_data.Gyro[2] * 16.384f);
     g_car.Prop.Accel_X = (short)(g_car.Device.mpu.mpu_data.Accel[0] * 208.98f);
     g_car.Prop.Accel_Y = (short)(g_car.Device.mpu.mpu_data.Accel[1] * 208.98f);
     g_car.Prop.Accel_Z = (short)(g_car.Device.mpu.mpu_data.Accel[2] * 208.98f);
+*/
+    static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
+    const float alpha = 0.2f; // 0.1~0.3
 
-    g_car.Prop.Pitch_Angle = atan2f(-g_car.Device.mpu.mpu_data.Accel[0],
-                                    sqrtf(g_car.Device.mpu.mpu_data.Accel[1] * g_car.Device.mpu.mpu_data.Accel[1] +
-                                          g_car.Device.mpu.mpu_data.Accel[2] * g_car.Device.mpu.mpu_data.Accel[2])) *
-                             180.0f / PI;
-    g_car.Prop.Roll_Angle = atan2f(g_car.Device.mpu.mpu_data.Accel[1], g_car.Device.mpu.mpu_data.Accel[2]) * 180.0f / PI;
-    g_car.Prop.Yaw_Angle += g_car.Device.mpu.mpu_data.Gyro[2] * dt;
+
+    acc_x_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[0] + (1 - alpha) * acc_x_filtered;
+    acc_y_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[1] + (1 - alpha) * acc_y_filtered;
+    acc_z_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[2] + (1 - alpha) * acc_z_filtered;
+
+    float gx, gy, gz, ax, ay, az;
+    gx = (g_car.Device.mpu.mpu_data.Gyro_row[0] - g_car.Device.mpu.mpu_data.Gyro_Bias[0]) / 16.384f;
+    gy = (g_car.Device.mpu.mpu_data.Gyro_row[1] - g_car.Device.mpu.mpu_data.Gyro_Bias[1]) / 16.384f;
+    gz = (g_car.Device.mpu.mpu_data.Gyro_row[2] - g_car.Device.mpu.mpu_data.Gyro_Bias[2]) / 16.384f;
+    ax = g_car.Device.mpu.mpu_data.Accel[0];
+    ay = g_car.Device.mpu.mpu_data.Accel[1];
+    az = g_car.Device.mpu.mpu_data.Accel[2];
+    Mahony_update_IMU(gx, gy, gz, acc_x_filtered, acc_y_filtered, acc_z_filtered);
+    // Mahony_computeAngles();
+    /* Mahony_computeAngles(); */
+    /*
+    g_car.Prop.Pitch_Angle = atan2f(-g_car.Prop.Accel_X,
+                                        sqrtf(g_car.Prop.Accel_Y * g_car.Prop.Accel_Y +
+                                              g_car.Prop.Accel_Z * g_car.Prop.Accel_Z)) *
+                                 180.0f / PI;
+    g_car.Prop.Roll_Angle = atan2f(g_car.Prop.Accel_Y, g_car.Prop.Accel_Z) * 180.0f / PI;
+    g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * dt;
+
+
+*/ g_car.Prop.Pitch_Angle = getPitch();
+
+    g_car.Prop.Roll_Angle = getRoll();
+    g_car.Prop.Yaw_Angle = getYaw();
     g_car.PitchPID->Current = g_car.Prop.Pitch_Angle;
     g_car.RollPID->Current = g_car.Prop.Roll_Angle;
     g_car.Prop.Full_Yaw = InfiniteYaw(g_car.Prop.Yaw_Angle);
     g_car.YawPID->Current = g_car.Prop.Full_Yaw;
     g_car.SpeedPID->Current = (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f;
-    u1_printf("Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
+    //u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
+    //  pitch roll yaw
+		u1_printf("{\"Pitch\":%.2f,\"Roll\":%.2f,\"Yaw\":%.2f}\r\n", 
+          g_car.Prop.Pitch_Angle, 
+          g_car.Prop.Roll_Angle, 
+          g_car.Prop.Full_Yaw);
+    //u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

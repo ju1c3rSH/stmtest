@@ -178,6 +178,9 @@ typedef struct __MPU9250_DataTypeDef {
 	volatile int16_t Gyro_row[3];
 	volatile int16_t Magn_row[3];
 	// store real data in float
+	float Gyro_Bias[3];
+	float Magn_Bias[3];
+	float Accel_Bias[3];
 	float Accel[3];
 	float Gyro[3];
 	float Magn[3];
@@ -213,6 +216,8 @@ uint8_t MPU9250_ResetDevice(MPU9250 *mpu);
 uint8_t MPU9250_ConfigureIMU(MPU9250 *mpu, MPU9250_AccelRange accel_range, MPU9250_GyroRange gyro_range, MPU9250_Accel_DLPFBandwidth accel_bandwidth, MPU9250_Gyro_DLPFBandwidth gyro_bandwidth, uint8_t sample_rate_divider);
 uint8_t MPU9250_ConfigureMagnetometer(MPU9250 *mpu);
 uint8_t MPU9250_ConfigureClock(MPU9250 *mpu);
+void Calibrate_Gyro(MPU9250 *mpu, uint16_t samples);
+void Calibrate_Accel(MPU9250 *mpu, uint16_t samples);
 #ifdef __cplusplus
 }
 #endif

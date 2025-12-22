@@ -445,6 +445,11 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f1xx_hal_timebase_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>MahonyAHRS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\MahonyAHRS.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

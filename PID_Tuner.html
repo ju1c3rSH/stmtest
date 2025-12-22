@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PID Tuner - Material 3 Style</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -16,9 +15,7 @@
       --md-background: #f5f5f5;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Roboto', sans-serif;
@@ -34,7 +31,7 @@
       background: var(--md-surface);
       border-radius: 28px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     h1 {
@@ -46,9 +43,10 @@
 
     .control-row {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       margin-bottom: 24px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     select {
@@ -61,18 +59,21 @@
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 8px 16px;
+      font-size: 14px;
       font-weight: 500;
       border: none;
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .submit-btn {
       background: var(--md-primary);
       color: var(--md-on-primary);
+      padding: 10px 20px;
+      font-size: 16px;
     }
 
     .submit-btn:hover {
@@ -120,14 +121,18 @@
       border-radius: 50%;
       background: var(--md-primary);
       margin-top: -10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    .value-display {
-      min-width: 60px;
-      text-align: right;
+    .value-input {
+      width: 90px;
+      padding: 6px 8px;
+      font-family: 'Roboto', monospace;
       font-size: 14px;
-      font-weight: 500;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: right;
+      margin-left: 8px;
     }
 
     /* 串口监视器 */
@@ -149,7 +154,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <h1>PID 参数调谐器</h1>
@@ -168,18 +172,18 @@
       <h3>平衡 Pitch</h3>
       <div class="param-row">
         <span class="param-label">Kp</span>
-        <input type="range" id="pitch_kp" min="0" max="2000" step="1" value="850">
-        <span class="value-display" id="pitch_kp_val">850</span>
+        <input type="range" id="pitch_kp" min="0" max="2000" step="0.001" value="850">
+        <input type="text" id="pitch_kp_input" class="value-input" value="850.000">
       </div>
       <div class="param-row">
         <span class="param-label">Ki</span>
-        <input type="range" id="pitch_ki" min="0" max="10" step="0.1" value="0">
-        <span class="value-display" id="pitch_ki_val">0</span>
+        <input type="range" id="pitch_ki" min="0" max="10" step="0.001" value="0">
+        <input type="text" id="pitch_ki_input" class="value-input" value="0.000">
       </div>
       <div class="param-row">
         <span class="param-label">Kd</span>
-        <input type="range" id="pitch_kd" min="0" max="10" step="0.1" value="2.6">
-        <span class="value-display" id="pitch_kd_val">2.6</span>
+        <input type="range" id="pitch_kd" min="0" max="10" step="0.001" value="2.6">
+        <input type="text" id="pitch_kd_input" class="value-input" value="2.600">
       </div>
     </div>
 
@@ -188,18 +192,18 @@
       <h3>偏航 Yaw</h3>
       <div class="param-row">
         <span class="param-label">Kp</span>
-        <input type="range" id="yaw_kp" min="0" max="100" step="1" value="30">
-        <span class="value-display" id="yaw_kp_val">30</span>
+        <input type="range" id="yaw_kp" min="0" max="100" step="0.001" value="30">
+        <input type="text" id="yaw_kp_input" class="value-input" value="30.000">
       </div>
       <div class="param-row">
         <span class="param-label">Ki</span>
-        <input type="range" id="yaw_ki" min="0" max="10" step="0.1" value="0">
-        <span class="value-display" id="yaw_ki_val">0</span>
+        <input type="range" id="yaw_ki" min="0" max="10" step="0.001" value="0">
+        <input type="text" id="yaw_ki_input" class="value-input" value="0.000">
       </div>
       <div class="param-row">
         <span class="param-label">Kd</span>
-        <input type="range" id="yaw_kd" min="0" max="10" step="0.1" value="1">
-        <span class="value-display" id="yaw_kd_val">1</span>
+        <input type="range" id="yaw_kd" min="0" max="10" step="0.001" value="1">
+        <input type="text" id="yaw_kd_input" class="value-input" value="1.000">
       </div>
     </div>
 
@@ -208,18 +212,18 @@
       <h3>速度 Speed</h3>
       <div class="param-row">
         <span class="param-label">Kp</span>
-        <input type="range" id="speed_kp" min="0" max="10" step="0.1" value="1">
-        <span class="value-display" id="speed_kp_val">1</span>
+        <input type="range" id="speed_kp" min="0" max="10" step="0.001" value="1">
+        <input type="text" id="speed_kp_input" class="value-input" value="1.000">
       </div>
       <div class="param-row">
         <span class="param-label">Ki</span>
-        <input type="range" id="speed_ki" min="0" max="5" step="0.01" value="0.1">
-        <span class="value-display" id="speed_ki_val">0.1</span>
+        <input type="range" id="speed_ki" min="0" max="5" step="0.001" value="0.1">
+        <input type="text" id="speed_ki_input" class="value-input" value="0.100">
       </div>
       <div class="param-row">
         <span class="param-label">Kd</span>
-        <input type="range" id="speed_kd" min="0" max="1" step="0.01" value="0.01">
-        <span class="value-display" id="speed_kd_val">0.01</span>
+        <input type="range" id="speed_kd" min="0" max="1" step="0.001" value="0.01">
+        <input type="text" id="speed_kd_input" class="value-input" value="0.010">
       </div>
     </div>
 
@@ -242,20 +246,42 @@
     let downloadBtn = null;
     let clearLogBtn = null;
 
-    // ========== 滑块绑定 ==========
-    const sliderIds = [
-      'pitch_kp', 'pitch_ki', 'pitch_kd',
-      'yaw_kp', 'yaw_ki', 'yaw_kd',
-      'speed_kp', 'speed_ki', 'speed_kd'
-    ];
+    // ========== 参数配置（精度、范围）==========
+    const paramConfig = {
+      pitch_kp: { min: 0, max: 2000, step: 0.001, decimals: 3 },
+      pitch_ki: { min: 0, max: 10, step: 0.001, decimals: 3 },
+      pitch_kd: { min: 0, max: 10, step: 0.001, decimals: 3 },
+      yaw_kp:  { min: 0, max: 100, step: 0.001, decimals: 3 },
+      yaw_ki:  { min: 0, max: 10, step: 0.001, decimals: 3 },
+      yaw_kd:  { min: 0, max: 10, step: 0.001, decimals: 3 },
+      speed_kp:{ min: 0, max: 10, step: 0.001, decimals: 3 },
+      speed_ki:{ min: 0, max: 5, step: 0.001, decimals: 3 },
+      speed_kd:{ min: 0, max: 1, step: 0.001, decimals: 3 }
+    };
 
-    sliderIds.forEach(id => {
+    // ========== 初始化双向绑定 ==========
+    Object.keys(paramConfig).forEach(id => {
       const slider = document.getElementById(id);
-      const valEl = document.getElementById(id + '_val');
+      const input = document.getElementById(`${id}_input`);
+      const config = paramConfig[id];
+
+      // 滑块 → 文本框
       slider.addEventListener('input', () => {
         const val = parseFloat(slider.value);
-        valEl.textContent = val.toFixed(slider.step < 1 ? 3 : 0);
+        input.value = val.toFixed(config.decimals);
       });
+
+      // 文本框 → 滑块
+      input.addEventListener('change', () => {
+        let val = parseFloat(input.value);
+        if (isNaN(val)) val = config.min;
+        val = Math.max(config.min, Math.min(config.max, val));
+        slider.value = val;
+        input.value = val.toFixed(config.decimals);
+      });
+
+      // 初始化
+      input.value = parseFloat(slider.value).toFixed(config.decimals);
     });
 
     // ========== 切换 PID 类型 ==========
@@ -349,29 +375,29 @@
       fields.forEach(field => {
         if (dataObj[field] !== undefined) {
           const slider = document.getElementById(field);
+          const input = document.getElementById(`${field}_input`);
           const val = parseFloat(dataObj[field]);
           slider.value = val;
-          document.getElementById(field + '_val').textContent = val.toFixed(3);
+          input.value = val.toFixed(3);
         }
       });
     }
 
     // ========== 处理连接 ==========
     async function handleConnect() {
-      // ✅ 关键修复：如果已连接，先断开
       if (isConnected) {
         await handleDisconnect();
       }
 
       try {
         const port = await navigator.serial.requestPort();
-
-        // ✅ 检查是否已打开（防重复）
         if (port.readable || port.writable) {
-          log("⚠️ 端口已打开，跳过重复打开");
+          // 复用已打开端口
           currentPort = port;
           isConnected = true;
           connectBtn.textContent = "断开串口";
+          log("✅ 串口已连接（复用）");
+          readFromPort(port);
           return;
         }
 
@@ -398,16 +424,14 @@
       }
 
       try {
-        // 先停止读取（如果有 reader）
         if (currentPort.readable) {
           const reader = currentPort.readable.getReader();
           await reader.cancel();
           reader.releaseLock();
         }
         await currentPort.close();
-      } catch (e) {
-        // 忽略关闭错误
-      } finally {
+      } catch (e) { }
+      finally {
         currentPort = null;
         isConnected = false;
         if (connectBtn) connectBtn.textContent = "连接串口";
@@ -423,14 +447,15 @@
       }
 
       const type = pidTypeSelect.value;
-      // 从 type 获取 slider 前缀 (balance_pitch → pitch)
       const prefix = type.split('_')[1];
 
-      const kp = parseFloat(document.getElementById(`${prefix}_kp`).value);
-      const ki = parseFloat(document.getElementById(`${prefix}_ki`).value);
-      const kd = parseFloat(document.getElementById(`${prefix}_kd`).value);
+      // 从文本框读取精确值
+      const kp = parseFloat(document.getElementById(`${prefix}_kp_input`).value);
+      const ki = parseFloat(document.getElementById(`${prefix}_ki_input`).value);
+      const kd = parseFloat(document.getElementById(`${prefix}_kd_input`).value);
 
-      const jsonToSend = `{"type":"${type}","kp":${kp.toFixed(1)},"ki":${ki.toFixed(1)},"kd":${kd.toFixed(1)}}`;
+      // 保留三位小数（符合你固件的解析精度）
+      const jsonToSend = `{"type":"${type}","kp":${kp.toFixed(3)},"ki":${ki.toFixed(3)},"kd":${kd.toFixed(3)}}`;
       log("📤 发送 PID 参数: " + jsonToSend);
 
       const success = await sendJSON(jsonToSend);
@@ -439,7 +464,6 @@
         submitBtn.textContent = "等待重启...";
         log("⏳ 等待设备重启...");
 
-        // 等待设备处理并复位
         await new Promise(r => setTimeout(r, 300));
         await handleDisconnect();
 
@@ -457,21 +481,21 @@
       const config = {
         balance_pitch: {
           type: "balance_pitch",
-          kp: parseFloat(pitch_kp.value),
-          ki: parseFloat(pitch_ki.value),
-          kd: parseFloat(pitch_kd.value)
+          kp: parseFloat(pitch_kp_input.value),
+          ki: parseFloat(pitch_ki_input.value),
+          kd: parseFloat(pitch_kd_input.value)
         },
         balance_yaw: {
           type: "balance_yaw",
-          kp: parseFloat(yaw_kp.value),
-          ki: parseFloat(yaw_ki.value),
-          kd: parseFloat(yaw_kd.value)
+          kp: parseFloat(yaw_kp_input.value),
+          ki: parseFloat(yaw_ki_input.value),
+          kd: parseFloat(yaw_kd_input.value)
         },
         speed: {
           type: "speed",
-          kp: parseFloat(speed_kp.value),
-          ki: parseFloat(speed_ki.value),
-          kd: parseFloat(speed_kd.value)
+          kp: parseFloat(speed_kp_input.value),
+          ki: parseFloat(speed_ki_input.value),
+          kd: parseFloat(speed_kd_input.value)
         }
       };
 
@@ -487,17 +511,14 @@
 
     // ========== 初始化 UI ==========
     document.addEventListener('DOMContentLoaded', () => {
-      // 创建按钮容器
       const btnContainer = document.createElement('div');
       btnContainer.style.display = 'flex';
-      btnContainer.style.gap = '12px';
+      btnContainer.style.gap = '10px';
       btnContainer.style.marginTop = '12px';
+      btnContainer.style.flexWrap = 'wrap';
 
-      // 连接/断开按钮
       connectBtn = document.createElement('button');
       connectBtn.textContent = "连接串口";
-      connectBtn.style.padding = "8px 16px";
-      connectBtn.style.borderRadius = "16px";
       connectBtn.onclick = () => {
         if (isConnected) {
           handleDisconnect();
@@ -507,21 +528,15 @@
       };
       btnContainer.appendChild(connectBtn);
 
-      // 下载配置按钮
       downloadBtn = document.createElement('button');
       downloadBtn.textContent = "下载配置";
-      downloadBtn.style.padding = "8px 16px";
-      downloadBtn.style.borderRadius = "16px";
       downloadBtn.style.backgroundColor = "#34a853";
       downloadBtn.style.color = "white";
       downloadBtn.onclick = downloadCurrentConfig;
       btnContainer.appendChild(downloadBtn);
 
-      // 清空日志按钮
       clearLogBtn = document.createElement('button');
       clearLogBtn.textContent = "清空日志";
-      clearLogBtn.style.padding = "8px 16px";
-      clearLogBtn.style.borderRadius = "16px";
       clearLogBtn.style.backgroundColor = "#ea4335";
       clearLogBtn.style.color = "white";
       clearLogBtn.onclick = clearLog;
@@ -532,5 +547,4 @@
     });
   </script>
 </body>
-
 </html>
