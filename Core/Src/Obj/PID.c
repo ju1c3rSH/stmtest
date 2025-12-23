@@ -11,7 +11,7 @@ PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
 };
 float Position_PID(PID_TypeDef *PID, float Target)
 {
-    PID->Target = Target;f
+    PID->Target = Target;
     PID->Error = PID->Target - PID->Current;
 
     PID->I_Out += PID->Error;

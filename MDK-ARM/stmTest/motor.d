@@ -41,3 +41,4 @@ stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers
 stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+stmtest\motor.o: ../Core/Inc/text_utils.h

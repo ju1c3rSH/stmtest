@@ -122,7 +122,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.YawPID->Ki = g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki;
     g_car.YawPID->Kd = g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd;
     g_car.YawPID->I_Max = 0.0f;
-    g_car.YawPID->Out_Max = 9000.0f;
+    g_car.YawPID->Out_Max = 0.0f;//disable yaw control for now
     g_car.YawPID->Out = 0;
     g_car.YawPID->Error = 0;
     g_car.YawPID->Last_Error = 0;

@@ -6,14 +6,14 @@
 //#include "tim.h"
 
 #define MOTOR_A_IN1_GPIO_PORT  GPIOA
-#define MOTOR_A_IN1_PIN        GPIO_PIN_0
+#define MOTOR_A_IN1_PIN        GPIO_PIN_8
 #define MOTOR_A_IN2_GPIO_PORT  GPIOA
-#define MOTOR_A_IN2_PIN        GPIO_PIN_1
+#define MOTOR_A_IN2_PIN        GPIO_PIN_11
 
 #define MOTOR_B_IN1_GPIO_PORT  GPIOB
-#define MOTOR_B_IN1_PIN        GPIO_PIN_6
+#define MOTOR_B_IN1_PIN        GPIO_PIN_12
 #define MOTOR_B_IN2_GPIO_PORT  GPIOB
-#define MOTOR_B_IN2_PIN        GPIO_PIN_7
+#define MOTOR_B_IN2_PIN        GPIO_PIN_13
 
 //A is for Left motor, B is for Right motor
 
