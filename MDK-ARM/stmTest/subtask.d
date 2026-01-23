@@ -35,3 +35,4 @@ stmtest\subtask.o: ../Core/Inc/Obj/PID.h
 stmtest\subtask.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\subtask.o: ../Hardwares/mpu9250.h
 stmtest\subtask.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\subtask.o: ../Hardwares/motor.h

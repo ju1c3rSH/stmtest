@@ -59,6 +59,7 @@ extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_rx;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -71,7 +72,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 256 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for uartRecvTask */
@@ -79,7 +80,7 @@ osThreadId_t uartRecvTaskHandle;
 const osThreadAttr_t uartRecvTask_attributes = {
   .name = "uartRecvTask",
   .stack_size = 384 * 4,
-  .priority = (osPriority_t) osPriorityAboveNormal,
+  .priority = (osPriority_t) osPriorityLow7,
 };
 /* USER CODE BEGIN PV */
 
@@ -256,6 +257,7 @@ int main(void)
   // HAL_Delay(100);
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
   u1_printf("CS TEST DONE\r\n");
+  LoadPIDParamsFromFlash();
   Car_Init(&mpu);
   car_instance = Car_GetInstance();
   /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
@@ -269,7 +271,7 @@ int main(void)
     */
   // initPIDMutex();
   xParsePIDMutex = xSemaphoreCreateMutex();
-  LoadPIDParamsFromFlash();
+
   Set_PID(&g_stored_pid_params[PID_TYPE_BALANCE_PITCH], // pitch
           g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
           g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
@@ -467,7 +469,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -553,7 +555,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 1199;
+  htim3.Init.Period = 960;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -773,11 +775,11 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  const TickType_t xFrequency = pdMS_TO_TICKS(20);
-  TickType_t xLastWakeTime = xTaskGetTickCount(); // 记录首次唤醒时间
+  const TickType_t xFrequency = pdMS_TO_TICKS(10);
+  TickType_t xLastWakeTime = xTaskGetTickCount();
 
   u1_printf("Queue is %s\n", (xUART1ReceiveQueue ? "OK" : "NULL"));
-#define SAMPLE_RATE 0.05f
+  // #define SAMPLE_RATE 0.05f
   static uint32_t last_time = 0;
   float yaw = 0.00f;
 
@@ -785,14 +787,14 @@ void StartDefaultTask(void *argument)
   {
     // u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-     Get_Data_SubTask();
-     Normal_Balance_SubTask(car_instance);
-    //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1
-    //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // IN2 = 0
+    Get_Data_SubTask();
+    Normal_Balance_SubTask(car_instance);
+    // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1
+    // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // IN2 = 0
 
     // 确保 PWM 非零（如果使用 PWM 控制）
     //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 1000);
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+     //vTaskDelayUntil(&xLastWakeTime, xFrequency);
   }
   /*
   for (;;)

@@ -56,8 +56,8 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetSpeedAcc = 0.0f;
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
-    g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = -4.1f;
+    //g_car.SetMid_Angle = 0.0f;
+    g_car.Prop.Mid_Angle = 0.95f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -102,7 +102,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.PitchPID->Current = 0;
     g_car.PitchPID->Target = 0;
     g_car.PitchPID->I_Max = 0.0f;//不需要积分
-    g_car.PitchPID->Out_Max =9000.0f;
+    g_car.PitchPID->Out_Max =960.0f;
     g_car.PitchPID->pid_type = PID_TYPE_BALANCE_PITCH;
     // 速度环
     g_car.SpeedPID->Kp = g_stored_pid_params[PID_TYPE_SPEED].Kp;
@@ -111,7 +111,7 @@ void Car_Init(MPU9250 *mpu)
     // g_car.SpeedPID->Kd = 0.01f;
     g_car.SpeedPID->I_Max = 3000.0f;
     g_car.SpeedPID->Out_Max = 30.0f;
-    g_car.SpeedPID->Out = 0;
+    g_car.SpeedPID->Out = 9000.0f;
     g_car.SpeedPID->Error = 0;
     g_car.SpeedPID->Last_Error = 0;
     g_car.SpeedPID->Current = 0;
@@ -206,11 +206,13 @@ void Car_Get_Real_Value(float dt)
     MPU9250_ReadAccel(&g_car.Device.mpu);
     MPU9250_ReadGyro(&g_car.Device.mpu);
     MPU9250_ReadMag(&g_car.Device.mpu);
-
+    /*
      static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
     const float alpha = 0.2f; // 0.1~0.3
+    
 
 
+    
     acc_x_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[0] + (1 - alpha) * acc_x_filtered;
     acc_y_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[1] + (1 - alpha) * acc_y_filtered;
     acc_z_filtered = alpha * g_car.Device.mpu.mpu_data.Accel[2] + (1 - alpha) * acc_z_filtered;
@@ -223,21 +225,28 @@ void Car_Get_Real_Value(float dt)
     ay = g_car.Device.mpu.mpu_data.Accel[1];
     az = g_car.Device.mpu.mpu_data.Accel[2];
     Mahony_update_IMU(gx, gy, gz, acc_x_filtered, acc_y_filtered, acc_z_filtered);
+    */
     // mpu->mpu_data.Gyro[0] = -mpu->mpu_data.Gyro[0]; //根据安装方向调整轴向
+    
+    g_car.Prop.Gyro_X = (g_car.Device.mpu.mpu_data.Gyro[0] * 16.384f);
+    g_car.Prop.Gyro_Y = (g_car.Device.mpu.mpu_data.Gyro[1] * 16.384f);
+    g_car.Prop.Gyro_Z = (g_car.Device.mpu.mpu_data.Gyro[2] * 16.384f);
+    g_car.Prop.Accel_X = (g_car.Device.mpu.mpu_data.Accel[0] * 208.98f);
+    g_car.Prop.Accel_Y = (g_car.Device.mpu.mpu_data.Accel[1] * 208.98f);
+    g_car.Prop.Accel_Z = (g_car.Device.mpu.mpu_data.Accel[2] * 208.98f);
     /*
-    g_car.Prop.Gyro_X = (short)(g_car.Device.mpu.mpu_data.Gyro[0] * 16.384f);
-    g_car.Prop.Gyro_Y = (short)(g_car.Device.mpu.mpu_data.Gyro[1] * 16.384f);
-    g_car.Prop.Gyro_Z = (short)(g_car.Device.mpu.mpu_data.Gyro[2] * 16.384f);
-    g_car.Prop.Accel_X = (short)(g_car.Device.mpu.mpu_data.Accel[0] * 208.98f);
-    g_car.Prop.Accel_Y = (short)(g_car.Device.mpu.mpu_data.Accel[1] * 208.98f);
-    g_car.Prop.Accel_Z = (short)(g_car.Device.mpu.mpu_data.Accel[2] * 208.98f);
-*/
+    g_car.Prop.Gyro_X = (short)(gx);
+    g_car.Prop.Gyro_Y = (short)(gy);
+    g_car.Prop.Gyro_Z = (short)(gz); 
+    g_car.Prop.Accel_X = (short)(ax);
+    g_car.Prop.Accel_Y = (short)(ay);
+    g_car.Prop.Accel_Z = (short)(az);
     
-    
+    */
    
     // Mahony_computeAngles();
     /* Mahony_computeAngles(); */
-    /*
+    
     g_car.Prop.Pitch_Angle = atan2f(-g_car.Prop.Accel_X,
                                         sqrtf(g_car.Prop.Accel_Y * g_car.Prop.Accel_Y +
                                               g_car.Prop.Accel_Z * g_car.Prop.Accel_Z)) *
@@ -246,7 +255,9 @@ void Car_Get_Real_Value(float dt)
     g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * dt;
 
 
-*/ g_car.Prop.Pitch_Angle = getPitch();
+
+/*
+    g_car.Prop.Pitch_Angle = getPitch();
 
     g_car.Prop.Roll_Angle = getRoll();
     g_car.Prop.Yaw_Angle = getYaw();
@@ -256,6 +267,7 @@ void Car_Get_Real_Value(float dt)
     //g_car.YawPID->Current = g_car.Prop.Full_Yaw;
     //g_car.SpeedPID->Current = (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f;
     //这两行被新封装取代
+    */
     PID_Set_Current(g_car.RollPID, g_car.Prop.Roll_Angle);
     PID_Set_Current(g_car.PitchPID, g_car.Prop.Pitch_Angle);
     PID_Set_Current(g_car.SpeedPID, (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f);
@@ -263,6 +275,7 @@ void Car_Get_Real_Value(float dt)
     
     //u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
     //  pitch roll yaw
+		/*
 		u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f},\"accel\":{\"x\":%.3f,\"y\":%.3f,\"z\":%.3f}}}\r\n",
           g_car.Prop.Pitch_Angle,
           g_car.Prop.Roll_Angle,
@@ -270,5 +283,6 @@ void Car_Get_Real_Value(float dt)
           g_car.Prop.Accel_X / 208.98f,
           g_car.Prop.Accel_Y / 208.98f,
           g_car.Prop.Accel_Z / 208.98f);
+					*/
     //u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

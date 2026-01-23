@@ -1,7 +1,10 @@
 #ifndef __PID_H__
 #define __PID_H__
-
+#include <stdbool.h>
 #include "main.h"
+
+#include <stdint.h>
+
 typedef enum
 {
     PID_TYPE_BALANCE_PITCH,
@@ -11,8 +14,17 @@ typedef enum
     PID_TYPE_INVALID,
     PID_TYPE_COUNT
 } PID_Type_t;
+typedef struct
+{
+    const char *name;
+    PID_Type_t type;
+} PID_Type_Map_t;
 
-
+static const PID_Type_Map_t pid_type_map[] = {
+    {"balance_pitch", PID_TYPE_BALANCE_PITCH},
+    {"balance_yaw", PID_TYPE_BALANCE_YAW},
+    {"speed", PID_TYPE_SPEED},
+};
 typedef struct
 {
     float Kp;
@@ -31,17 +43,11 @@ typedef struct
 
 } PID_TypeDef;
 
-
-PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = 1.0f, .Ki = 0.1f, .Kd = 0.01f},
-    // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
-};
 // 只是处理func
 float Position_PID(PID_TypeDef *PID, float Target);
 float Distance_PID(PID_TypeDef *PID, float Target);
 float Angle_PID(PID_TypeDef *PID, float Target, float Gyro);
 void Set_PID(PID_TypeDef *PID, float Kp, float Ki, float Kd);
-
+void PID_Set_Current(PID_TypeDef *PID, float current);
+int PID_GetOutput(PID_TypeDef *PID);
 #endif /* __PID_H__ */

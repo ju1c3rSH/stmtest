@@ -2,16 +2,15 @@
 #include "main.h"
 #include "cmsis_os.h"
 
-
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp = -850.0f, .Ki = 0.0f, .Kd = -2.6f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =90.00f, .Ki = 0.0f, .Kd = 0.0f},
     [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300, .Ki = 0.0f, .Kd = -1.0f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = -0.0079263f, .Ki = -0.0079263f*0.005f, .Kd = 0.0f},
+    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = -0.0079263f, .Ki = -0.0079263f * 0.005f, .Kd = 0.0f},
     // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
 };
 float Position_PID(PID_TypeDef *PID, float Target)
 {
-    PID->Target = Target;
+    PID->Target = Target                                                                                                                                                                                                        ;
     PID->Error = PID->Target - PID->Current;
 
     PID->I_Out += PID->Error;
@@ -52,6 +51,16 @@ float Angle_PID(PID_TypeDef *PID, float Target, float Gyro)
 
     PID->Last_Error = PID->Error;
 
+//     float feedforward = 0;
+
+//         if (fabsf(PID->Error) > 15.0f)
+//     {
+
+//         feedforward = 0.3f * PID->Out_Max * (PID->Error > 0 ? 1 : -1);
+//     }
+
+//    PID->Out += feedforward;
+
     return PID->Out;
 }
 
@@ -73,13 +82,16 @@ float Distance_PID(PID_TypeDef *PID, float Target)
     PID->Last_Error = PID->Error;
     return PID->Out;
 }
-void PID_Set_Current(PID_TypeDef *PID, float current){
+void PID_Set_Current(PID_TypeDef *PID, float current)
+{
     PID->Current = current;
 }
-int PID_GetOutput(PID_TypeDef *PID){
+int PID_GetOutput(PID_TypeDef *PID)
+{
     return (int)(PID->Out);
 }
-void Set_PID(PID_TypeDef *PID, float Kp, float Ki, float Kd){
+void Set_PID(PID_TypeDef *PID, float Kp, float Ki, float Kd)
+{
     PID->Kp = Kp;
     PID->Ki = Ki;
     PID->Kd = Kd;

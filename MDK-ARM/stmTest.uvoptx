@@ -163,67 +163,52 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>xUART1ReceiveQueue</ItemText>
+          <ItemText>M1_PWM_Out,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>M1_PWM_Out</ItemText>
+          <ItemText>huart1</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>huart1</ItemText>
+          <ItemText>s_pid_uart_rx_buf</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>s_pid_uart_rx_buf</ItemText>
+          <ItemText>(1024 / sizeof(PID_Flash_Params_t))</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>(1024 / sizeof(PID_Flash_Params_t))</ItemText>
+          <ItemText>uartRecvTaskHandle</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>uartRecvTaskHandle</ItemText>
+          <ItemText>M2_PWM_Out,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>xReceivedData</ItemText>
+          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop.Pitch_Angle</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>local_buffer</ItemText>
+          <ItemText>\\stmTest\../Core/Src/subtask.c\M1_PWM_Out,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>temp</ItemText>
+          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop.Roll_Angle</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>M2_PWM_Out</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PID-&gt;Current</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>g_car.Prop.Pitch_Angle</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>g_car.PitchPID-&gt;Current</ItemText>
+          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.PitchPID-&gt;Kp</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -237,7 +222,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>dataBuf[0]</ItemText>
+          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop.Pitch_Angle</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -257,7 +242,7 @@
         <periodic>1</periodic>
         <aLwin>0</aLwin>
         <aCover>0</aCover>
-        <aSer1>1</aSer1>
+        <aSer1>0</aSer1>
         <aSer2>1</aSer2>
         <aPa>0</aPa>
         <viewmode>1</viewmode>

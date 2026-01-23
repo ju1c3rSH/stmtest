@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PID Tuner - Material 3 Style</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -15,7 +16,9 @@
       --md-background: #f5f5f5;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Roboto', sans-serif;
@@ -31,7 +34,7 @@
       background: var(--md-surface);
       border-radius: 28px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
@@ -121,7 +124,7 @@
       border-radius: 50%;
       background: var(--md-primary);
       margin-top: -10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .value-input {
@@ -154,6 +157,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>PID 参数调谐器</h1>
@@ -233,7 +237,6 @@
   </div>
 
   <script>
-    // ========== 全局状态 ==========
     let currentPort = null;
     let isConnected = false;
     let logLines = [];
@@ -241,37 +244,32 @@
     const pidTypeSelect = document.getElementById('pidType');
     const submitBtn = document.getElementById('submitBtn');
 
-    // ========== UI 元素 ==========
     let connectBtn = null;
     let downloadBtn = null;
     let clearLogBtn = null;
 
-    // ========== 参数配置（精度、范围）==========
     const paramConfig = {
       pitch_kp: { min: 0, max: 2000, step: 0.001, decimals: 3 },
       pitch_ki: { min: 0, max: 10, step: 0.001, decimals: 3 },
       pitch_kd: { min: 0, max: 10, step: 0.001, decimals: 3 },
-      yaw_kp:  { min: 0, max: 100, step: 0.001, decimals: 3 },
-      yaw_ki:  { min: 0, max: 10, step: 0.001, decimals: 3 },
-      yaw_kd:  { min: 0, max: 10, step: 0.001, decimals: 3 },
-      speed_kp:{ min: 0, max: 10, step: 0.001, decimals: 3 },
-      speed_ki:{ min: 0, max: 5, step: 0.001, decimals: 3 },
-      speed_kd:{ min: 0, max: 1, step: 0.001, decimals: 3 }
+      yaw_kp: { min: 0, max: 100, step: 0.001, decimals: 3 },
+      yaw_ki: { min: 0, max: 10, step: 0.001, decimals: 3 },
+      yaw_kd: { min: 0, max: 10, step: 0.001, decimals: 3 },
+      speed_kp: { min: 0, max: 10, step: 0.001, decimals: 3 },
+      speed_ki: { min: 0, max: 5, step: 0.001, decimals: 3 },
+      speed_kd: { min: 0, max: 1, step: 0.001, decimals: 3 }
     };
 
-    // ========== 初始化双向绑定 ==========
     Object.keys(paramConfig).forEach(id => {
       const slider = document.getElementById(id);
       const input = document.getElementById(`${id}_input`);
       const config = paramConfig[id];
 
-      // 滑块 → 文本框
       slider.addEventListener('input', () => {
         const val = parseFloat(slider.value);
         input.value = val.toFixed(config.decimals);
       });
 
-      // 文本框 → 滑块
       input.addEventListener('change', () => {
         let val = parseFloat(input.value);
         if (isNaN(val)) val = config.min;
@@ -280,11 +278,9 @@
         input.value = val.toFixed(config.decimals);
       });
 
-      // 初始化
       input.value = parseFloat(slider.value).toFixed(config.decimals);
     });
 
-    // ========== 切换 PID 类型 ==========
     pidTypeSelect.addEventListener('change', () => {
       document.querySelectorAll('.param-section').forEach(el => el.classList.remove('active'));
       const type = pidTypeSelect.value;
@@ -298,7 +294,6 @@
 
     document.getElementById('section_pitch').classList.add('active');
 
-    // ========== 日志 ==========
     function log(msg) {
       const line = `[${new Date().toLocaleTimeString()}] ${msg}`;
       logLines.push(line);
@@ -312,7 +307,6 @@
       monitorEl.innerHTML = '<p class="log-line">日志已清空</p>';
     }
 
-    // ========== 串口读取 ==========
     async function readFromPort(port) {
       const reader = port.readable.getReader();
       const decoder = new TextDecoder();
@@ -350,26 +344,27 @@
       }
     }
 
-    // ========== 发送 JSON ==========
     async function sendJSON(jsonStr) {
       if (!isConnected || !currentPort?.writable) {
-        log("❌ 串口未连接，无法发送");
+        log("❌ 串口未连接");
         return false;
       }
-      const writer = currentPort.writable.getWriter();
+
       try {
+        const writer = currentPort.writable.getWriter();
         await writer.write(new TextEncoder().encode(jsonStr + "\n"));
+        writer.releaseLock();
         log(`→ ${jsonStr}`);
         return true;
       } catch (e) {
         log(`❌ 发送失败: ${e.message}`);
+        //强制断开
+        isConnected = false;
+        updateUI();
         return false;
-      } finally {
-        writer.releaseLock();
       }
     }
 
-    // ========== 更新滑块 ==========
     function updateSliders(dataObj) {
       const fields = ['pitch_kp', 'pitch_ki', 'pitch_kd', 'yaw_kp', 'yaw_ki', 'yaw_kd', 'speed_kp', 'speed_ki', 'speed_kd'];
       fields.forEach(field => {
@@ -383,40 +378,32 @@
       });
     }
 
-    // ========== 处理连接 ==========
+    function updateUI() {
+      if (!connectBtn) return;
+
+      connectBtn.textContent = isConnected ? "断开串口" : "连接串口";
+      submitBtn.disabled = !isConnected;
+    }
     async function handleConnect() {
-      if (isConnected) {
-        await handleDisconnect();
-      }
+      // 强制先断开
+      if (isConnected) await handleDisconnect();
 
       try {
         const port = await navigator.serial.requestPort();
-        if (port.readable || port.writable) {
-          // 复用已打开端口
-          currentPort = port;
-          isConnected = true;
-          connectBtn.textContent = "断开串口";
-          log("✅ 串口已连接（复用）");
-          readFromPort(port);
-          return;
-        }
-
         await port.open({ baudRate: 115200 });
-        if (!port.readable) throw new Error('串口不可读');
 
         currentPort = port;
         isConnected = true;
-        connectBtn.textContent = "断开串口";
+        updateUI();
         log("✅ 串口已连接");
         readFromPort(port);
       } catch (error) {
         isConnected = false;
-        if (connectBtn) connectBtn.textContent = "连接串口";
+        updateUI();
         log(`❌ ${error.message || '串口连接失败'}`);
       }
     }
 
-    // ========== 处理断开 ==========
     async function handleDisconnect() {
       if (!currentPort) {
         isConnected = false;
@@ -439,44 +426,39 @@
       }
     }
 
-    // ========== 提交按钮 ==========
     submitBtn.addEventListener('click', async () => {
-      if (!isConnected) {
-        log("⚠️ 请先连接串口");
+      if (!isConnected || !currentPort?.writable) {
+        log("⚠️ 串口未连接");
         return;
       }
 
-      const type = pidTypeSelect.value;
+      const type = pidTypeSelect.value; // 当前选中的类型
       const prefix = type.split('_')[1];
 
-      // 从文本框读取精确值
-      const kp = parseFloat(document.getElementById(`${prefix}_kp_input`).value);
-      const ki = parseFloat(document.getElementById(`${prefix}_ki_input`).value);
-      const kd = parseFloat(document.getElementById(`${prefix}_kd_input`).value);
+      // 从输入框获取值（确保精度）
+      const kp = parseFloat(document.getElementById(`${prefix}_kp_input`).value) || 0;
+      const ki = parseFloat(document.getElementById(`${prefix}_ki_input`).value) || 0;
+      const kd = parseFloat(document.getElementById(`${prefix}_kd_input`).value) || 0;
 
-      // 保留三位小数（符合你固件的解析精度）
       const jsonToSend = `{"type":"${type}","kp":${kp.toFixed(3)},"ki":${ki.toFixed(3)},"kd":${kd.toFixed(3)}}`;
-      log("📤 发送 PID 参数: " + jsonToSend);
+      log(`📤 发送: ${jsonToSend}`);
 
       const success = await sendJSON(jsonToSend);
       if (success) {
+        // 等待设备重启
         submitBtn.disabled = true;
         submitBtn.textContent = "等待重启...";
-        log("⏳ 等待设备重启...");
 
         await new Promise(r => setTimeout(r, 300));
         await handleDisconnect();
 
         await new Promise(r => setTimeout(r, 2000));
-        log("🔄 尝试重新连接...");
         await handleConnect();
 
         submitBtn.disabled = false;
         submitBtn.textContent = "提交并等待重启";
       }
     });
-
-    // ========== 下载当前配置 ==========
     function downloadCurrentConfig() {
       const config = {
         balance_pitch: {
@@ -506,7 +488,7 @@
       a.download = 'pid_config_backup.json';
       a.click();
       URL.revokeObjectURL(url);
-      log("💾 已下载当前配置");
+      log("已下载当前配置");
     }
 
     // ========== 初始化 UI ==========
@@ -542,9 +524,12 @@
       clearLogBtn.onclick = clearLog;
       btnContainer.appendChild(clearLogBtn);
 
-      document.querySelector('.control-row').appendChild(btnContainer);
-      log("ℹ️ 点击「连接串口」开始");
+      
+      querySelector('.control-row').appendChild(btnContainer);
+      updateUI();
+      log("点击「连接串口」开始");
     });
   </script>
 </body>
+
 </html>

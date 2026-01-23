@@ -43,13 +43,12 @@ typedef struct
     float Pitch_Angle;
     float Roll_Angle;
     float Mid_Angle; // 机械中值
-    short Gyro_X;
-    short Gyro_Y;
-    short Gyro_Z;
-    short Accel_X;
-    short Accel_Y;
-    short Accel_Z;
-
+    float Gyro_X;
+    float Gyro_Y;
+    float Gyro_Z;
+    float Accel_X;
+    float Accel_Y;
+    float Accel_Z;
     float LastDistance;
     float dt;
 } Car_PropTypeDef;

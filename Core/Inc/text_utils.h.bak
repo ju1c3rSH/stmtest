@@ -11,7 +11,8 @@ extern "C"{
 extern UART_HandleTypeDef huart1; 
 extern SPI_HandleTypeDef hspi1;
 
-void Log_Print(const char *message);
+void Log_Print(const char *message, uint16_t len);
+
 void SWO_PrintChar(char c);
 void SWO_Print(const char *message);
 void u1_printf(const char *format, ...);

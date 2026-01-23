@@ -51,3 +51,5 @@ void Set_PID(PID_TypeDef *PID, float Kp, float Ki, float Kd);
 void PID_Set_Current(PID_TypeDef *PID, float current);
 int PID_GetOutput(PID_TypeDef *PID);
 #endif /* __PID_H__ */
+
+

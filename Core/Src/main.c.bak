@@ -29,6 +29,7 @@
 #include "mpu9250.h"
 #include <math.h>
 #include "delay.h"
+#include "MahonyAHRS.h"
 #include "subtask.h"
 #include <stdarg.h >
 #include <string.h>
@@ -70,7 +71,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 256 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for uartRecvTask */
@@ -78,7 +79,7 @@ osThreadId_t uartRecvTaskHandle;
 const osThreadAttr_t uartRecvTask_attributes = {
   .name = "uartRecvTask",
   .stack_size = 384 * 4,
-  .priority = (osPriority_t) osPriorityAboveNormal,
+  .priority = (osPriority_t) osPriorityLow7,
 };
 /* USER CODE BEGIN PV */
 
@@ -244,16 +245,21 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+  // 使能TB6612
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
   u1_printf("CS HIGH\r\n");
+
   // HAL_Delay(100);
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET);
   u1_printf("CS LOW\r\n");
   // HAL_Delay(100);
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
   u1_printf("CS TEST DONE\r\n");
-
-  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
+  LoadPIDParamsFromFlash();
+  Car_Init(&mpu);
+  car_instance = Car_GetInstance();
+  /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -261,18 +267,46 @@ int main(void)
   {
     Error_Handler();
   }
+    */
   // initPIDMutex();
   xParsePIDMutex = xSemaphoreCreateMutex();
-  LoadPIDParamsFromFlash();
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // AIN1 = 1
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
-  uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
-  uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
-  StartUART1DMAReceive();
-  DWT_Delay_us(2000);
 
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
+  Set_PID(&g_stored_pid_params[PID_TYPE_BALANCE_PITCH], // pitch
+          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
+          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
+          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd);
+  Set_PID(&g_stored_pid_params[PID_TYPE_BALANCE_YAW], // yaw
+          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
+          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
+          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd);
+  Set_PID(&g_stored_pid_params[PID_TYPE_SPEED], // speed
+          g_stored_pid_params[PID_TYPE_SPEED].Kp,
+          g_stored_pid_params[PID_TYPE_SPEED].Ki,
+          g_stored_pid_params[PID_TYPE_SPEED].Kd);
+
+  u1_printf("{\"data\":{"
+            "\"pitch_kp\":%.3f,\"pitch_ki\":%.3f,\"pitch_kd\":%.3f,"
+            "\"yaw_kp\":%.3f,\"yaw_ki\":%.3f,\"yaw_kd\":%.3f,"
+            "\"speed_kp\":%.3f,\"speed_ki\":%.3f,\"speed_kd\":%.3f"
+            "}}\n",
+            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
+            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
+            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd,
+            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
+            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
+            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd,
+            g_stored_pid_params[PID_TYPE_SPEED].Kp,
+            g_stored_pid_params[PID_TYPE_SPEED].Ki,
+            g_stored_pid_params[PID_TYPE_SPEED].Kd);
+  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // AIN1 = 1
+  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
+  // uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
+  // uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
+  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
+  StartUART1DMAReceive();
+  // DWT_Delay_us(20000);
+
+  // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
 
   if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
   {
@@ -282,9 +316,10 @@ int main(void)
   {
     u1_printf("MPU9250 init FAILED\r\n");
   }
+
+  Mahony_Init(50.0f);
   // Test_SPI_Communication();
-  Car_Init(&mpu);
-  car_instance = Car_GetInstance();
+
   // ATGM336H_Init(&g_gps_data);
   /*
      OLED_PropTypeDef oled_cfg = {
@@ -385,11 +420,11 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV2;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -517,9 +552,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 72-1;
+  htim3.Init.Prescaler = 1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 999;
+  htim3.Init.Period = 4799;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -554,7 +589,8 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM3_Init 2 */
-
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
 
@@ -657,6 +693,7 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 14, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+
 }
 
 /**
@@ -681,13 +718,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15|GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5|OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -737,8 +774,11 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+  const TickType_t xFrequency = pdMS_TO_TICKS(10);
+  TickType_t xLastWakeTime = xTaskGetTickCount(); // 记录首次唤醒时间
+
   u1_printf("Queue is %s\n", (xUART1ReceiveQueue ? "OK" : "NULL"));
-#define SAMPLE_RATE 0.05f
+  // #define SAMPLE_RATE 0.05f
   static uint32_t last_time = 0;
   float yaw = 0.00f;
 
@@ -748,7 +788,12 @@ void StartDefaultTask(void *argument)
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     Get_Data_SubTask();
     Normal_Balance_SubTask(car_instance);
-    vTaskDelay(10);
+    // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1
+    // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // IN2 = 0
+
+    // 确保 PWM 非零（如果使用 PWM 控制）
+    //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 1000);
+     vTaskDelayUntil(&xLastWakeTime, xFrequency);
   }
   /*
   for (;;)
@@ -804,7 +849,7 @@ void StartDefaultTask(void *argument)
 void UartRecvTask(void *argument)
 {
   /* USER CODE BEGIN UartRecvTask */
-  
+
   /*
   未处理粘包/多帧情况
   当前逻辑假设一帧 = 一个 JSON + 换行。
@@ -867,15 +912,15 @@ void UartRecvTask(void *argument)
           {
             u1_printf("[UartRecvTask]Updated PID params from JSON and saved to Flash: Type=%d, Kp=%.3f, Ki=%.3f, Kd=%.3f\r\n",
                       pid_params.pid_type, pid_params.kp, pid_params.ki, pid_params.kd);
-            
-            //while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY);
-            //while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET);
+
+            // while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY);
+            // while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET);
             u1_printf("[UartRecvTask]Resetting system...\r\n");
-            HAL_Delay(10); 
+            HAL_Delay(10);
             __disable_irq();
 
             vTaskDelay(pdMS_TO_TICKS(100));
-            
+
             NVIC_SystemReset();
           }
           else

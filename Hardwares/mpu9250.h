@@ -117,7 +117,7 @@ typedef enum __MPU9250_Accel_DLPFBandwidth {
 	MPU9250_Accel_DLPFBandwidth_460 = 0x00,    // delay 1.94ms
 	MPU9250_Accel_DLPFBandwidth_184,           // delay 5.80ms
 	MPU9250_Accel_DLPFBandwidth_92,            // delay 7.80ms
-	MPU9250_Accel_DLPFBandwidth_41,            // delay 11.80ms
+	MPU9250_Accel_DLPFBandwidth_41,            // delay 11.80ms 
 	MPU9250_Accel_DLPFBandwidth_20,            // delay 19.80ms
 	MPU9250_Accel_DLPFBandwidth_10,            // delay 35.70ms
 	MPU9250_Accel_DLPFBandwidth_5,             // delay 66.96ms
