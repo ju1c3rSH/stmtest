@@ -17,16 +17,16 @@ void Set_Motor_A_Speed(int16_t speed)
 {
     if (speed >= 0)
     {
-        HAL_GPIO_WritePin(MOTOR_A_IN1_GPIO_PORT, MOTOR_A_IN1_PIN, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(MOTOR_A_IN2_GPIO_PORT, MOTOR_A_IN2_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MOTOR_A_IN1_GPIO_PORT, MOTOR_A_IN1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MOTOR_A_IN2_GPIO_PORT, MOTOR_A_IN2_PIN, GPIO_PIN_SET);
         //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (uint32_t)speed); 
-        u1_printf("Motor A PWM: %d\n", speed);
+        //u1_printf("Motor A PWM: %d\n", speed);
         htim3.Instance->CCR3 = speed; // Make speed positive for PWM
     }
     else if (speed < 0)
     {
-        HAL_GPIO_WritePin(MOTOR_A_IN1_GPIO_PORT, MOTOR_A_IN1_PIN, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(MOTOR_A_IN2_GPIO_PORT, MOTOR_A_IN2_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MOTOR_A_IN1_GPIO_PORT, MOTOR_A_IN1_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MOTOR_A_IN2_GPIO_PORT, MOTOR_A_IN2_PIN, GPIO_PIN_RESET);
         //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (uint32_t)-speed); 
         htim3.Instance->CCR3 = -speed; // Make speed positive for PWM
     }
@@ -38,15 +38,15 @@ void Set_Motor_B_Speed(int16_t speed)
 {
     if (speed >= 0)
     {
-        HAL_GPIO_WritePin(MOTOR_B_IN1_GPIO_PORT, MOTOR_B_IN1_PIN, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(MOTOR_B_IN2_GPIO_PORT, MOTOR_B_IN2_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MOTOR_B_IN1_GPIO_PORT, MOTOR_B_IN1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MOTOR_B_IN2_GPIO_PORT, MOTOR_B_IN2_PIN, GPIO_PIN_SET);
         htim3.Instance->CCR4 = speed; // Make speed positive for PWM
         //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, (uint32_t)speed); 
     }
     else if (speed < 0)
     {
-        HAL_GPIO_WritePin(MOTOR_B_IN1_GPIO_PORT, MOTOR_B_IN1_PIN, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(MOTOR_B_IN2_GPIO_PORT, MOTOR_B_IN2_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MOTOR_B_IN1_GPIO_PORT, MOTOR_B_IN1_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MOTOR_B_IN2_GPIO_PORT, MOTOR_B_IN2_PIN, GPIO_PIN_RESET);
         //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, (uint32_t)-speed); 
         htim3.Instance->CCR4 = -speed; // Make speed positive for PWM
     }

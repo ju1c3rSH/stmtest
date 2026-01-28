@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "MahonyAHRS.h"
 Car_TypeDef g_car;
-
+#define PWM_ARR 599
 #define PI 3.14159265358979323846f
 
 extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
@@ -57,7 +57,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     //g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = 0.95f;
+    g_car.Prop.Mid_Angle = 4.2f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -102,7 +102,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.PitchPID->Current = 0;
     g_car.PitchPID->Target = 0;
     g_car.PitchPID->I_Max = 0.0f;//不需要积分
-    g_car.PitchPID->Out_Max =960.0f;
+    g_car.PitchPID->Out_Max =PWM_ARR;
     g_car.PitchPID->pid_type = PID_TYPE_BALANCE_PITCH;
     // 速度环
     g_car.SpeedPID->Kp = g_stored_pid_params[PID_TYPE_SPEED].Kp;
@@ -255,7 +255,6 @@ void Car_Get_Real_Value(float dt)
     g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * dt;
 
 
-
 /*
     g_car.Prop.Pitch_Angle = getPitch();
 
@@ -275,7 +274,7 @@ void Car_Get_Real_Value(float dt)
     
     //u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
     //  pitch roll yaw
-		/*
+		
 		u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f},\"accel\":{\"x\":%.3f,\"y\":%.3f,\"z\":%.3f}}}\r\n",
           g_car.Prop.Pitch_Angle,
           g_car.Prop.Roll_Angle,
@@ -283,6 +282,6 @@ void Car_Get_Real_Value(float dt)
           g_car.Prop.Accel_X / 208.98f,
           g_car.Prop.Accel_Y / 208.98f,
           g_car.Prop.Accel_Z / 208.98f);
-					*/
+					
     //u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

@@ -72,7 +72,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 512 * 4,
+  .stack_size = 768 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for uartRecvTask */
@@ -214,7 +214,7 @@ void Test_SPI_Communication(void)
   * @retval int
   */
 int main(void)
-{
+                                                                                                                                                                   {
 
   /* USER CODE BEGIN 1 */
 
@@ -347,6 +347,8 @@ int main(void)
   /* USER CODE BEGIN RTOS_MUTEX */
 
   /* add mutexes, ... */
+	
+	
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -553,9 +555,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 1;
+  htim3.Init.Prescaler = 11;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 960;
+  htim3.Init.Period = 899;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -785,8 +787,9 @@ void StartDefaultTask(void *argument)
 
   for (;;)
   {
-    // u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+    //u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    //vTaskDelayUntil(&xLastWakeTime, xFrequency);
     Get_Data_SubTask();
     Normal_Balance_SubTask(car_instance);
     // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1
@@ -831,8 +834,7 @@ void StartDefaultTask(void *argument)
               pitch, roll, yaw);
     u1_printf("}}\r\n");
 
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-
+ 
     // osDelay(1);
     osDelay(10);
   }

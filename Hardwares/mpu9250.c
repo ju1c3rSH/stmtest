@@ -220,9 +220,9 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	/* init GYRO and ACCEL */
 	mpu_w_reg(SMPLRT_DIV, (uint8_t)0x00);						 // SAMPLE_RATE= Internal_Sample_Rate / (1 + SMPLRT_DIV), Internal_Sample_Rate==8K
 	mpu_w_reg(GYRO_CONFIG, (uint8_t)MPU9250_Gyro_Range_500dps); // gyro full scale select
-	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_2G);	 // accel full scale select
-	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_10); 
-	mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_3600);
+	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_4G);	 // accel full scale select
+	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_460); 
+	mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_184);
 	/* init MAG */
 	/*
 	mpu_w_reg(USER_CTRL, (uint8_t) 0x20); // enable I2C master mode
@@ -239,7 +239,7 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_r_ak8963_regs(MAG_XOUT_L, 7);
 
 	*/
-	Calibrate_Gyro(mpu, 100);
+	//Calibrate_Gyro(mpu, 100);
 	//Calibrate_Accel(mpu, 100);
 	return 1;
 }

@@ -14,37 +14,40 @@ void Get_Data_SubTask(void)
 
 void Normal_Balance_SubTask(Car_TypeDef *car)
 {
-    //u1_printf("Normal Balance SubTask Running at time: %lu ms\r\n", HAL_GetTick());
-     //Position_PID(car->SpeedPID, car->SetSpeed);
-     //Angle_PID(car->PitchPID, car->Prop.Mid_Angle + car->SpeedPID->Out, (float)car->Prop.Gyro_Y);
-	Angle_PID(car->PitchPID, car->Prop.Mid_Angle, (float)car->Prop.Gyro_Y);
-    //Angle_PID(car->YawPID, car->SetYaw, car->Prop.Gyro_Z);
+    // u1_printf("Normal Balance SubTask Running at time: %lu ms\r\n", HAL_GetTick());
+    // Position_PID(car->SpeedPID, car->SetSpeed);
+    // Angle_PID(car->PitchPID, car->Prop.Mid_Angle + car->SpeedPID->Out, (float)car->Prop.Gyro_Y);
+    Angle_PID(car->PitchPID, car->Prop.Mid_Angle, (float)car->Prop.Gyro_Y);
+    // Angle_PID(car->YawPID, car->SetYaw, car->Prop.Gyro_Z);
     float yaw_out = 0;
 
-    //M1_PWM_Out = (int)car->PitchPID->Out + car->YawPID->Out;
-   // M2_PWM_Out = (int)car->PitchPID->Out - car->YawPID->Out;
-    M1_PWM_Out = (int)car->PitchPID->Out ;
-    M2_PWM_Out = (int)car->PitchPID->Out ;
-
-    //int test_pwm = 800;
-    //防失控保护
-	
+    // M1_PWM_Out = (int)car->PitchPID->Out + car->YawPID->Out;
+    // M2_PWM_Out = (int)car->PitchPID->Out - car->YawPID->Out;
+    M1_PWM_Out = (int)car->PitchPID->Out;
+    M2_PWM_Out = (int)car->PitchPID->Out;
+    Set_Motor_A_Speed(M1_PWM_Out);
+    Set_Motor_B_Speed(M2_PWM_Out);
+    // int test_pwm = 800;
+    // 防失控保护
+    /*
     if( (car->Prop.Pitch_Angle > 65.0f || car->Prop.Pitch_Angle < -65.0f)){
         M1_PWM_Out = 0;
         M2_PWM_Out = 0;
 
     }
-	
+    */
+    /*
     if (!car->Flag.Stop_PWM )
-    {
-        Set_Motor_A_Speed(M1_PWM_Out);
-        Set_Motor_B_Speed(M2_PWM_Out);
-    }
-		
-    else
-    {
-        Set_Motor_A_Speed(0);
-        Set_Motor_B_Speed(0);
-    }
-		
+        if (!car->Flag.Stop_PWM )
+        {
+            Set_Motor_A_Speed(M1_PWM_Out);
+            Set_Motor_B_Speed(M2_PWM_Out);
+        }
+
+        else
+        {
+            Set_Motor_A_Speed(0);
+            Set_Motor_B_Speed(0);
+        }
+            */
 }
