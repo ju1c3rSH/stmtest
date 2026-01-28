@@ -305,7 +305,7 @@ int main(void)
   // uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
   //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
   StartUART1DMAReceive();
-  // DWT_Delay_us(20000);
+  DWT_Delay_us(20000);
 
   // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
 
@@ -777,7 +777,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  const TickType_t xFrequency = pdMS_TO_TICKS(10);
+  const TickType_t xFrequency = pdMS_TO_TICKS(5);
   TickType_t xLastWakeTime = xTaskGetTickCount();
 
   u1_printf("Queue is %s\n", (xUART1ReceiveQueue ? "OK" : "NULL"));
@@ -789,7 +789,7 @@ void StartDefaultTask(void *argument)
   {
     //u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    //vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
     Get_Data_SubTask();
     Normal_Balance_SubTask(car_instance);
     // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1

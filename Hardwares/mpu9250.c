@@ -221,7 +221,7 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_w_reg(SMPLRT_DIV, (uint8_t)0x00);						 // SAMPLE_RATE= Internal_Sample_Rate / (1 + SMPLRT_DIV), Internal_Sample_Rate==8K
 	mpu_w_reg(GYRO_CONFIG, (uint8_t)MPU9250_Gyro_Range_500dps); // gyro full scale select
 	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_4G);	 // accel full scale select
-	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_460); 
+	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_41); 
 	mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_184);
 	/* init MAG */
 	/*
@@ -239,7 +239,7 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_r_ak8963_regs(MAG_XOUT_L, 7);
 
 	*/
-	//Calibrate_Gyro(mpu, 100);
+	Calibrate_Gyro(mpu, 100);
 	//Calibrate_Accel(mpu, 100);
 	return 1;
 }
@@ -248,9 +248,9 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
  *          data will be stored in mpu
  * */
 void MPU9250_ReadAccel(MPU9250 *mpu)
-{	//16g量程
+{	//4g量程
 	// m/s
-	const float accel_scale = 16.0f * 9.8f / 32768.0f;
+	const float accel_scale = 9.8f / 8192.0f;
 	mpu_r_regs(ACCEL_XOUT_H, 6);
 	// calculate x axis
 	mpu->mpu_data.Accel_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
@@ -273,21 +273,22 @@ void MPU9250_ReadGyro(MPU9250 *mpu)
 	// d/s
 	mpu_r_regs(GYRO_XOUT_H, 6);
 	// calculate x axis
+	const float gyro_scale = 65.5f; // ±500dps to °/s.
 	mpu->mpu_data.Gyro_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Gyro[0] = mpu->mpu_data.Gyro_row[0] / 16.384;
+	mpu->mpu_data.Gyro[0] = (mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) / gyro_scale;
 
 	// calculate y axis
 	mpu->mpu_data.Gyro_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Gyro[1] = mpu->mpu_data.Gyro_row[1] / 16.384;
-
+	mpu->mpu_data.Gyro[1] = (mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) / gyro_scale;
 	// calculate z axis
 	mpu->mpu_data.Gyro_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Gyro[2] = mpu->mpu_data.Gyro_row[2] / 16.384;
+	mpu->mpu_data.Gyro[2] = (mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) / gyro_scale;
 }
 /*
  * @brief   read mag origin value and calculate real value
  *          data will be stored in mpu
  * */
+
 void MPU9250_ReadMag(MPU9250 *mpu)
 {
 	uint8_t mag_adjust[3] = {0};
