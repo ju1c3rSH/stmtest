@@ -239,7 +239,7 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_r_ak8963_regs(MAG_XOUT_L, 7);
 
 	*/
-	Calibrate_Gyro(mpu, 100);
+	Calibrate_Gyro(mpu, 200);
 	//Calibrate_Accel(mpu, 100);
 	return 1;
 }
@@ -382,72 +382,31 @@ uint8_t MPU9250_ConfigureMagnetometer(
 
 	return 1;
 }
-
 void Calibrate_Gyro(MPU9250 *mpu, uint16_t samples)
 {
-	int32_t gyro_bias[3] = {0};
-	int16_t gyro_temp[3] = {0};
-	// 100次@50Hz=2秒
-	u1_printf("Calibrating Gyro with %d samples...\r\n", samples);
-	for (uint16_t i = 0; i < samples; i++)
-	{
-		MPU9250_ReadGyro(mpu);
-		gyro_temp[0] = mpu->mpu_data.Gyro_row[0];
-		gyro_temp[1] = mpu->mpu_data.Gyro_row[1];
-		gyro_temp[2] = mpu->mpu_data.Gyro_row[2];
+    float gyro_bias[3] = {0};
+    
+    u1_printf("Calibrating Gyro (%d samples, 50ms interval)...\r\n", samples);
+    
+    for (uint16_t i = 0; i < samples; i++)
+    {
+        MPU9250_ReadGyro(mpu);
+        gyro_bias[0] += (float)mpu->mpu_data.Gyro[0];
+        gyro_bias[1] += (float)mpu->mpu_data.Gyro[1];
+        gyro_bias[2] += (float)mpu->mpu_data.Gyro[2];
+        
+        DWT_Delay_us(50000); // 50ms
+    }
+    
+    gyro_bias[0] /= samples;
+    gyro_bias[1] /= samples;
+    gyro_bias[2] /= samples;
+    
 
-		gyro_bias[0] += gyro_temp[0];
-		gyro_bias[1] += gyro_temp[1];
-		gyro_bias[2] += gyro_temp[2];
-
-		DWT_Delay_us(20000); // 50Hz
-	}
-
-	gyro_bias[0] /= samples;
-	gyro_bias[1] /= samples;
-	gyro_bias[2] /= samples;
-
-	u1_printf("Gyro Calibration Complete. Biases: X=%d, Y=%d, Z=%d\r\n",
-			  gyro_bias[0], gyro_bias[1], gyro_bias[2]);
-
-	// Store biases for later use
-	mpu->mpu_data.Gyro_Bias[0] = gyro_bias[0];
-	mpu->mpu_data.Gyro_Bias[1] = gyro_bias[1];
-	mpu->mpu_data.Gyro_Bias[2] = gyro_bias[2];
-}
-
-void Calibrate_Accel(MPU9250 *mpu, uint16_t samples)
-{
-	int32_t accel_bias[3] = {0};
-	int16_t accel_temp[3] = {0};
-	// 100次@50Hz=2秒
-	u1_printf("Calibrating Accel with %d samples...\r\n", samples);
-	for (uint16_t i = 0; i < samples; i++)
-	{
-		MPU9250_ReadAccel(mpu);
-		accel_temp[0] = mpu->mpu_data.Accel_row[0];
-		accel_temp[1] = mpu->mpu_data.Accel_row[1];
-		accel_temp[2] = mpu->mpu_data.Accel_row[2];
-
-		accel_bias[0] += accel_temp[0];
-		accel_bias[1] += accel_temp[1];
-		accel_bias[2] += accel_temp[2];
-
-		DWT_Delay_us(20000); // 50Hz
-	}
-
-	accel_bias[0] /= samples;
-	accel_bias[1] /= samples;
-	accel_bias[2] /= samples;
-
-	// Adjust Z-axis bias to account for gravity
-	accel_bias[2] -= 16384; // Assuming 1g = 16384 LSB for ±2g range
-
-	u1_printf("Accel Calibration Complete. Biases: X=%d, Y=%d, Z=%d\r\n",
-			  accel_bias[0], accel_bias[1], accel_bias[2]);
-
-	// Store biases for later use
-	mpu->mpu_data.Accel_Bias[0] = accel_bias[0];
-	mpu->mpu_data.Accel_Bias[1] = accel_bias[1];
-	mpu->mpu_data.Accel_Bias[2] = accel_bias[2];
+    u1_printf("Gyro Calibration Complete. Biases: X=%.2f, Y=%.2f, Z=%.2f\r\n",
+              gyro_bias[0], gyro_bias[1], gyro_bias[2]);
+    
+    mpu->mpu_data.Gyro_Bias[0] = gyro_bias[0];
+    mpu->mpu_data.Gyro_Bias[1] = gyro_bias[1];
+    mpu->mpu_data.Gyro_Bias[2] = gyro_bias[2];
 }

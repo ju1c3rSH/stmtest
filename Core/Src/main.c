@@ -109,7 +109,7 @@ int fputc(int ch, FILE *file)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-MPU9250 mpu;
+MPU9250 mpu = {0};
 uint8_t mpu9250_WhoAmI = 0;
 uint8_t ak8963_WhoAmI = 0;
 Car_TypeDef *car_instance;
@@ -258,6 +258,18 @@ int main(void)
   HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
   u1_printf("CS TEST DONE\r\n");
   LoadPIDParamsFromFlash();
+    DWT_Delay_us(20000);
+
+  // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
+
+  if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
+  {
+    u1_printf("MPU9250 init SUCCESSFUL\r\n");
+  }
+  else
+  {
+    u1_printf("MPU9250 init FAILED\r\n");
+  }
   Car_Init(&mpu);
   car_instance = Car_GetInstance();
   /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
@@ -305,18 +317,7 @@ int main(void)
   // uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
   //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
   StartUART1DMAReceive();
-  DWT_Delay_us(20000);
 
-  // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
-
-  if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
-  {
-    u1_printf("MPU9250 init SUCCESSFUL\r\n");
-  }
-  else
-  {
-    u1_printf("MPU9250 init FAILED\r\n");
-  }
 
   Mahony_Init(50.0f);
   // Test_SPI_Communication();
