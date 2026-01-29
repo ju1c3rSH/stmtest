@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "MahonyAHRS.h"
 Car_TypeDef g_car;
-#define PWM_ARR 599
+#define PWM_ARR 1799
 #define PI 3.14159265358979323846f
 
 extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
