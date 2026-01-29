@@ -36,8 +36,8 @@ typedef struct
     float Distance_Left;
     float Distance_Right;
     float Distance_Target;
-    float Pulse_Left;
-    float Pulse_Right;
+    uint32_t Pulse_Left;
+    uint32_t Pulse_Right;
     float Full_Yaw; // 无限角
     float Yaw_Angle;
     float Pitch_Angle;

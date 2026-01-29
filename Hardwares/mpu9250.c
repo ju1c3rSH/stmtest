@@ -275,14 +275,14 @@ void MPU9250_ReadGyro(MPU9250 *mpu)
 	// calculate x axis
 	const float gyro_scale = 65.5f; // ±500dps to °/s.
 	mpu->mpu_data.Gyro_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Gyro[0] = (mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) / gyro_scale;
+	mpu->mpu_data.Gyro[0] = ((mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[0];
 
 	// calculate y axis
 	mpu->mpu_data.Gyro_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Gyro[1] = (mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) / gyro_scale;
+	mpu->mpu_data.Gyro[1] = ((mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[1];
 	// calculate z axis
 	mpu->mpu_data.Gyro_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Gyro[2] = (mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) / gyro_scale;
+	mpu->mpu_data.Gyro[2] = ((mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[2];
 }
 /*
  * @brief   read mag origin value and calculate real value
@@ -395,7 +395,7 @@ void Calibrate_Gyro(MPU9250 *mpu, uint16_t samples)
         gyro_bias[1] += (float)mpu->mpu_data.Gyro[1];
         gyro_bias[2] += (float)mpu->mpu_data.Gyro[2];
         
-        DWT_Delay_us(50000); // 50ms
+        DWT_Delay_us(25000); // 50ms
     }
     
     gyro_bias[0] /= samples;
