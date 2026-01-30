@@ -35,14 +35,3 @@ stmtest\stm32f1xx_it.o: ../Core/Inc/Obj/PID.h
 stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\stm32f1xx_it.o: ../Hardwares/mpu9250.h
 stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-stmtest\stm32f1xx_it.o: ../Core/Inc/FreeRTOSConfig.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
-stmtest\stm32f1xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h

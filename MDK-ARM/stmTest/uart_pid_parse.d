@@ -38,14 +38,3 @@ stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
 stmtest\uart_pid_parse.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\uart_pid_parse.o: ../Core/Inc/text_utils.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-stmtest\uart_pid_parse.o: ../Core/Inc/FreeRTOSConfig.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
-stmtest\uart_pid_parse.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h

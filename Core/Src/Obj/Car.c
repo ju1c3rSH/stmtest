@@ -295,11 +295,11 @@ void Car_Get_Real_Value(float dt)
 
     // u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
     //   pitch roll yaw
-    
+    /*
     u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
               g_car.Prop.Pitch_Angle,
               g_car.Prop.Roll_Angle,
               g_car.Prop.Full_Yaw);
-
+*/
     // u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

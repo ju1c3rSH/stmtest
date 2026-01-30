@@ -103,9 +103,9 @@ static void spi_r_bytes(SPI_HandleTypeDef *hspi, uint8_t address, uint8_t num)
 	mpu_select();
 
 	// may be can use HAL_SPI_TransmitReceive()
-	HAL_SPI_Transmit(hspi, &_address, 1, 0x01f4);
-	HAL_SPI_Receive(hspi, dataBuf, num, 0x01f4); // store read data to dataBuf
-
+	//HAL_SPI_Transmit(hspi, &_address, 1, 0x01f4);
+	//HAL_SPI_Receive(hspi, dataBuf, num, 0x01f4); // store read data to dataBuf
+	HAL_SPI_TransmitReceive(hspi, &_address, dataBuf, num, 0x01f4);
 	mpu_deselect();
 }
 /*** basic mpu9250 operate ***/

@@ -33,5 +33,5 @@ void u1_printf(const char *format, ...)
   vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
-  Log_Print(buffer);
+  Log_Print(buffer,strlen(buffer));
 }

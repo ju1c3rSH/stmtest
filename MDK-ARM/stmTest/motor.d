@@ -30,15 +30,4 @@ stmtest\motor.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\motor.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\motor.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\motor.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-stmtest\motor.o: ../Core/Inc/FreeRTOSConfig.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-stmtest\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 stmtest\motor.o: ../Core/Inc/text_utils.h

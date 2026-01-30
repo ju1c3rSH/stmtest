@@ -26,10 +26,9 @@
 // #include "atgm336h.h"
 #include "Car.h"
 #include "stdint.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
+
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,7 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 // extern void GPS_UART_IDLE_Callback(uint8_t* buf, uint16_t len);
-extern QueueHandle_t xUART1ReceiveQueue;
+
 extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
 static volatile uint32_t g_queue_send_fail = 0;
 
@@ -69,8 +68,6 @@ static volatile uint32_t g_queue_send_fail = 0;
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
-extern TIM_HandleTypeDef htim1;
-
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -154,6 +151,19 @@ void UsageFault_Handler(void)
 }
 
 /**
+  * @brief This function handles System service call via SWI instruction.
+  */
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVCall_IRQn 0 */
+
+  /* USER CODE END SVCall_IRQn 0 */
+  /* USER CODE BEGIN SVCall_IRQn 1 */
+
+  /* USER CODE END SVCall_IRQn 1 */
+}
+
+/**
   * @brief This function handles Debug monitor.
   */
 void DebugMon_Handler(void)
@@ -164,6 +174,33 @@ void DebugMon_Handler(void)
   /* USER CODE BEGIN DebugMonitor_IRQn 1 */
 
   /* USER CODE END DebugMonitor_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Pendable request for system service.
+  */
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles System tick timer.
+  */
+void SysTick_Handler(void)
+{
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
+  HAL_IncTick();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -185,20 +222,6 @@ void DMA1_Channel5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
 
   /* USER CODE END DMA1_Channel5_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM1 update interrupt.
-  */
-void TIM1_UP_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-
-  /* USER CODE END TIM1_UP_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
-  /* USER CODE BEGIN TIM1_UP_IRQn 1 */
-
-  /* USER CODE END TIM1_UP_IRQn 1 */
 }
 
 /**
@@ -224,16 +247,8 @@ void USART1_IRQHandler(void)
 
     UART1_DMA_Received_Data_t rx_data;
     rx_data.length = len;
-    memcpy(rx_data.buffer, s_pid_uart_rx_buf, len);
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    if (xQueueSendFromISR(xUART1ReceiveQueue, &rx_data, &xHigherPriorityTaskWoken) != pdPASS)
-    {
-       g_queue_send_fail++;
-      // Process Queue Full Error>..
-    }
+  
 
-    HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     return; //返回，避免再进 HAL_UART_IRQHandler
   }
   /*

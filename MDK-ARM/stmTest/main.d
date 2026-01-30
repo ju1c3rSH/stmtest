@@ -29,17 +29,6 @@ stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-stmtest\main.o: ../Core/Inc/FreeRTOSConfig.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3/portmacro.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 stmtest\main.o: ../Hardwares/oled.h
 stmtest\main.o: ../Hardwares/OLED_Data.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
@@ -54,6 +43,4 @@ stmtest\main.o: ../Core/Inc/Obj/Car.h
 stmtest\main.o: ../Core/Inc/Obj/PID.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h 
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
-stmtest\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 stmtest\main.o: ../Core/Inc/uart_pid_parse.h

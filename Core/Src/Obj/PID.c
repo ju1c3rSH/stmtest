@@ -1,6 +1,5 @@
 #include "PID.h"
 #include "main.h"
-#include "cmsis_os.h"
 
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
     [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =25.00f, .Ki = 0.0f, .Kd = 0.0f},

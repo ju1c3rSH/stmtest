@@ -1,7 +1,7 @@
 #include <stdarg.h >
 #include <string.h>
 #include <stdio.h>
-#include "cmsis_os.h"
+
 #include "stm32f1xx_hal.h"
 #include "text_utils.h"
 
