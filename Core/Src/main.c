@@ -153,6 +153,9 @@ static volatile uint32_t ulLastDMATransferSize = 0;
 }
 
 */
+
+
+
 void StartUART1DMAReceive(void)
 {
   // memset(s_uart_rx_buf, 0, UART1_PID_BUFFER_SIZE);
@@ -627,7 +630,7 @@ static void MX_TIM4_Init(void)
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -781,21 +784,16 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  const TickType_t xFrequency = pdMS_TO_TICKS(10);
+  const TickType_t xFrequency = pdMS_TO_TICKS(5);
   TickType_t xLastWakeTime = xTaskGetTickCount();
-
   u1_printf("Queue is %s\n", (xUART1ReceiveQueue ? "OK" : "NULL"));
-  // #define SAMPLE_RATE 0.05f
-  static uint32_t last_time = 0;
-  float yaw = 0.00f;
-
-  for (;;)
+  while(1)
   {
     //u1_printf("Default Task Running at time: %lu ms\r\n", HAL_GetTick());
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     Get_Data_SubTask();
     Normal_Balance_SubTask(car_instance);
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
     // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // IN1 = 1
     // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // IN2 = 0
 

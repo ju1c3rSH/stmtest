@@ -273,16 +273,17 @@ void MPU9250_ReadGyro(MPU9250 *mpu)
 	// d/s
 	mpu_r_regs(GYRO_XOUT_H, 6);
 	// calculate x axis
+	const float scale = 500.0f / 32768.0f;
 	const float gyro_scale = 65.5f; // ±500dps to °/s.
 	mpu->mpu_data.Gyro_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Gyro[0] = ((mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[0];
+	mpu->mpu_data.Gyro[0] = ((mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) * scale);
 
 	// calculate y axis
 	mpu->mpu_data.Gyro_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Gyro[1] = ((mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[1];
+	mpu->mpu_data.Gyro[1] = ((mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) * scale);
 	// calculate z axis
 	mpu->mpu_data.Gyro_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Gyro[2] = ((mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) / gyro_scale) - mpu->mpu_data.Gyro_Bias[2];
+	mpu->mpu_data.Gyro[2] = ((mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) * scale);
 }
 /*
  * @brief   read mag origin value and calculate real value
