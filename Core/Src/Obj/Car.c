@@ -213,7 +213,7 @@ void Car_Get_Real_Value(float dt)
 
     MPU9250_ReadAccel(&g_car.Device.mpu);
     MPU9250_ReadGyro(&g_car.Device.mpu);
-    MPU9250_ReadMag(&g_car.Device.mpu);
+    //MPU9250_ReadMag(&g_car.Device.mpu);
     /*
      static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
     const float alpha = 0.2f; // 0.1~0.3

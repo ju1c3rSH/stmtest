@@ -29,6 +29,7 @@
 #include <math.h>
 #include "delay.h"
 #include "MahonyAHRS.h"
+#include "text_utils.h"
 #include "subtask.h"
 #include <stdarg.h >
 #include <string.h>
@@ -48,17 +49,20 @@
 /* USER CODE BEGIN PD */
 // GPS_PropTypeDef g_gps_data = {0};
 extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
+
 // extern SemaphoreHandle_t xGnssMutex;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+Car_TypeDef *car_instance;
+MPU9250 mpu = {0};
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_rx;
+
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -80,6 +84,7 @@ static void MX_SPI1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 int fputc(int ch, FILE *file)
@@ -90,102 +95,17 @@ int fputc(int ch, FILE *file)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-MPU9250 mpu = {0};
-uint8_t mpu9250_WhoAmI = 0;
-uint8_t ak8963_WhoAmI = 0;
-Car_TypeDef *car_instance;
-static volatile uint32_t ulCurrentDMATransferSize = 0;
-static volatile uint32_t ulLastDMATransferSize = 0;
-/*void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-{
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-  if (huart->Instance == huart1.Instance)
+  if (htim->Instance == TIM1)
   {
-    ulCurrentDMATransferSize = Size;
-
-    static UART1_DMA_Received_Data_t xReceivedData;
-
-    if (ulCurrentDMATransferSize > 0)
-    {
-      memcpy(xReceivedData.buffer, s_pid_uart_rx_buf, ulCurrentDMATransferSize);
-      xReceivedData.length = ulCurrentDMATransferSize;
-    }
-    if (xQueueSendFromISR(xUART1ReceiveQueue, &xReceivedData, &xHigherPriorityTaskWoken) != pdPASS)
-    {
-      // Process Queue Full Error>..
-    }
-
-    // Now Restart DMA Reception after clear the flag
-    __HAL_DMA_CLEAR_FLAG(&hdma_usart1_rx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_usart1_rx));
-
-    if (HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE) != HAL_OK)
-    {
-      // Handle Error
-    };
-    // 發送信號量以通知數據已準備好
-    xSemaphoreGiveFromISR(xUART1ProcessingSemaphore, &xHigherPriorityTaskWoken); // 釋放信號量
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    Get_Data_SubTask();
+    Normal_Balance_SubTask(car_instance);
   }
 }
 
-*/
-
-void StartUART1DMAReceive(void)
-{
-  // memset(s_uart_rx_buf, 0, UART1_PID_BUFFER_SIZE);
-
-  /*
-
-  if (HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE) != HAL_OK)
-  {
-    Error_Handler();
-  };
-  只能启动一次 DMA
-  */
-  HAL_UART_DMAStop(&huart1);
-  __HAL_UART_CLEAR_IDLEFLAG(&huart1);
-
-  if (HAL_UART_Receive_DMA(&huart1, s_pid_uart_rx_buf, PID_UART1_RX_BUF_SIZE) != HAL_OK)
-  {
-    u1_printf("DMA Start Failed!\r\n");
-    Error_Handler();
-  };
-  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
-}
-
-void Test_SPI_Communication(void)
-{
-  uint8_t test_data = 0x75; // WHO_AM_I register address
-  uint8_t rx_data = 0;
-
-  u1_printf("=== SPI Communication Test ===\r\n");
-
-  // Test 1: Direct HAL_SPI_TransmitReceive test
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
-
-  HAL_StatusTypeDef status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
-
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
-
-  u1_printf("SPI transmit status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
-  u1_printf("Sent: 0x%02X, Received: 0x%02X\r\n", test_data, rx_data);
-
-  // Test 2: Read WHO_AM_I register
-  u1_printf("--- Reading WHO_AM_I Register ---\r\n");
-  test_data = 0x75 | 0x80; // Read operation, set MSB
-
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET); // CS LOW
-  status = HAL_SPI_TransmitReceive(&hspi1, &test_data, &rx_data, 1, 1000);
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET); // CS HIGH
-
-  u1_printf("WHO_AM_I read status: %s\r\n", (status == HAL_OK) ? "SUCCESS" : "FAILED");
-  u1_printf("WHO_AM_I value: 0x%02X\r\n", rx_data);
-
-  u1_printf("=== SPI Test Complete ===\r\n\r\n");
-}
+/* USER CODE END 0 */
 
 /**
  * @brief  The application entry point.
@@ -211,7 +131,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+	  Car_Init(&mpu);
+  car_instance = Car_GetInstance();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -219,10 +140,10 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
-
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+  
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
@@ -252,8 +173,7 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
 
-  Car_Init(&mpu);
-  car_instance = Car_GetInstance();
+
   /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
@@ -297,7 +217,7 @@ int main(void)
   // uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
   // uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
   //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
-  StartUART1DMAReceive();
+  //  StartUART1DMAReceive();
 
   Mahony_Init(50.0f);
   // Test_SPI_Communication();
@@ -319,12 +239,20 @@ int main(void)
       OLED_ShowString(0, 0, "OLED OK!", 8);
       OLED_Update();
     */
+		MX_TIM1_Init();
   uint32_t last_time = HAL_GetTick();
   const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
 
   while (1)
-  {
-    /*
+  {/*
+    static uint32_t debug_cnt = 0;
+    if (HAL_GetTick() - debug_cnt > 1000)
+    {
+      debug_cnt = HAL_GetTick();
+      uint32_t tim1_cnt = __HAL_TIM_GET_COUNTER(&htim1);
+      u1_printf("TIM1 Counter: %d\r\n", tim1_cnt); // 若计数一直增长，说明定时器在运行
+    }
+    
     uint32_t current_time = HAL_GetTick();
       if (current_time - last_time >= CONTROL_PERIOD_MS)
       {
@@ -334,10 +262,11 @@ int main(void)
           Normal_Balance_SubTask(car_instance);
       }
   }
-      */
+
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     Get_Data_SubTask();
     Normal_Balance_SubTask(car_instance);
+    */
   }
   /* USER CODE END 2 */
 
@@ -424,6 +353,55 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+}
+
+/**
+ * @brief TIM1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 7199;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 49;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+  __HAL_TIM_CLEAR_FLAG(&htim1, TIM_FLAG_UPDATE);
+  if (HAL_TIM_Base_Start_IT(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE END TIM1_Init 2 */
 }
 
 /**
