@@ -103,9 +103,9 @@ static void spi_r_bytes(SPI_HandleTypeDef *hspi, uint8_t address, uint8_t num)
 	mpu_select();
 
 	// may be can use HAL_SPI_TransmitReceive()
-	//HAL_SPI_Transmit(hspi, &_address, 1, 0x01f4);
-	//HAL_SPI_Receive(hspi, dataBuf, num, 0x01f4); // store read data to dataBuf
-	HAL_SPI_TransmitReceive(hspi, &_address, dataBuf, num, 0x01f4);
+	HAL_SPI_Transmit(hspi, &_address, 1, 0x01f4);
+	HAL_SPI_Receive(hspi, dataBuf, num, 0x01f4); // store read data to dataBuf
+	//HAL_SPI_TransmitReceive(hspi, &_address, dataBuf, num, 0x01f4);
 	mpu_deselect();
 }
 /*** basic mpu9250 operate ***/
@@ -221,8 +221,9 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_w_reg(SMPLRT_DIV, (uint8_t)0x00);						 // SAMPLE_RATE= Internal_Sample_Rate / (1 + SMPLRT_DIV), Internal_Sample_Rate==8K
 	mpu_w_reg(GYRO_CONFIG, (uint8_t)MPU9250_Gyro_Range_500dps); // gyro full scale select
 	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_4G);	 // accel full scale select
+		mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_184);
 	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_41); 
-	mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_184);
+
 	/* init MAG */
 	/*
 	mpu_w_reg(USER_CTRL, (uint8_t) 0x20); // enable I2C master mode
@@ -276,14 +277,14 @@ void MPU9250_ReadGyro(MPU9250 *mpu)
 	const float scale = 500.0f / 32768.0f;
 	const float gyro_scale = 65.5f; // ±500dps to °/s.
 	mpu->mpu_data.Gyro_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Gyro[0] = ((mpu->mpu_data.Gyro_row[0] - mpu->mpu_data.Gyro_Bias[0]) * scale);
+	mpu->mpu_data.Gyro[0] = ((mpu->mpu_data.Gyro_row[0] ) * scale)- mpu->mpu_data.Gyro_Bias[0];
 
 	// calculate y axis
 	mpu->mpu_data.Gyro_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Gyro[1] = ((mpu->mpu_data.Gyro_row[1] - mpu->mpu_data.Gyro_Bias[1]) * scale);
+	mpu->mpu_data.Gyro[1] = ((mpu->mpu_data.Gyro_row[1]) * scale) - mpu->mpu_data.Gyro_Bias[1];
 	// calculate z axis
 	mpu->mpu_data.Gyro_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Gyro[2] = ((mpu->mpu_data.Gyro_row[2] - mpu->mpu_data.Gyro_Bias[2]) * scale);
+	mpu->mpu_data.Gyro[2] = ((mpu->mpu_data.Gyro_row[2]) * scale) - mpu->mpu_data.Gyro_Bias[2];
 }
 /*
  * @brief   read mag origin value and calculate real value

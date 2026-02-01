@@ -8,7 +8,7 @@ int M2_PWM_Out;
 int STOP;
 void Get_Data_SubTask(void)
 {
-    Car_Get_Real_Value(0.005f);
+    Car_Get_Real_Value();
     //... other subtasks
 }
 

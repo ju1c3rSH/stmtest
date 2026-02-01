@@ -55,8 +55,9 @@ extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-Car_TypeDef *car_instance;
 MPU9250 mpu = {0};
+Car_TypeDef *car_instance;
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -99,9 +100,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM1)
   {
-    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    Get_Data_SubTask();
-    Normal_Balance_SubTask(car_instance);
+    if (car_instance != NULL)
+    {
+      Get_Data_SubTask();
+      Normal_Balance_SubTask(car_instance);
+    }
   }
 }
 
@@ -131,7 +134,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-	  Car_Init(&mpu);
+  Car_Init(&mpu);
   car_instance = Car_GetInstance();
   /* USER CODE END SysInit */
 
@@ -143,7 +146,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
-  
+
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
@@ -173,6 +176,10 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
 
+  u1_printf("Bias X=%.2f Y=%.2f Z=%.2f\n",
+            mpu.mpu_data.Gyro_Bias[0],
+            mpu.mpu_data.Gyro_Bias[1],
+            mpu.mpu_data.Gyro_Bias[2]);
 
   /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
   {
@@ -239,34 +246,36 @@ int main(void)
       OLED_ShowString(0, 0, "OLED OK!", 8);
       OLED_Update();
     */
-		MX_TIM1_Init();
+  MX_TIM1_Init();
   uint32_t last_time = HAL_GetTick();
   const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
 
   while (1)
-  {/*
-    static uint32_t debug_cnt = 0;
-    if (HAL_GetTick() - debug_cnt > 1000)
-    {
-      debug_cnt = HAL_GetTick();
-      uint32_t tim1_cnt = __HAL_TIM_GET_COUNTER(&htim1);
-      u1_printf("TIM1 Counter: %d\r\n", tim1_cnt); // 若计数一直增长，说明定时器在运行
-    }
-    
-    uint32_t current_time = HAL_GetTick();
-      if (current_time - last_time >= CONTROL_PERIOD_MS)
-      {
-          last_time = current_time;
-          HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-          Get_Data_SubTask();
-          Normal_Balance_SubTask(car_instance);
-      }
-  }
+  { 
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		/*
+     static uint32_t debug_cnt = 0;
+     if (HAL_GetTick() - debug_cnt > 1000)
+     {
+       debug_cnt = HAL_GetTick();
+       uint32_t tim1_cnt = __HAL_TIM_GET_COUNTER(&htim1);
+       u1_printf("TIM1 Counter: %d\r\n", tim1_cnt); // 若计数一直增长，说明定时器在运行
+     }
 
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    Get_Data_SubTask();
-    Normal_Balance_SubTask(car_instance);
-    */
+     uint32_t current_time = HAL_GetTick();
+       if (current_time - last_time >= CONTROL_PERIOD_MS)
+       {
+           last_time = current_time;
+           HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+           Get_Data_SubTask();
+           Normal_Balance_SubTask(car_instance);
+       }
+   }
+
+     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+     Get_Data_SubTask();
+     Normal_Balance_SubTask(car_instance);
+     */
   }
   /* USER CODE END 2 */
 

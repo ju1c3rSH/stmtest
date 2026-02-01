@@ -4,9 +4,10 @@
 #include <stdbool.h>
 #include "MahonyAHRS.h"
 Car_TypeDef g_car;
+#define CONTROL_DT (1.0f / 200.0f)
 #define PWM_ARR 1799
 #define PI 3.14159265358979323846f
-
+#include "text_utils.h"
 extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
 static Car_WheelSpeedControlTypeDef SpeedControl;
 static PID_TypeDef g_pitch_pid_instance;
@@ -49,7 +50,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.RollPID = &g_roll_pid_instance;
     g_car.Flag = g_car_flag_instance;
     /*初始化外设*/
-    g_car.Device.mpu = *mpu;
+    g_car.Device.mpu = mpu;
     g_car.SetSpeed = 0.0f;
     g_car.CurrentSpeed = 0.0f;
     g_car.SetTempSpeed = 0.0f;
@@ -176,16 +177,18 @@ void Car_SetSpeed(float speed)
     g_car.SetSpeed = speed;
     // 对外只暴露操作接口
 }
-void Car_Get_Real_Value(float dt)
+void Car_Get_Real_Value(void)
 {
     
     static uint32_t last_time = 0;
     uint32_t current_time = HAL_GetTick();
     float actual_dt = (current_time - last_time) / 1000.0f;
     last_time = current_time;
-
+    float dt = CONTROL_DT;
     //u1_printf("Actual Freq: %.1f Hz | dt=%.4f s\n", 1.0f / actual_dt, actual_dt);
-    
+    //u1_printf("Gyro_Bias addr: 0x%08X | val: %.2f\n",
+    //(uint32_t)&g_car.Device.mpu->mpu_data.Gyro_Bias[0],
+    //g_car.Device.mpu->mpu_data.Gyro_Bias[0]);
     static char Status;
     float Temp[6];
 
@@ -207,12 +210,12 @@ void Car_Get_Real_Value(float dt)
     Blance.Car_RWheel_Distance += 1000*Blance.Car_RWheel_Pul*Wheel_Radius*__2PI/2000.0f/30;//获取右边轮真实路程[m]
     Blance.Car_LWheel_Distance += 1000*Blance.Car_RWheel_Pul*Wheel_Radius*__2PI/2000.0f/30;//获取左边轮真实路程*/
 
-    g_car.Prop.dt = actual_dt;
+    g_car.Prop.dt = dt;
 
     // 9250对象，x是[0]，y是[1]，z是[2]
 
-    MPU9250_ReadAccel(&g_car.Device.mpu);
-    MPU9250_ReadGyro(&g_car.Device.mpu);
+    MPU9250_ReadAccel(g_car.Device.mpu);
+    MPU9250_ReadGyro(g_car.Device.mpu);
     //MPU9250_ReadMag(&g_car.Device.mpu);
     /*
      static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
@@ -236,12 +239,12 @@ void Car_Get_Real_Value(float dt)
     */
     // mpu->mpu_data.Gyro[0] = -mpu->mpu_data.Gyro[0]; //根据安装方向调整轴向
 
-    g_car.Prop.Gyro_X = (g_car.Device.mpu.mpu_data.Gyro[0]);
-    g_car.Prop.Gyro_Y = (g_car.Device.mpu.mpu_data.Gyro[1]);
-    g_car.Prop.Gyro_Z = (g_car.Device.mpu.mpu_data.Gyro[2]);
-    g_car.Prop.Accel_X = (g_car.Device.mpu.mpu_data.Accel[0]);
-    g_car.Prop.Accel_Y = (g_car.Device.mpu.mpu_data.Accel[1]);
-    g_car.Prop.Accel_Z = (g_car.Device.mpu.mpu_data.Accel[2]);
+    g_car.Prop.Gyro_X = (g_car.Device.mpu->mpu_data.Gyro[0]);
+    g_car.Prop.Gyro_Y = (g_car.Device.mpu->mpu_data.Gyro[1]);
+    g_car.Prop.Gyro_Z = (g_car.Device.mpu->mpu_data.Gyro[2]);
+    g_car.Prop.Accel_X = (g_car.Device.mpu->mpu_data.Accel[0]);
+    g_car.Prop.Accel_Y = (g_car.Device.mpu->mpu_data.Accel[1]);
+    g_car.Prop.Accel_Z = (g_car.Device.mpu->mpu_data.Accel[2]);
     // 取消归一化
     // 如果 Accel_X 是 m/s²，结果仍然正确（因为比例不变）
     // 但没必要做单位转换，反而增加计算开销，效果不佳的时候，再试试吧
@@ -250,7 +253,7 @@ void Car_Get_Real_Value(float dt)
                           -g_car.Prop.Accel_X,
                           sqrtf(g_car.Prop.Accel_Y * g_car.Prop.Accel_Y + g_car.Prop.Accel_Z * g_car.Prop.Accel_Z)) *
                       180.0f / PI;
-    const float alpha = 0.9f;
+    const float alpha = 0.8f;
     
     /*
     g_car.Prop.Gyro_X = (short)(gx);
@@ -272,9 +275,9 @@ void Car_Get_Real_Value(float dt)
                                  */
     
     // 这里放弃使用纯加速度计的pitch计算方法，使用简单的互补滤波
-    g_car.Prop.Pitch_Angle = alpha * (g_car.Prop.Pitch_Angle + g_car.Prop.Gyro_X * actual_dt) + (1.0f - alpha) * acc_pitch;
+    g_car.Prop.Pitch_Angle = alpha * (g_car.Prop.Pitch_Angle + g_car.Prop.Gyro_X * dt) + (1.0f - alpha) * acc_pitch;
     g_car.Prop.Roll_Angle = atan2f(g_car.Prop.Accel_Y, g_car.Prop.Accel_Z) * 180.0f / PI;
-    g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * actual_dt;
+    g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * dt;
 
     /*
         g_car.Prop.Pitch_Angle = getPitch();
@@ -295,11 +298,11 @@ void Car_Get_Real_Value(float dt)
 
     // u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
     //   pitch roll yaw
-    /*
+    
     u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
               g_car.Prop.Pitch_Angle,
               g_car.Prop.Roll_Angle,
               g_car.Prop.Full_Yaw);
-*/
+
     // u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }

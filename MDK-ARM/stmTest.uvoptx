@@ -260,6 +260,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>temp_count</ItemText>
         </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gyro_bias[3]</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -286,6 +291,16 @@
           <count>4</count>
           <WinNumber>2</WinNumber>
           <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gyro_bias[3]</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gyro_bias[0]</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

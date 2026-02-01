@@ -78,7 +78,7 @@ typedef struct
 
 typedef struct
 {
-    MPU9250 mpu;
+    MPU9250 *mpu;
 } Car_DeviceTypeDef;
 
 typedef struct
@@ -109,7 +109,7 @@ extern Car_TypeDef g_car;
 微分项 (D): 误差的变化率 de(t)/dt 在离散系统中近似为 (e(t) - e(t-1)) / dt。*/
 void Car_Init(MPU9250 *mpu);
 void Car_SetSpeed(float speed);
-void Car_Get_Real_Value(float dt);
+void Car_Get_Real_Value(void);
 Car_TypeDef* Car_GetInstance(void);
 float Car_GetPitchAngle(void);
 void CorrectDate(float ax, float ay, float az,
