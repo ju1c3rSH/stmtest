@@ -2,9 +2,9 @@
 #include "main.h"
 
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =25.00f, .Ki = 0.0f, .Kd = 0.0f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-98.00f, .Ki = 0.0f, .Kd = -15.0f},
     [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300, .Ki = 0.0f, .Kd = -1.0f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = -0.0079263f, .Ki = -0.0079263f * 0.005f, .Kd = 0.0f},
+    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = 1.0f, .Ki = 0.005f, .Kd = 0.00f},
     // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
 };
 float Position_PID(PID_TypeDef *PID, float Target)
@@ -15,7 +15,7 @@ float Position_PID(PID_TypeDef *PID, float Target)
     PID->I_Out += PID->Error;
     if (PID->I_Out
 			> PID->I_Max)
-        PID->I_Out = PID->I_Max;
+        PID->I_Out = PID->I_Max; 
     else if (PID->I_Out < -PID->I_Max)
         PID->I_Out = -PID->I_Max;
 

@@ -248,12 +248,12 @@
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_car.Prop.Pulse_Left</ItemText>
+          <ItemText>g_car.Prop.Pulse_Left,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_car.Prop.Pulse_Right</ItemText>
+          <ItemText>g_car.Prop.Pulse_Right,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>20</count>

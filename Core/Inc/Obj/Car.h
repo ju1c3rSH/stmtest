@@ -36,10 +36,10 @@ typedef struct
     float Distance_Left;
     float Distance_Right;
     float Distance_Target;
-    uint32_t Pulse_Left;
-    uint32_t Pulse_Right;
+    int Pulse_Left;
+    int Pulse_Right;
     float Full_Yaw; // 无限角
-    float Yaw_Angle;
+    float Yaw_Angle ;
     float Pitch_Angle;
     float Roll_Angle;
     float Mid_Angle; // 机械中值

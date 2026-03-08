@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include "MahonyAHRS.h"
 Car_TypeDef g_car;
-#define CONTROL_DT (1.0f / 200.0f)
-#define PWM_ARR 1799
+#define CONTROL_DT (1.0f / 300.0f)
+#define PWM_ARR 3599
 #define PI 3.14159265358979323846f
 #include "text_utils.h"
 extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
@@ -58,7 +58,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     // g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = 1.9f;
+    g_car.Prop.Mid_Angle = -4.15f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -112,7 +112,7 @@ void Car_Init(MPU9250 *mpu)
     // g_car.SpeedPID->Kd = 0.01f;
     g_car.SpeedPID->I_Max = 3000.0f;
     g_car.SpeedPID->Out_Max = 30.0f;
-    g_car.SpeedPID->Out = 9000.0f;
+    g_car.SpeedPID->Out = 0.0f;
     g_car.SpeedPID->Error = 0;
     g_car.SpeedPID->Last_Error = 0;
     g_car.SpeedPID->Current = 0;
@@ -193,14 +193,14 @@ void Car_Get_Real_Value(void)
     float Temp[6];
 
     g_car.Prop.Pulse_Left = Encoder_Get_A();
-    g_car.Prop.Pulse_Right = Encoder_Get_B();
+    g_car.Prop.Pulse_Right = -Encoder_Get_B();
 
     g_car.Prop.Last_Velocity_Left = g_car.Prop.Velocity_Left;
     g_car.Prop.Last_Velocity_Right = g_car.Prop.Velocity_Right;
     g_car.Prop.Last_Velocity_Target = g_car.Prop.Velocity_Target;
 
-    g_car.Prop.Velocity_Left = (float)(g_car.Prop.Pulse_Left) * Wheel_Radius * __2PI / 2000.0f / dt / 30; // 假设每转2000脉冲 获取轮真实速度[m/s]
-    g_car.Prop.Velocity_Right = (float)(g_car.Prop.Pulse_Right) * Wheel_Radius * __2PI / 2000.0f / dt / 30;
+    g_car.Prop.Velocity_Left = (float)(g_car.Prop.Pulse_Left) * Wheel_Radius * __2PI / 13.0f / dt / 30; // 假设每转2000脉冲 获取轮真实速度[m/s]
+    g_car.Prop.Velocity_Right = (float)(g_car.Prop.Pulse_Right) * Wheel_Radius * __2PI / 13.0f / dt / 30;
 
     g_car.Prop.Distance_Left += g_car.Prop.Velocity_Left * dt;
     g_car.Prop.Distance_Right += g_car.Prop.Velocity_Right * dt;
