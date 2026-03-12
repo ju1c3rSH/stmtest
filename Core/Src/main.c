@@ -254,7 +254,16 @@ int main(void)
 
   while (1)
   {
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+      // u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
+      //         g_car.Prop.Pitch_Angle,
+      //         g_car.Prop.Roll_Angle,
+      //         g_car.Prop.Full_Yaw);
+      u1_printf("%.2f,%.2f,%.2f\r\n",
+              g_car.Prop.Pitch_Angle,
+              g_car.Prop.Roll_Angle,
+              g_car.Prop.Full_Yaw);
+
+    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     /*
      static uint32_t debug_cnt = 0;
      if (HAL_GetTick() - debug_cnt > 1000)

@@ -1,11 +1,11 @@
 #include "PID.h"
 #include "main.h"
 
-#define  kpo 1.0f
+#define  kpo 1.2f
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-100.51f, .Ki = 0.0f, .Kd = -17.0f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-85.1f, .Ki = 0.0f, .Kd = -12.0f},
     [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300.0, .Ki = 0.0f, .Kd = -1.0f,.a = 0.0f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = kpo, .Ki  = (kpo /200), .Kd = 0.00f,.a = 0.0f},
+    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = kpo, .Ki  = (kpo /200), .Kd = 0.00f,.a = 0.9f},
     // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
 };
 
@@ -14,16 +14,17 @@ float Position_PID(PID_TypeDef *PID, float Target)
     PID->Target = Target                                                                                                                                                                                                          ;
     PID->Error = PID->Target - PID->Current;
 		
-		PID->Error = (1 - PID->a) + PID->a * PID->Last_Error;
+		PID->Error = (1 - PID->a)*PID->Error + PID->a * PID->Last_Error;
+        //低通滤波，减少噪声对积分项的影响
 	
-    PID->I_Out += PID->Error;
+    PID->I_Out += PID->Ki * PID->Error;
     if (PID->I_Out
 			> PID->I_Max)
         PID->I_Out = PID->I_Max; 
     else if (PID->I_Out < -PID->I_Max)
         PID->I_Out = -PID->I_Max;
 
-    PID->Out = PID->Kp * PID->Error + PID->Ki * PID->I_Out + PID->Kd * (PID->Error - PID->Last_Error);
+    PID->Out = PID->Kp * PID->Error +  PID->I_Out + PID->Kd * (PID->Error - PID->Last_Error);
 
     if (PID->Out > PID->Out_Max)
         PID->Out = PID->Out_Max;
