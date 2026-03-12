@@ -3,7 +3,7 @@
 <title>Static Call Graph - [stmTest\stmTest.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image stmTest\stmTest.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sat Mar  7 22:53:48 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Thu Mar 12 20:39:50 2026
 <BR><P>
 <H3>Maximum Stack Usage =        552 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -285,6 +285,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Angle_PID
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Position_PID
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Normal_Balance_SubTask
 <LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_ReadGyro
@@ -352,7 +353,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_float_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
+<BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Normal_Balance_SubTask
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_ReadAccel
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_ReadGyro
 </UL>
@@ -371,7 +373,6 @@ Global Symbols
 
 <P><STRONG><a name="[5d]"></a>__aeabi_f2d</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, f2d.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Calibrate_Gyro
 </UL>
 
@@ -499,8 +500,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = Angle_PID &rArr; __aeabi_fadd &rArr; _float_epilogue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
 <LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
 </UL>
@@ -532,31 +533,29 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[5e]"></a>Car_Get_Real_Value</STRONG> (Thumb, 696 bytes, Stack size 56 bytes, car.o(.text.Car_Get_Real_Value))
-<BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = Car_Get_Real_Value &rArr; u1_printf &rArr; HAL_UART_Transmit
+<P><STRONG><a name="[5e]"></a>Car_Get_Real_Value</STRONG> (Thumb, 640 bytes, Stack size 40 bytes, car.o(.text.Car_Get_Real_Value))
+<BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = Car_Get_Real_Value &rArr; MPU9250_ReadGyro &rArr; HAL_SPI_Receive &rArr; HAL_SPI_TransmitReceive &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
 <LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;u1_printf
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_Set_Current
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Get_B
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Get_A
-<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_ReadAccel
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_ReadGyro
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Data_SubTask
 </UL>
 
-<P><STRONG><a name="[67]"></a>Car_Init</STRONG> (Thumb, 264 bytes, Stack size 24 bytes, car.o(.text.Car_Init))
+<P><STRONG><a name="[67]"></a>Car_Init</STRONG> (Thumb, 272 bytes, Stack size 24 bytes, car.o(.text.Car_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = Car_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -604,7 +603,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[6c]"></a>Get_Data_SubTask</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, subtask.o(.text.Get_Data_SubTask))
-<BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; u1_printf &rArr; HAL_UART_Transmit
+<BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; MPU9250_ReadGyro &rArr; HAL_SPI_Receive &rArr; HAL_SPI_TransmitReceive &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
 </UL>
@@ -873,7 +872,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[83]"></a>HAL_TIM_IRQHandler</STRONG> (Thumb, 334 bytes, Stack size 16 bytes, stm32f1xx_hal_tim.o(.text.HAL_TIM_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 392<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; u1_printf &rArr; HAL_UART_Transmit
+<BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; MPU9250_ReadGyro &rArr; HAL_SPI_Receive &rArr; HAL_SPI_TransmitReceive &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIMEx_CommutCallback
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_TriggerCallback
@@ -925,7 +924,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[87]"></a>HAL_TIM_PeriodElapsedCallback</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, main.o(.text.HAL_TIM_PeriodElapsedCallback))
-<BR><BR>[Stack]<UL><LI>Max Depth = 376<LI>Call Chain = HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; u1_printf &rArr; HAL_UART_Transmit
+<BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; MPU9250_ReadGyro &rArr; HAL_SPI_Receive &rArr; HAL_SPI_TransmitReceive &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Normal_Balance_SubTask
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Data_SubTask
@@ -1042,8 +1041,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Receive
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Transmit
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
@@ -1072,11 +1071,13 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
-<P><STRONG><a name="[8e]"></a>Normal_Balance_SubTask</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, subtask.o(.text.Normal_Balance_SubTask))
-<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = Normal_Balance_SubTask &rArr; Angle_PID &rArr; __aeabi_fadd &rArr; _float_epilogue
+<P><STRONG><a name="[8e]"></a>Normal_Balance_SubTask</STRONG> (Thumb, 78 bytes, Stack size 8 bytes, subtask.o(.text.Normal_Balance_SubTask))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = Normal_Balance_SubTask &rArr; Position_PID &rArr; __aeabi_fadd &rArr; _float_epilogue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Motor_B_Speed
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Motor_A_Speed
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
 <LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Angle_PID
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Position_PID
@@ -1091,12 +1092,12 @@ Global Symbols
 <P><STRONG><a name="[8]"></a>PendSV_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.PendSV_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
-<P><STRONG><a name="[a0]"></a>Position_PID</STRONG> (Thumb, 164 bytes, Stack size 32 bytes, pid.o(.text.Position_PID))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = Position_PID &rArr; __aeabi_fadd &rArr; _float_epilogue
+<P><STRONG><a name="[a0]"></a>Position_PID</STRONG> (Thumb, 204 bytes, Stack size 40 bytes, pid.o(.text.Position_PID))
+<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = Position_PID &rArr; __aeabi_fadd &rArr; _float_epilogue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
 <LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
 </UL>
@@ -1135,7 +1136,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(.text)
 </UL>
 <P><STRONG><a name="[23]"></a>TIM1_UP_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.TIM1_UP_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 392<LI>Call Chain = TIM1_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; u1_printf &rArr; HAL_UART_Transmit
+<BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = TIM1_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; Get_Data_SubTask &rArr; Car_Get_Real_Value &rArr; MPU9250_ReadGyro &rArr; HAL_SPI_Receive &rArr; HAL_SPI_TransmitReceive &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -1201,7 +1202,6 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU9250_Init
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Car_Get_Real_Value
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Calibrate_Gyro
 </UL>
 
@@ -1254,9 +1254,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = atan2f &rArr; __aeabi_fadd &rArr; _float_epilogue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
-<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
 <LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_underflow
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan2

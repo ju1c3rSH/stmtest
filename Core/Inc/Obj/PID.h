@@ -38,6 +38,7 @@ typedef struct
     float Out;
     float Out_Max;
     float Current;
+    float a;
     uint8_t Clear;
     PID_Type_t pid_type;
 

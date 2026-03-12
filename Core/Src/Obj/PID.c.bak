@@ -1,17 +1,21 @@
 #include "PID.h"
 #include "main.h"
 
+#define  kpo 1.0f
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-98.00f, .Ki = 0.0f, .Kd = -15f},
-    [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300, .Ki = 0.0f, .Kd = -1.0f},
-    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = 1.0f, .Ki = 0.005f, .Kd = 0.00f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-100.51f, .Ki = 0.0f, .Kd = -17.0f},
+    [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300.0, .Ki = 0.0f, .Kd = -1.0f,.a = 0.0f},
+    [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = kpo, .Ki  = (kpo /200), .Kd = 0.00f,.a = 0.0f},
     // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },
 };
+
 float Position_PID(PID_TypeDef *PID, float Target)
 {
     PID->Target = Target                                                                                                                                                                                                          ;
     PID->Error = PID->Target - PID->Current;
-
+		
+		PID->Error = (1 - PID->a) + PID->a * PID->Last_Error;
+	
     PID->I_Out += PID->Error;
     if (PID->I_Out
 			> PID->I_Max)

@@ -58,7 +58,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     // g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = -4.15f;
+    g_car.Prop.Mid_Angle = 0.8f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -105,13 +105,15 @@ void Car_Init(MPU9250 *mpu)
     g_car.PitchPID->I_Max = 0.0f; // 不需要积分
     g_car.PitchPID->Out_Max = PWM_ARR;
     g_car.PitchPID->pid_type = PID_TYPE_BALANCE_PITCH;
+    
     // 速度环
     g_car.SpeedPID->Kp = g_stored_pid_params[PID_TYPE_SPEED].Kp;
     g_car.SpeedPID->Ki = g_stored_pid_params[PID_TYPE_SPEED].Ki;
     g_car.SpeedPID->Kd = g_stored_pid_params[PID_TYPE_SPEED].Kd; // 不需要用到D
+    g_car.SpeedPID->a = g_stored_pid_params[PID_TYPE_SPEED].a;
     // g_car.SpeedPID->Kd = 0.01f;
-    g_car.SpeedPID->I_Max = 3000.0f;
-    g_car.SpeedPID->Out_Max = 30.0f;
+    g_car.SpeedPID->I_Max = 30.0f;
+    g_car.SpeedPID->Out_Max = 3000.0f;
     g_car.SpeedPID->Out = 0.0f;
     g_car.SpeedPID->Error = 0;
     g_car.SpeedPID->Last_Error = 0;
@@ -299,10 +301,10 @@ void Car_Get_Real_Value(void)
     // u1_printf("{Pitch: %.2f, Roll: %.2f, Yaw: %.2f\r\n}", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
     //   pitch roll yaw
     
-    u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
-              g_car.Prop.Pitch_Angle,
-              g_car.Prop.Roll_Angle,
-              g_car.Prop.Full_Yaw);
+    // u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
+    //           g_car.Prop.Pitch_Angle,
+    //           g_car.Prop.Roll_Angle,
+    //           g_car.Prop.Full_Yaw);
 
     // u1_printf(" %.2f,  %.2f, %.2f\r\n", g_car.Prop.Pitch_Angle, g_car.Prop.Roll_Angle, g_car.Prop.Full_Yaw);
 }
