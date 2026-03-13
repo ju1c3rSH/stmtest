@@ -339,9 +339,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F103xB,_ARMCLANG_</Define>
+              <Define>USE_HAL_DRIVER,STM32F103xB,_ARMCLANG_,EMPL</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../Core/Inc/Obj</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../Core/Inc/Obj;../DMP/mllite;../DMP/mpl;../DMP/driver/eMPL;../DMP/driver/include;../DMP/driver/stm32L;../DMP/eMPL-hal;../MDK-ARM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -389,6 +389,11 @@
               <FileName>startup_stm32f103xb.s</FileName>
               <FileType>2</FileType>
               <FilePath>startup_stm32f103xb.s</FilePath>
+            </File>
+            <File>
+              <FileName>libmpllib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\DMP\mpl\libmpllib.lib</FilePath>
             </File>
           </Files>
         </Group>
@@ -549,6 +554,46 @@
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\driver\eMPL\inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>softiic9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\softiic9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>softiic9250.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\softiic9250.h</FilePath>
+            </File>
+            <File>
+              <FileName>dmpKey.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\driver\eMPL\dmpKey.h</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\driver\eMPL\inv_mpu.h</FilePath>
+            </File>
+            <File>
+              <FileName>mpl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mllite\mpl.h</FilePath>
+            </File>
+            <File>
+              <FileName>results_holder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mllite\results_holder.h</FilePath>
             </File>
           </Files>
         </Group>

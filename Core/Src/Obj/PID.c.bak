@@ -1,9 +1,9 @@
 #include "PID.h"
 #include "main.h"
 
-#define  kpo 1.2f
+#define  kpo 1.0f
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-85.1f, .Ki = 0.0f, .Kd = -12.0f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-100.7f, .Ki = 0.0f, .Kd = -15.0f},
     [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300.0, .Ki = 0.0f, .Kd = -1.0f,.a = 0.0f},
     [PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = kpo, .Ki  = (kpo /200), .Kd = 0.00f,.a = 0.9f},
     // [PID_TYPE_DISTANCE]    = { .pid_type = PID_TYPE_DISTANCE,    .kp = 1.0f, .ki = 0.1f, .kd = 0.01f },

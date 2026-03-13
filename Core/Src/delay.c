@@ -23,3 +23,8 @@ void DWT_Delay_us(uint32_t us)
     /* Delay till end */
     while ((DWT->CYCCNT - clk_cycle_start) < us);
 }
+
+uint32_t DWT_Get_MS(void){
+    uint32_t ms = DWT->CYCCNT / (current_freq / 1000);
+    return ms;
+}

@@ -103,9 +103,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     if (car_instance != NULL)
     {
+      //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
       Get_Data_SubTask();
 			//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
       Normal_Balance_SubTask(car_instance);
+      //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
     }
   }
 }
@@ -147,7 +149,6 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
-
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
@@ -228,7 +229,7 @@ int main(void)
   //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
   //  StartUART1DMAReceive();
 
-  Mahony_Init(50.0f);
+  Mahony_Init(200.0f);
   // Test_SPI_Communication();
 
   // ATGM336H_Init(&g_gps_data);
@@ -258,10 +259,11 @@ int main(void)
       //         g_car.Prop.Pitch_Angle,
       //         g_car.Prop.Roll_Angle,
       //         g_car.Prop.Full_Yaw);
-      u1_printf("%.2f,%.2f,%.2f\r\n",
+      u1_printf("%.2f,%.2f,%.2f,%.2f\r\n",
               g_car.Prop.Pitch_Angle,
               g_car.Prop.Roll_Angle,
-              g_car.Prop.Full_Yaw);
+              g_car.Prop.Full_Yaw,
+              g_car.PitchPID->Out);
 
     //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     /*
@@ -662,7 +664,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
@@ -677,8 +679,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB12 PB13 PB15 PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15|GPIO_PIN_5;
+  /*Configure GPIO pins : PB12 PB13 PB14 PB15
+                           PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15
+                          |GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

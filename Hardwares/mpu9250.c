@@ -221,7 +221,7 @@ uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_por
 	mpu_w_reg(SMPLRT_DIV, (uint8_t)0x00);						 // SAMPLE_RATE= Internal_Sample_Rate / (1 + SMPLRT_DIV), Internal_Sample_Rate==8K
 	mpu_w_reg(GYRO_CONFIG, (uint8_t)MPU9250_Gyro_Range_500dps); // gyro full scale select
 	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_4G);	 // accel full scale select
-		mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_41);
+		mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_92);
 	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_41); 
 
 	/* init MAG */

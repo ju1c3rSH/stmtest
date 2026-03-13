@@ -1,5 +1,6 @@
 --cpu Cortex-M3
 "stmtest\startup_stm32f103xb.o"
+"..\DMP\mpl\libmpllib.lib"
 "stmtest\text_utils.o"
 "stmtest\delay.o"
 "stmtest\subtask.o"
@@ -26,6 +27,9 @@
 "stmtest\ascii16.o"
 "stmtest\mpu9250.o"
 "stmtest\motor.o"
+"stmtest\inv_mpu.o"
+"stmtest\inv_mpu_dmp_motion_driver.o"
+"stmtest\softiic9250.o"
 "stmtest\pid.o"
 "stmtest\car.o"
 --library_type=microlib --strict --scatter "stmTest\stmTest.sct"

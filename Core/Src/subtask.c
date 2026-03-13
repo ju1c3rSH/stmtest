@@ -14,10 +14,11 @@ void Get_Data_SubTask(void)
 
 void Normal_Balance_SubTask(Car_TypeDef *car)
 {
+    
     // u1_printf("Normal Balance SubTask Running at time: %lu ms\r\n", HAL_GetTick());
     Position_PID(car->SpeedPID, car->SetSpeed);
     // Angle_PID(car->PitchPID, car->Prop.Mid_Angle + car->SpeedPID->Out, (float)car->Prop.Gyro_Y);
-    Angle_PID(car->PitchPID,car -> Prop.Mid_Angle + car->SpeedPID->Out, (float)car->Prop.Gyro_Y);
+    Angle_PID(car->PitchPID,car -> Prop.Mid_Angle, (float)car->Prop.Gyro_Y);
     // Angle_PID(car->YawPID, car->SetYaw, car->Prop.Gyro_Z);
     float yaw_out = 0;
 

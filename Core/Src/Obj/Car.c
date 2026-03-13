@@ -221,7 +221,7 @@ void Car_Get_Real_Value(void)
     //MPU9250_ReadMag(&g_car.Device.mpu);
     
      static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
-    const float alpha = 0.2f; // 0.1~0.3
+    const float alpha = 0.20f; // 0.1~0.3
 
 
 
@@ -231,9 +231,9 @@ void Car_Get_Real_Value(void)
     acc_z_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[2] + (1 - alpha) * acc_z_filtered;
 
     float gx, gy, gz, ax, ay, az;
-    gx = (g_car.Device.mpu->mpu_data.Gyro_row[0] - g_car.Device.mpu->mpu_data.Gyro_Bias[0]) / 16.384f;
-    gy = (g_car.Device.mpu->mpu_data.Gyro_row[1] - g_car.Device.mpu->mpu_data.Gyro_Bias[1]) / 16.384f;
-    gz = (g_car.Device.mpu->mpu_data.Gyro_row[2] - g_car.Device.mpu->mpu_data.Gyro_Bias[2]) / 16.384f;
+    gx = (g_car.Device.mpu->mpu_data.Gyro_row[0] - g_car.Device.mpu->mpu_data.Gyro_Bias[0]);
+    gy = (g_car.Device.mpu->mpu_data.Gyro_row[1] - g_car.Device.mpu->mpu_data.Gyro_Bias[1]);
+    gz = (g_car.Device.mpu->mpu_data.Gyro_row[2] - g_car.Device.mpu->mpu_data.Gyro_Bias[2]);
     ax = g_car.Device.mpu->mpu_data.Accel[0];
     ay = g_car.Device.mpu->mpu_data.Accel[1];
     az = g_car.Device.mpu->mpu_data.Accel[2];
