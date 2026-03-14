@@ -1,0 +1,11 @@
+stmtest\start_manager.o: ..\DMP\mllite\start_manager.c
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\start_manager.o: ../DMP/driver/include/log.h
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
+stmtest\start_manager.o: ..\DMP\mllite\start_manager.h
+stmtest\start_manager.o: ../DMP/driver/include/mltypes.h
+stmtest\start_manager.o: ../DMP/driver/include/stdint_invensense.h
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
+stmtest\start_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h

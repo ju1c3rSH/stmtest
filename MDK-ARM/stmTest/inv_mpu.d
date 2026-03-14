@@ -1,41 +1,73 @@
-stmtest/inv_mpu.o: ..\DMP\driver\eMPL\inv_mpu.c \
-  ..\DMP\driver\eMPL\inv_mpu.h ..\Core\Inc\main.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h \
-  ..\Core\Inc\stm32f1xx_hal_conf.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_rcc.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_def.h \
-  ..\Drivers\CMSIS\Device\ST\STM32F1xx\Include\stm32f1xx.h \
-  ..\Drivers\CMSIS\Device\ST\STM32F1xx\Include\stm32f103xb.h \
-  ..\Drivers\CMSIS\Include\core_cm3.h \
-  ..\Drivers\CMSIS\Device\ST\STM32F1xx\Include\system_stm32f1xx.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_rcc_ex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_gpio.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_gpio_ex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_exti.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_dma.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_dma_ex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_cortex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash_ex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_spi.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_tim.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_tim_ex.h \
-  ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h \
-  ..\DMP\mllite\mpl.h ..\DMP\driver\include\mltypes.h \
-  ..\DMP\driver\include\stdint_invensense.h ..\DMP\mllite\invensense.h \
-  ..\DMP\mllite\data_builder.h ..\DMP\mllite\hal_outputs.h \
-  ..\DMP\mllite\message_layer.h ..\DMP\driver\include\mlmath.h \
-  ..\DMP\mllite\ml_math_func.h ..\DMP\mllite\results_holder.h \
-  ..\DMP\mllite\start_manager.h ..\DMP\mllite\storage_manager.h \
-  ..\DMP\driver\include\log.h ..\DMP\driver\include\mlinclude.h \
-  ..\DMP\mpl\invensense_adv.h ..\DMP\mpl\accel_auto_cal.h \
-  ..\DMP\mpl\compass_vec_cal.h ..\DMP\mpl\fast_no_motion.h \
-  ..\DMP\mpl\fusion_9axis.h ..\DMP\mpl\gyro_tc.h \
-  ..\DMP\mpl\heading_from_gyro.h ..\DMP\mpl\mag_disturb.h \
-  ..\DMP\mpl\motion_no_motion.h ..\DMP\mpl\no_gyro_fusion.h \
-  ..\DMP\mpl\quaternion_supervisor.h ..\DMP\eMPL-hal\eMPL_outputs.h \
-  ..\DMP\driver\include\mpu.h ..\DMP\driver\stm32L\packet.h \
-  ..\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.h ..\Hardwares\mpu9250.h \
-  ..\MDK-ARM\softiic9250.h ..\Core\Inc\delay.h
+stmtest\inv_mpu.o: ..\DMP\driver\eMPL\inv_mpu.c
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+stmtest\inv_mpu.o: ..\DMP\driver\eMPL\inv_mpu.h
+stmtest\inv_mpu.o: ../Core/Inc/main.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
+stmtest\inv_mpu.o: ../Core/Inc/stm32f1xx_hal_conf.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Include/core_cm3.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Include/cmsis_version.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+stmtest\inv_mpu.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio_ex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_exti.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
+stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+stmtest\inv_mpu.o: ../DMP/mllite/mpl.h
+stmtest\inv_mpu.o: ../DMP/driver/include/mltypes.h
+stmtest\inv_mpu.o: ../DMP/driver/include/stdint_invensense.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h
+stmtest\inv_mpu.o: ../DMP/mllite/invensense.h
+stmtest\inv_mpu.o: ../DMP/mllite/data_builder.h
+stmtest\inv_mpu.o: ../DMP/mllite/hal_outputs.h
+stmtest\inv_mpu.o: ../DMP/mllite/message_layer.h
+stmtest\inv_mpu.o: ../DMP/driver/include/mlmath.h
+stmtest\inv_mpu.o: ../DMP/mllite/ml_math_func.h
+stmtest\inv_mpu.o: ../DMP/mllite/mpl.h
+stmtest\inv_mpu.o: ../DMP/mllite/results_holder.h
+stmtest\inv_mpu.o: ../DMP/mllite/start_manager.h
+stmtest\inv_mpu.o: ../DMP/mllite/storage_manager.h
+stmtest\inv_mpu.o: ../DMP/driver/include/log.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
+stmtest\inv_mpu.o: ../DMP/driver/include/mlinclude.h
+stmtest\inv_mpu.o: ../DMP/mpl/invensense_adv.h
+stmtest\inv_mpu.o: ../DMP/mpl/accel_auto_cal.h
+stmtest\inv_mpu.o: ../DMP/mpl/compass_vec_cal.h
+stmtest\inv_mpu.o: ../DMP/mpl/fast_no_motion.h
+stmtest\inv_mpu.o: ../DMP/mpl/fusion_9axis.h
+stmtest\inv_mpu.o: ../DMP/mpl/gyro_tc.h
+stmtest\inv_mpu.o: ../DMP/mpl/heading_from_gyro.h
+stmtest\inv_mpu.o: ../DMP/mpl/mag_disturb.h
+stmtest\inv_mpu.o: ../DMP/mpl/motion_no_motion.h
+stmtest\inv_mpu.o: ../DMP/mpl/no_gyro_fusion.h
+stmtest\inv_mpu.o: ../DMP/mpl/quaternion_supervisor.h
+stmtest\inv_mpu.o: ../DMP/mllite/data_builder.h
+stmtest\inv_mpu.o: ../DMP/eMPL-hal/eMPL_outputs.h
+stmtest\inv_mpu.o: ../DMP/driver/include/mpu.h
+stmtest\inv_mpu.o: ../DMP/driver/stm32L/packet.h
+stmtest\inv_mpu.o: ..\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.h
+stmtest\inv_mpu.o: ../Hardwares/mpu9250.h
+stmtest\inv_mpu.o: ../MDK-ARM/softiic9250.h
+stmtest\inv_mpu.o: ../Core/Inc/delay.h

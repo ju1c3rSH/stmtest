@@ -1,0 +1,14 @@
+stmtest\empl_outputs.o: ..\DMP\eMPL-hal\eMPL_outputs.c
+stmtest\empl_outputs.o: ..\DMP\eMPL-hal\eMPL_outputs.h
+stmtest\empl_outputs.o: ../DMP/driver/include/mltypes.h
+stmtest\empl_outputs.o: ../DMP/driver/include/stdint_invensense.h
+stmtest\empl_outputs.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+stmtest\empl_outputs.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\empl_outputs.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
+stmtest\empl_outputs.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h
+stmtest\empl_outputs.o: ../DMP/mllite/ml_math_func.h
+stmtest\empl_outputs.o: ../DMP/driver/include/mlmath.h
+stmtest\empl_outputs.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+stmtest\empl_outputs.o: ../DMP/mllite/start_manager.h
+stmtest\empl_outputs.o: ../DMP/mllite/data_builder.h
+stmtest\empl_outputs.o: ../DMP/mllite/results_holder.h

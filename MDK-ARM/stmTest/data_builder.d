@@ -1,0 +1,17 @@
+stmtest\data_builder.o: ..\DMP\mllite\data_builder.c
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\data_builder.o: ..\DMP\mllite\ml_math_func.h
+stmtest\data_builder.o: ../DMP/driver/include/mltypes.h
+stmtest\data_builder.o: ../DMP/driver/include/stdint_invensense.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h
+stmtest\data_builder.o: ..\DMP\mllite\data_builder.h
+stmtest\data_builder.o: ../DMP/driver/include/mlmath.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+stmtest\data_builder.o: ..\DMP\mllite\storage_manager.h
+stmtest\data_builder.o: ..\DMP\mllite\message_layer.h
+stmtest\data_builder.o: ..\DMP\mllite\results_holder.h
+stmtest\data_builder.o: ../DMP/driver/include/log.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\data_builder.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h

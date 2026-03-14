@@ -9,12 +9,12 @@ License Information: Episode Episode, Episode, LIC=GMZI6-DKHEA-CXKU6-DAGH0-14VUP
  
 Tool Versions:
 Toolchain:       MDK-ARM Plus  Version: 5.43.0.0
-Toolchain Path:  G:\Keil5\ARM\ARMCLANG\Bin
-C Compiler:      ArmClang.exe V6.24
-Assembler:       Armasm.exe V6.24
-Linker/Locator:  ArmLink.exe V6.24
-Library Manager: ArmAr.exe V6.24
-Hex Converter:   FromElf.exe V6.24
+Toolchain Path:  G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
 CPU DLL:         SARMCM3.DLL V5.43.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
 Target DLL:      CMSIS_AGDI.dll V1.33.24.0
@@ -22,150 +22,89 @@ Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
 F:\stmtest\MDK-ARM\stmTest.uvprojx
-Project File Date:  03/13/2026
+Project File Date:  03/14/2026
 
 <h2>Output:</h2>
-*** Using Compiler 'V6.24', folder: 'G:\Keil5\ARM\ARMCLANG\Bin'
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin'
 Rebuild target 'stmTest'
-compiling delay.c...
-compiling text_utils.c...
-compiling stm32f1xx_hal_msp.c...
 assembling startup_stm32f103xb.s...
-compiling stm32f1xx_hal_flash.c...
 compiling MahonyAHRS.c...
-compiling stm32f1xx_hal_pwr.c...
-compiling stm32f1xx_hal_rcc_ex.c...
 compiling ascii16.c...
-compiling stm32f1xx_hal_gpio.c...
-compiling main.c...
-compiling stm32f1xx_it.c...
-compiling stm32f1xx_hal_gpio_ex.c...
+compiling text_utils.c...
 compiling subtask.c...
-compiling system_stm32f1xx.c...
+..\Core\Src\subtask.c(23): warning:  #177-D: variable "yaw_out"  was declared but never referenced
+      float yaw_out = 0;
+..\Core\Src\subtask.c: 1 warning, 0 errors
+compiling stm32f1xx_it.c...
+../Core/Src/stm32f1xx_it.c(263): warning:  #550-D: variable "rx_data"  was set but never used
+      UART1_DMA_Received_Data_t rx_data;
+../Core/Src/stm32f1xx_it.c: 1 warning, 0 errors
+compiling delay.c...
 compiling stm32f1xx_hal.c...
-compiling stm32f1xx_hal_tim_ex.c...
-compiling stm32f1xx_hal_exti.c...
+compiling stm32f1xx_hal_flash.c...
+compiling stm32f1xx_hal_gpio_ex.c...
 compiling stm32f1xx_hal_flash_ex.c...
-compiling stm32f1xx_hal_dma.c...
 compiling stm32f1xx_hal_cortex.c...
-compiling stm32f1xx_hal_rcc.c...
+compiling stm32f1xx_hal_exti.c...
+compiling stm32f1xx_hal_msp.c...
+compiling stm32f1xx_hal_gpio.c...
+compiling system_stm32f1xx.c...
+compiling stm32f1xx_hal_rcc_ex.c...
+compiling main.c...
+../Core/Src/main.c(254): warning:  #177-D: variable "CONTROL_PERIOD_MS"  was declared but never referenced
+    const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
+../Core/Src/main.c: 1 warning, 0 errors
+compiling stm32f1xx_hal_pwr.c...
 compiling stm32f1xx_hal_spi.c...
-compiling motor.c...
-compiling stm32f1xx_hal_uart.c...
+compiling mpl.c...
+compiling stm32f1xx_hal_dma.c...
+compiling stm32f1xx_hal_rcc.c...
+compiling stm32f1xx_hal_tim_ex.c...
 compiling mpu9250.c...
-compiling softiic9250.c...
-compiling PID.c...
-compiling inv_mpu_dmp_motion_driver.c...
-compiling Car.c...
+..\Hardwares\mpu9250.c(278): warning:  #177-D: variable "gyro_scale"  was declared but never referenced
+  	const float gyro_scale = 65.5f; // ±500dps to °/s.
+..\Hardwares\mpu9250.c(414): warning:  #1-D: last line of file ends without a newline
+  }
+..\Hardwares\mpu9250.c: 2 warnings, 0 errors
+compiling stm32f1xx_hal_uart.c...
+compiling eMPL_outputs.c...
+compiling start_manager.c...
+compiling storage_manager.c...
+compiling results_holder.c...
+compiling hal_outputs.c...
+compiling data_builder.c...
 compiling stm32f1xx_hal_tim.c...
-../DMP/driver/eMPL/inv_mpu.c(28): warning: In file included from...
-../DMP/mpl\invensense_adv.h(21): warning: In file included from...
-../DMP/mpl\gyro_tc.h(14): warning: '_GYRO_TC_H' is used as a header guard here, followed by #define of a different macro [-Wheader-guard]
-   14 | #ifndef _GYRO_TC_H
-      |         ^~~~~~~~~~
-../DMP/mpl\gyro_tc.h(15): note: '_GYRO_TC_H_' is defined here; did you mean '_GYRO_TC_H'?
-   15 | #define _GYRO_TC_H_
-      |         ^~~~~~~~~~~
-      |         _GYRO_TC_H
-../DMP/driver/eMPL/inv_mpu.c(2350): warning: using floating point absolute value function 'fabsf' when argument is of integer type [-Wabsolute-value]
- 2350 |                         if(fabs(bias_regular[i]) > accel_offset_max) {
-      |                            ^
-../DMP/driver/eMPL/inv_mpu.c(66): note: expanded from macro 'fabs'
-   66 | #define fabs        fabsf
-      |                     ^
-../DMP/driver/eMPL/inv_mpu.c(2350): note: use function 'labs' instead
- 2350 |                         if(fabs(bias_regular[i]) > accel_offset_max) {
-      |                            ^~~~
-      |                            labs
-../DMP/driver/eMPL/inv_mpu.c(66): note: expanded from macro 'fabs'
-   66 | #define fabs        fabsf
-      |                     ^
-../DMP/driver/eMPL/inv_mpu.c(2444): warning: using floating point absolute value function 'fabsf' when argument is of integer type [-Wabsolute-value]
- 2444 |                         if(fabs(bias_regular[i]) > gyro_offset_max) {
-      |                            ^
-../DMP/driver/eMPL/inv_mpu.c(66): note: expanded from macro 'fabs'
-   66 | #define fabs        fabsf
-      |                     ^
-../DMP/driver/eMPL/inv_mpu.c(2444): note: use function 'labs' instead
- 2444 |                         if(fabs(bias_regular[i]) > gyro_offset_max) {
-      |                            ^~~~
-      |                            labs
-../DMP/driver/eMPL/inv_mpu.c(66): note: expanded from macro 'fabs'
-   66 | #define fabs        fabsf
-      |                     ^
-3 warnings generated.
+compiling message_layer.c...
+compiling motor.c...
+compiling mlmath.c...
+compiling inv_mpu_dmp_motion_driver.c...
+compiling ml_math_func.c...
+compiling softiic9250.c...
 compiling inv_mpu.c...
+compiling PID.c...
+..\Core\Src\Obj\PID.c(103): warning:  #1-D: last line of file ends without a newline
+  }
+..\Core\Src\Obj\PID.c: 1 warning, 0 errors
+compiling Car.c...
+..\Core\Src\Obj\Car.c(306): warning:  #1-D: last line of file ends without a newline
+  }
+..\Core\Src\Obj\Car.c(194): warning:  #177-D: variable "Status"  was declared but never referenced
+      static char Status;
+..\Core\Src\Obj\Car.c(195): warning:  #177-D: variable "Temp"  was declared but never referenced
+      float Temp[6];
+..\Core\Src\Obj\Car.c(233): warning:  #550-D: variable "ax"  was set but never used
+      float gx, gy, gz, ax, ay, az;
+..\Core\Src\Obj\Car.c(233): warning:  #550-D: variable "ay"  was set but never used
+      float gx, gy, gz, ax, ay, az;
+..\Core\Src\Obj\Car.c(233): warning:  #550-D: variable "az"  was set but never used
+      float gx, gy, gz, ax, ay, az;
+..\Core\Src\Obj\Car.c: 6 warnings, 0 errors
 linking...
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_init_mpl (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_enable_eMPL_outputs (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_start_mpl (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_gyro_sample_rate (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_accel_sample_rate (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_sample_rate (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_orientation_matrix_to_scalar (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_gyro_orientation_and_scale (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_accel_orientation_and_scale (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_orientation_and_scale (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_build_gyro (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_build_temp (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_build_accel (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_build_compass (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_execute_on_data (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_sensor_type_euler (referred from inv_mpu.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_convert_to_body_with_scale (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_6axis_quaternion (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_compass_bias (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_compass_state (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gyro_sum_of_sqr (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_large_mag_field (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_got_compass_bias (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_invert (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_mult (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_register_data_cb (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_register_mpl_start_notification (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_bias (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_bias_error (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_bias_found (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_state (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_unregister_data_cb (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_unregister_mpl_start_notification (referred from compass_vec_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q30_mult (referred from fast_no_motion.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_gyro_bias (referred from fast_no_motion.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_message (referred from fast_no_motion.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_motion_state (referred from fast_no_motion.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_compass_angle (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gravity (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_multf (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_normalizef (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_quaternion_to_rotation (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_correction (referred from fusion_9axis.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gyro_bias (referred from gyro_tc.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gyro_bias_tc_set (referred from gyro_tc.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_motion_state (referred from gyro_tc.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_register_load_store (referred from gyro_tc.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_acc_state (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_compass_correction (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gyro (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_gyro_on (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_local_field (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_compass_disturbance (referred from mag_disturb.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_linear_accel (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_add (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_addf (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_invertf (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_norm4 (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_q_rotate (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_store_gaming_quaternion (referred from quaternion_supervisor.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_linear_accel_float (referred from accel_auto_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_quaternion (referred from accel_auto_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_get_sensor_type_gravity (referred from accel_auto_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_accel_accuracy (referred from accel_auto_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_accel_bias_found (referred from accel_auto_cal.o).
-stmTest\stmTest.axf: Error: L6218E: Undefined symbol inv_set_accel_bias_mask (referred from accel_auto_cal.o).
+stmTest\stmTest.axf: Error: L6218E: Undefined symbol _MLPrintLog (referred from mpl.o).
 Not enough information to list image symbols.
 Not enough information to list load addresses in the image map.
-Finished: 2 information, 0 warning and 66 error messages.
-"stmTest\stmTest.axf" - 66 Error(s), 3 Warning(s).
+Finished: 2 information, 0 warning and 1 error messages.
+"stmTest\stmTest.axf" - 1 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -190,7 +129,7 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE@6.1.1
       Include file:  CMSIS/Core/Include/tz_context.h
 Target not created.
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

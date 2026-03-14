@@ -1,0 +1,14 @@
+stmtest\storage_manager.o: ..\DMP\mllite\storage_manager.c
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\storage_manager.o: ..\DMP\mllite\storage_manager.h
+stmtest\storage_manager.o: ../DMP/driver/include/mltypes.h
+stmtest\storage_manager.o: ../DMP/driver/include/stdint_invensense.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h
+stmtest\storage_manager.o: ../DMP/driver/include/log.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
+stmtest\storage_manager.o: ..\DMP\mllite\ml_math_func.h
+stmtest\storage_manager.o: ../DMP/driver/include/mlmath.h
+stmtest\storage_manager.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
