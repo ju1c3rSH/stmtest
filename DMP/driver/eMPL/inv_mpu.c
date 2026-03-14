@@ -23,6 +23,9 @@
 #include <string.h>
 #include <math.h>
 #include "inv_mpu.h"
+#include "log.h"
+#include "packet.h"
+#ifndef DMP_ONLY
 #include "mpl.h"
 #include "invensense.h"
 #include "invensense_adv.h"
@@ -30,8 +33,7 @@
 #include "eMPL_outputs.h"
 #include "mltypes.h"
 #include "mpu.h"
-#include "log.h"
-#include "packet.h"
+#endif
 #include "inv_mpu_dmp_motion_driver.h"
 #include "mpu9250.h"
 #include "softiic9250.h"
@@ -39,6 +41,7 @@
 #define STM32_MPU9250  //开启自定义的函数宏定义
 #define MPU9250
 #define MOTION_DRIVER_TARGET_MSP430
+#define DMP_ONLY       // 仅使用DMP，不使用MPL
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
  *      unsigned char length, unsigned char const *data)
@@ -3405,6 +3408,17 @@ unsigned short inv_row_2_scale(const signed char *row)
         b = 7;      // error
     return b;
 }
+
+// 添加 inv_orientation_matrix_to_scalar 函数 (来自 MPL)
+unsigned short inv_orientation_matrix_to_scalar(const signed char *mtx)
+{
+    unsigned short scalar;
+    scalar = inv_row_2_scale(mtx);
+    scalar |= inv_row_2_scale(mtx + 3) << 3;
+    scalar |= inv_row_2_scale(mtx + 6) << 6;
+    return scalar;
+}
+
 //mpu6050,dmp��ʼ��
 //����ֵ:0,����
 //    ����,ʧ��
@@ -3418,6 +3432,7 @@ u8 mpu_dmp_init(void)
     
 	if(mpu_init(&int_param)==0)	//��ʼ��MPU9250
 	{	 
+#ifndef DMP_ONLY
         res=inv_init_mpl();     //��ʼ��MPL
         if(res)return 1;
         inv_enable_quaternion();
@@ -3429,6 +3444,7 @@ u8 mpu_dmp_init(void)
         inv_enable_eMPL_outputs();
         res=inv_start_mpl();    //����MPL
         if(res)return 1;
+#endif
 		res=mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL|INV_XYZ_COMPASS);//��������Ҫ�Ĵ�����
 		if(res)return 2; 
 		res=mpu_configure_fifo(INV_XYZ_GYRO | INV_XYZ_ACCEL);   //����FIFO
@@ -3441,6 +3457,7 @@ u8 mpu_dmp_init(void)
         mpu_get_gyro_fsr(&gyro_fsr);
         mpu_get_accel_fsr(&accel_fsr);
         mpu_get_compass_fsr(&compass_fsr);
+#ifndef DMP_ONLY
         inv_set_gyro_sample_rate(1000000L/gyro_rate);
         inv_set_accel_sample_rate(1000000L/gyro_rate);
         inv_set_compass_sample_rate(COMPASS_READ_MS*1000L);
@@ -3450,6 +3467,7 @@ u8 mpu_dmp_init(void)
             inv_orientation_matrix_to_scalar(gyro_orientation),(long)accel_fsr<<15);
         inv_set_compass_orientation_and_scale(
             inv_orientation_matrix_to_scalar(comp_orientation),(long)compass_fsr<<15);
+#endif
             
             
 		res=dmp_load_motion_driver_firmware();		             //����dmp�̼�
@@ -3507,6 +3525,7 @@ u8 mpu_dmp_get_data(float *pitch,float *roll,float *yaw)
 	return 0;
 }
 
+#ifndef DMP_ONLY
 //�õ�mpl�����������(ע��,��������Ҫ�Ƚ϶��ջ,�ֲ������е��)
 //pitch:������ ����:0.1��   ��Χ:-90.0�� <---> +90.0��
 //roll:�����  ����:0.1��   ��Χ:-180.0��<---> +180.0��
@@ -3554,4 +3573,5 @@ u8 mpu_mpl_get_data(float *pitch,float *roll,float *yaw)
     *yaw   = -data[2] / q16;
 	return 0;
 }
+#endif
 

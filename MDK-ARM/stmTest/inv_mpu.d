@@ -34,11 +34,14 @@ stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\inv_mpu.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stmtest\inv_mpu.o: ../DMP/mllite/mpl.h
+stmtest\inv_mpu.o: ../DMP/driver/include/log.h
+stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
+stmtest\inv_mpu.o: ../DMP/driver/stm32L/packet.h
 stmtest\inv_mpu.o: ../DMP/driver/include/mltypes.h
 stmtest\inv_mpu.o: ../DMP/driver/include/stdint_invensense.h
 stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\errno.h
 stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\limits.h
+stmtest\inv_mpu.o: ../DMP/mllite/mpl.h
 stmtest\inv_mpu.o: ../DMP/mllite/invensense.h
 stmtest\inv_mpu.o: ../DMP/mllite/data_builder.h
 stmtest\inv_mpu.o: ../DMP/mllite/hal_outputs.h
@@ -49,8 +52,6 @@ stmtest\inv_mpu.o: ../DMP/mllite/mpl.h
 stmtest\inv_mpu.o: ../DMP/mllite/results_holder.h
 stmtest\inv_mpu.o: ../DMP/mllite/start_manager.h
 stmtest\inv_mpu.o: ../DMP/mllite/storage_manager.h
-stmtest\inv_mpu.o: ../DMP/driver/include/log.h
-stmtest\inv_mpu.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
 stmtest\inv_mpu.o: ../DMP/driver/include/mlinclude.h
 stmtest\inv_mpu.o: ../DMP/mpl/invensense_adv.h
 stmtest\inv_mpu.o: ../DMP/mpl/accel_auto_cal.h
@@ -66,7 +67,6 @@ stmtest\inv_mpu.o: ../DMP/mpl/quaternion_supervisor.h
 stmtest\inv_mpu.o: ../DMP/mllite/data_builder.h
 stmtest\inv_mpu.o: ../DMP/eMPL-hal/eMPL_outputs.h
 stmtest\inv_mpu.o: ../DMP/driver/include/mpu.h
-stmtest\inv_mpu.o: ../DMP/driver/stm32L/packet.h
 stmtest\inv_mpu.o: ..\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.h
 stmtest\inv_mpu.o: ../Hardwares/mpu9250.h
 stmtest\inv_mpu.o: ../MDK-ARM/softiic9250.h
