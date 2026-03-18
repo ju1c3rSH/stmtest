@@ -11,7 +11,7 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pArmCC>5060960::V5.06 update 7 (build 960)::.\ARM_Compiler_5.06u7</pArmCC>
-      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARM_Compiler_5.06u7</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -82,7 +82,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
+            <RunUserProg2>0</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB,EMPL</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../Core/Inc/Obj;../DMP/mllite;../DMP/mpl;../DMP/driver/eMPL;../DMP/driver/include;../DMP/driver/stm32L;../DMP/eMPL-hal;../MDK-ARM</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;..\DMP\eMPL;..\Core\Inc\Obj</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -390,11 +390,6 @@
               <FileType>2</FileType>
               <FilePath>startup_stm32f103xb.s</FilePath>
             </File>
-            <File>
-              <FileName>libmpllib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\DMP\mpl\libmpllib.lib</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -421,11 +416,6 @@
               <FilePath>..\Core\Src\subtask.c</FilePath>
             </File>
             <File>
-              <FileName>MahonyAHRS.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\MahonyAHRS.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
@@ -449,11 +439,6 @@
               <FileName>stm32f1xx_hal_gpio_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c</FilePath>
             </File>
             <File>
               <FileName>stm32f1xx_hal.c</FileName>
@@ -556,16 +541,6 @@
               <FilePath>..\Hardwares\motor.c</FilePath>
             </File>
             <File>
-              <FileName>inv_mpu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\driver\eMPL\inv_mpu.c</FilePath>
-            </File>
-            <File>
-              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
-            </File>
-            <File>
               <FileName>softiic9250.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\softiic9250.c</FilePath>
@@ -576,79 +551,14 @@
               <FilePath>.\softiic9250.h</FilePath>
             </File>
             <File>
-              <FileName>dmpKey.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\DMP\driver\eMPL\dmpKey.h</FilePath>
-            </File>
-            <File>
-              <FileName>inv_mpu.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\DMP\driver\eMPL\inv_mpu.h</FilePath>
-            </File>
-            <File>
-              <FileName>mpl.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\DMP\mllite\mpl.h</FilePath>
-            </File>
-            <File>
-              <FileName>results_holder.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\DMP\mllite\results_holder.h</FilePath>
-            </File>
-            <File>
-              <FileName>eMPL_outputs.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\DMP\eMPL-hal\eMPL_outputs.h</FilePath>
-            </File>
-            <File>
-              <FileName>mpl.c</FileName>
+              <FileName>inv_mpu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\mpl.c</FilePath>
+              <FilePath>..\DMP\eMPL\inv_mpu.c</FilePath>
             </File>
             <File>
-              <FileName>eMPL_outputs.c</FileName>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\DMP\eMPL-hal\eMPL_outputs.c</FilePath>
-            </File>
-            <File>
-              <FileName>data_builder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\data_builder.c</FilePath>
-            </File>
-            <File>
-              <FileName>results_holder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\results_holder.c</FilePath>
-            </File>
-            <File>
-              <FileName>start_manager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\start_manager.c</FilePath>
-            </File>
-            <File>
-              <FileName>storage_manager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\storage_manager.c</FilePath>
-            </File>
-            <File>
-              <FileName>hal_outputs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\hal_outputs.c</FilePath>
-            </File>
-            <File>
-              <FileName>message_layer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\message_layer.c</FilePath>
-            </File>
-            <File>
-              <FileName>ml_math_func.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\ml_math_func.c</FilePath>
-            </File>
-            <File>
-              <FileName>mlmath.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DMP\mllite\mlmath.c</FilePath>
+              <FilePath>..\DMP\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
             </File>
           </Files>
         </Group>

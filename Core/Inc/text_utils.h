@@ -9,7 +9,7 @@ extern "C"{
 #include "stm32f1xx_hal.h"
 
 extern UART_HandleTypeDef huart1; 
-extern SPI_HandleTypeDef hspi1;
+
 
 void Log_Print(const char *message, uint16_t len);
 

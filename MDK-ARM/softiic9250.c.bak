@@ -7,7 +7,7 @@
   */
 
 #include "softiic9250.h"
-
+#include "delay.h"
 /**
   * @brief  软件IIC GPIO初始化
   * @param  无
@@ -41,9 +41,9 @@ void Soft_I2C_Start(void)
 {
     I2C_SDA_HIGH();   // 确保SDA为高
     I2C_SCL_HIGH();   // 确保SCL为高
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
     I2C_SDA_LOW();    // SDA拉低，产生起始信号
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
     I2C_SCL_LOW();    // 拉低SCL，准备传输数据
 }
 
@@ -56,9 +56,9 @@ void Soft_I2C_Stop(void)
 {
     I2C_SDA_LOW();    // 确保SDA为低
     I2C_SCL_HIGH();   // SCL先高
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
     I2C_SDA_HIGH();   // SDA上升沿，产生停止信号
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
 }
 
 /**
@@ -72,9 +72,9 @@ uint8_t Soft_I2C_WaitAck(void)
 
     /* 释放SDA线，由从机控制 */
     I2C_SDA_HIGH();
-    i2c_delay_us(2);
+    DWT_Delay_us(2);
     I2C_SCL_HIGH();   // 第9个时钟脉冲，从机拉低SDA表示应答
-    i22c_delay_us(2);
+    DWT_Delay_us(2);
 
     /* 等待SDA被从机拉低（应答），并增加超时处理 */
     while (I2C_SDA_READ())
@@ -99,9 +99,9 @@ uint8_t Soft_I2C_WaitAck(void)
 void Soft_I2C_Ack(void)
 {
     I2C_SDA_LOW();   // 拉低SDA表示应答
-    i2c_delay_us(2);
+    DWT_Delay_us(2);
     I2C_SCL_HIGH();  // 产生时钟脉冲
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
     I2C_SCL_LOW();   // 拉低SCL，结束应答
     I2C_SDA_HIGH();  // 释放SDA
 }
@@ -114,9 +114,9 @@ void Soft_I2C_Ack(void)
 void Soft_I2C_NAck(void)
 {
     I2C_SDA_HIGH();  // 拉高SDA表示非应答
-    i2c_delay_us(2);
+    DWT_Delay_us(2);
     I2C_SCL_HIGH();  // 产生时钟脉冲
-    i2c_delay_us(5);
+    DWT_Delay_us(5);
     I2C_SCL_LOW();   // 拉低SCL，结束非应答
 }
 
@@ -133,7 +133,7 @@ void Soft_I2C_SendByte(uint8_t data)
     {
         /* 先拉低SCL，准备设置数据 */
         I2C_SCL_LOW();
-        i2c_delay_us(2);
+        DWT_Delay_us(2);
 
         /* 根据数据位设置SDA电平（从高位开始传输） */
         if (data & 0x80)
@@ -141,10 +141,10 @@ void Soft_I2C_SendByte(uint8_t data)
         else
             I2C_SDA_LOW();
 
-        i2c_delay_us(2);
+        DWT_Delay_us(2);
         /* 拉高SCL，从机在上升沿读取数据 */
         I2C_SCL_HIGH();
-        i2c_delay_us(5);
+        DWT_Delay_us(5);
 
         data <<= 1;  // 左移一位，准备下一位
     }
@@ -170,14 +170,14 @@ uint8_t Soft_I2C_ReadByte(uint8_t ack)
     {
         data <<= 1;      // 左移一位，为接收新位做准备
         I2C_SCL_HIGH();  // SCL高电平，从机输出数据
-        i2c_delay_us(2);
+        DWT_Delay_us(2);
 
         /* 读取SDA电平并存入数据 */
         if (I2C_SDA_READ())
             data |= 0x01;
 
         I2C_SCL_LOW();   // 拉低SCL，从机准备下一位
-        i2c_delay_us(2);
+        DWT_Delay_us(2);
     }
 
     /* 根据参数决定发送应答还是非应答 */
@@ -187,4 +187,47 @@ uint8_t Soft_I2C_ReadByte(uint8_t ack)
         Soft_I2C_NAck();  // 发送非应答，结束读取
 
     return data;
+}
+
+int MPU6050_Write(uint8_t addr, uint8_t reg, uint8_t len, uint8_t *data) //向指定地址写len个字节,用于dmp
+{
+	int i;
+    Soft_I2C_Start();
+    Soft_I2C_SendByte(addr << 1);
+    Soft_I2C_WaitAck();
+    Soft_I2C_SendByte(reg);
+    Soft_I2C_WaitAck();
+	for (i = 0; i < len; ++)i 
+	{
+        Soft_I2C_SendByte(data[i]);
+        Soft_I2C_WaitAck();
+    }
+    Soft_I2C_Stop();
+	return 0;
+}
+
+int MPU6050_Read(uint8_t addr, uint8_t reg, uint8_t len, uint8_t *buf)// 向指定从机指定地址读len个字节，用于dmp
+{
+    Soft_I2C_Start();
+    Soft_I2C_SendByte(addr << 1);
+    Soft_I2C_WaitAck();
+    Soft_I2C_SendByte(reg);
+    Soft_I2C_WaitAck();
+    Soft_I2C_Start();
+    Soft_I2C_SendByte((addr << 1)+1);
+    Soft_I2C_WaitAck();
+    while (len) {
+        if (len == 1)
+		{
+            *buf = Soft_I2C_ReadByte(1);
+		}
+        else
+		{
+            *buf = Soft_I2C_ReadByte(0);
+		}
+        buf++;
+        len--;
+    }
+	Soft_I2C_Stop();
+	return 0;
 }

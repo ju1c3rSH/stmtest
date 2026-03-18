@@ -3,6 +3,7 @@
 #include "math.h"
 #include <stdbool.h>
 #include "MahonyAHRS.h"
+#include "inv_mpu.h"
 Car_TypeDef g_car;
 #define CONTROL_DT (1.0f / 300.0f)
 #define PWM_ARR 3599
@@ -216,37 +217,38 @@ void Car_Get_Real_Value(void)
 
     // 9250对象，x是[0]，y是[1]，z是[2]
 
-    MPU9250_ReadAccel(g_car.Device.mpu);
-    MPU9250_ReadGyro(g_car.Device.mpu);
-    //MPU9250_ReadMag(&g_car.Device.mpu);
     
-     static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
-    const float alpha = 0.20f; // 0.1~0.3
-
-
-
-
-    acc_x_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[0] + (1 - alpha) * acc_x_filtered;
-    acc_y_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[1] + (1 - alpha) * acc_y_filtered;
-    acc_z_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[2] + (1 - alpha) * acc_z_filtered;
-
-    float gx, gy, gz, ax, ay, az;
-    gx = (g_car.Device.mpu->mpu_data.Gyro_row[0] - g_car.Device.mpu->mpu_data.Gyro_Bias[0]);
-    gy = (g_car.Device.mpu->mpu_data.Gyro_row[1] - g_car.Device.mpu->mpu_data.Gyro_Bias[1]);
-    gz = (g_car.Device.mpu->mpu_data.Gyro_row[2] - g_car.Device.mpu->mpu_data.Gyro_Bias[2]);
-    ax = g_car.Device.mpu->mpu_data.Accel[0];
-    ay = g_car.Device.mpu->mpu_data.Accel[1];
-    az = g_car.Device.mpu->mpu_data.Accel[2];
-    Mahony_update_IMU(gx, gy, gz, acc_x_filtered, acc_y_filtered, acc_z_filtered);
+    // MPU9250_ReadAccel(g_car.Device.mpu);
+    // MPU9250_ReadGyro(g_car.Device.mpu);
+    // //MPU9250_ReadMag(&g_car.Device.mpu);
     
-    // mpu->mpu_data.Gyro[0] = -mpu->mpu_data.Gyro[0]; //根据安装方向调整轴向
+    //  static float acc_x_filtered = 0, acc_y_filtered = 0, acc_z_filtered = 0;
+    // const float alpha = 0.20f; // 0.1~0.3
 
-    g_car.Prop.Gyro_X = (g_car.Device.mpu->mpu_data.Gyro[0]);
-    g_car.Prop.Gyro_Y = (g_car.Device.mpu->mpu_data.Gyro[1]);
-    g_car.Prop.Gyro_Z = (g_car.Device.mpu->mpu_data.Gyro[2]);
-    g_car.Prop.Accel_X = (g_car.Device.mpu->mpu_data.Accel[0]);
-    g_car.Prop.Accel_Y = (g_car.Device.mpu->mpu_data.Accel[1]);
-    g_car.Prop.Accel_Z = (g_car.Device.mpu->mpu_data.Accel[2]);
+
+
+
+    // acc_x_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[0] + (1 - alpha) * acc_x_filtered;
+    // acc_y_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[1] + (1 - alpha) * acc_y_filtered;
+    // acc_z_filtered = alpha * g_car.Device.mpu->mpu_data.Accel[2] + (1 - alpha) * acc_z_filtered;
+
+    // float gx, gy, gz, ax, ay, az;
+    // gx = (g_car.Device.mpu->mpu_data.Gyro_row[0] - g_car.Device.mpu->mpu_data.Gyro_Bias[0]);
+    // gy = (g_car.Device.mpu->mpu_data.Gyro_row[1] - g_car.Device.mpu->mpu_data.Gyro_Bias[1]);
+    // gz = (g_car.Device.mpu->mpu_data.Gyro_row[2] - g_car.Device.mpu->mpu_data.Gyro_Bias[2]);
+    // ax = g_car.Device.mpu->mpu_data.Accel[0];
+    // ay = g_car.Device.mpu->mpu_data.Accel[1];
+    // az = g_car.Device.mpu->mpu_data.Accel[2];
+    // Mahony_update_IMU(gx, gy, gz, acc_x_filtered, acc_y_filtered, acc_z_filtered);
+    
+    // // mpu->mpu_data.Gyro[0] = -mpu->mpu_data.Gyro[0]; //根据安装方向调整轴向
+
+    // g_car.Prop.Gyro_X = (g_car.Device.mpu->mpu_data.Gyro[0]);
+    // g_car.Prop.Gyro_Y = (g_car.Device.mpu->mpu_data.Gyro[1]);
+    // g_car.Prop.Gyro_Z = (g_car.Device.mpu->mpu_data.Gyro[2]);
+    // g_car.Prop.Accel_X = (g_car.Device.mpu->mpu_data.Accel[0]);
+    // g_car.Prop.Accel_Y = (g_car.Device.mpu->mpu_data.Accel[1]);
+    // g_car.Prop.Accel_Z = (g_car.Device.mpu->mpu_data.Accel[2]);
     // 取消归一化
     // 如果 Accel_X 是 m/s²，结果仍然正确（因为比例不变）
     // 但没必要做单位转换，反而增加计算开销，效果不佳的时候，再试试吧
@@ -267,7 +269,7 @@ void Car_Get_Real_Value(void)
 
     */
 
-    Mahony_computeAngles();
+    //Mahony_computeAngles();
     /* Mahony_computeAngles(); */
     /*
     g_car.Prop.Pitch_Angle = atan2f(-g_car.Prop.Accel_X,
@@ -282,17 +284,26 @@ void Car_Get_Real_Value(void)
     // g_car.Prop.Yaw_Angle += g_car.Prop.Gyro_Z * dt;
 
     
-        g_car.Prop.Pitch_Angle = getPitch();
+        //g_car.Prop.Pitch_Angle = getPitch();
 
-        g_car.Prop.Roll_Angle = getRoll();
+        //g_car.Prop.Roll_Angle = getRoll();
         //g_car.Prop.Yaw_Angle = getYaw();
         //g_car.PitchPID->Current = g_car.Prop.Pitch_Angle;
         //g_car.RollPID->Current = g_car.Prop.Roll_Angle;
-        g_car.Prop.Full_Yaw = InfiniteYaw(g_car.Prop.Yaw_Angle);
+        //g_car.Prop.Full_Yaw = InfiniteYaw(g_car.Prop.Yaw_Angle);
         //g_car.YawPID->Current = g_car.Prop.Full_Yaw;
         //g_car.SpeedPID->Current = (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f;
         //这两行被新封装取代
-        
+//     g_car.Prop.Gyro_X = 
+//    g_car.Prop.Gyro_Y =
+//    g_car.Prop.Gyro_Z = (short)(gz);
+//    g_car.Prop.Accel_X = (short)(ax);
+//    g_car.Prop.Accel_Y = (short)(ay);
+//    g_car.Prop.Accel_Z = (short)(az);
+    //mpu_dmp_get_data(&Blance.Car_Pitch,&Blance.Car_Roll,&Blance.Car_Yaw);//小车角度[°]
+		MPU_Get_Gyroscope((short*)&g_car.Prop.Gyro_X, (short*)&g_car.Prop.Gyro_Y, (short*)&g_car.Prop.Gyro_Z);
+		MPU_Get_Accelerometer((short*)&g_car.Prop.Accel_X, (short*)&g_car.Prop.Accel_Y, (short*)&g_car.Prop.Accel_Z);
+    mpu_dmp_get_data(&g_car.Prop.Pitch_Angle, &g_car.Prop.Roll_Angle, &g_car.Prop.Yaw_Angle);
     PID_Set_Current(g_car.RollPID, g_car.Prop.Roll_Angle);
     PID_Set_Current(g_car.PitchPID, g_car.Prop.Pitch_Angle);
     PID_Set_Current(g_car.SpeedPID, (g_car.Prop.Velocity_Left + g_car.Prop.Velocity_Right) / 2.0f);

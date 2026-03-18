@@ -1,173 +1,12 @@
 #ifndef __MPU9250_H
 #define __MPU9250_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include "softiic9250.h"   
 #include "main.h"
-//#include "spi.h"
-extern SPI_HandleTypeDef hspi1;
+#include "stdio.h"
+//MPU9250初始化程序头文件
+//由正点原子MPU6050驱动修改
+ typedef struct __MPU9250_PropTypDef {
 
-#include <stdlib.h>
-#define mpuselect()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET)
-#define mpudeselect()  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET)
-#define MPU9250_CS_GPIO    GY_CS_GPIO_Port
-#define MPU9250_CS_PIN     GY_CS_Pin
-//#define MPU9250_SPI        hspi1
-#define MPU9250_TIMEOUT_S  0x0100
-#define MPU9250_TIMEOUT_L  0x1000
-
-// MPU9250 registers
-
-#define	SMPLRT_DIV		                    (uint8_t)0x19
-#define	CONFIG			                    (uint8_t)0x1A
-#define	GYRO_CONFIG		                    (uint8_t)0x1B
-#define	ACCEL_CONFIG	                    (uint8_t)0x1C
-#define	ACCEL_CONFIG_2                      (uint8_t)0x1D
-
-#define INT_PIN_CFG                         (uint8_t)0x37
-#define USER_CTRL                           (uint8_t)0x6a
-#define I2C_MST_CTRL                        (uint8_t)0x24
-#define I2C_MST_DELAY_CTRL                  (uint8_t)0x67
-//--------------------i2c slv0-------------------------------//
-#define I2C_SLV0_ADDR                       (uint8_t)0x25
-#define I2C_SLV0_REG                        (uint8_t)0x26
-#define I2C_SLV0_CTRL                       (uint8_t)0x27
-#define I2C_SLV0_DO                         (uint8_t)0x63 //output reg
-//--------------------AK8963 reg addr------------------------//
-#define AK8963_I2C_ADDR                     (uint8_t)0x0C  //AKM addr
-#define AK8963_WHOAMI_REG                   (uint8_t)0x00  //AKM ID addr
-#define AK8963_WHOAMI_ID                    (uint8_t)0x48  //ID
-#define AK8963_ST1_REG                      (uint8_t)0x02  //Data Status1
-#define AK8963_ST2_REG                      (uint8_t)0x09  //Data reading end register & check Magnetic sensor overflow occurred
-#define AK8963_ST1_DOR                      (uint8_t)0x02
-#define AK8963_ST1_DRDY                     (uint8_t)0x01  //Data Ready
-#define AK8963_ST2_BITM                     (uint8_t)0x10
-#define AK8963_ST2_HOFL                     (uint8_t)0x08  // Magnetic sensor overflow
-#define AK8963_CNTL1_REG                    (uint8_t)0x0A
-#define AK8963_CNTL2_REG                    (uint8_t)0x0B
-#define AK8963_CNTL2_SRST                   (uint8_t)0x01  //soft Reset
-#define AK8963_ASAX                         (uint8_t)0x10  //X-axis sensitivity adjustment value
-#define AK8963_ASAY                         (uint8_t)0x11  //Y-axis sensitivity adjustment value
-#define AK8963_ASAZ                         (uint8_t)0x12  //Z-axis sensitivity adjustment value
-//--------------------9axis  reg addr-----------------------//
-#define	ACCEL_XOUT_H	(uint8_t)0x3B
-#define	ACCEL_XOUT_L	(uint8_t)0x3C
-#define	ACCEL_YOUT_H	(uint8_t)0x3D
-#define	ACCEL_YOUT_L	(uint8_t)0x3E
-#define	ACCEL_ZOUT_H	(uint8_t)0x3F
-#define	ACCEL_ZOUT_L	(uint8_t)0x40
-
-#define	TEMP_OUT_H		(uint8_t)0x41   //temperture
-#define	TEMP_OUT_L		(uint8_t)0x42
-
-#define	GYRO_XOUT_H		(uint8_t)0x43
-#define	GYRO_XOUT_L		(uint8_t)0x44
-#define	GYRO_YOUT_H		(uint8_t)0x45
-#define	GYRO_YOUT_L		(uint8_t)0x46
-#define	GYRO_ZOUT_H		(uint8_t)0x47
-#define	GYRO_ZOUT_L		(uint8_t)0x48
-
-#define MAG_XOUT_L		(uint8_t)0x03
-#define MAG_XOUT_H		(uint8_t)0x04
-#define MAG_YOUT_L		(uint8_t)0x05
-#define MAG_YOUT_H		(uint8_t)0x06
-#define MAG_ZOUT_L		(uint8_t)0x07
-#define MAG_ZOUT_H		(uint8_t)0x08
-//--------------------other reg addr-----------------------//
-#define	PWR_MGMT_1		    (uint8_t)0x6B
-#define PWR_MGMT_2          (uint8_t)0x6C
-#define	WHO_AM_I		    (uint8_t)0x75
-
-#define EXT_SENS_DATA_00    (uint8_t)0x49
-#define EXT_SENS_DATA_01    (uint8_t)0x4a
-#define EXT_SENS_DATA_02    (uint8_t)0x4b
-#define EXT_SENS_DATA_03    (uint8_t)0x4c
-
-typedef enum __MPU9250_AccelRange {
-	MPU9250_Accel_Range_2G = 0x00,
-	MPU9250_Accel_Range_4G = 0x08,
-	MPU9250_Accel_Range_8G = 0x10,
-	MPU9250_Accel_Range_16G = 0x18
-/*
- * 0b00000000 for +-2G
- * 0b00001000 for +-4G
- * 0b00010000 for +-8G
- * 0b00011000 for +-16G
- * */
-} MPU9250_AccelRange;
-
-typedef enum __MPU9250_GyroRange {
-	MPU9250_Gyro_Range_250dps = 0x00,
-	MPU9250_Gyro_Range_500dps = 0x08,
-	MPU9250_Gyro_Range_1000dps = 0x10,
-	MPU9250_Gyro_Range_2000dps = 0x18
-/*
- * 0b00000000 for 250dps
- * 0b00001000 for 500dps
- * 0b00010000 for 1000dps
- * 0b00011000 for 2000dps
- * */
-} MPU9250_GyroRange;
-
-typedef enum __MPU9250_Accel_DLPFBandwidth {
-	// set reg29 Bit[3] & Bit[2:0]
-	// Hz
-	MPU9250_Accel_DLPFBandwidth_460 = 0x00,    // delay 1.94ms
-	MPU9250_Accel_DLPFBandwidth_184,           // delay 5.80ms
-	MPU9250_Accel_DLPFBandwidth_92,            // delay 7.80ms
-	MPU9250_Accel_DLPFBandwidth_41,            // delay 11.80ms
-	MPU9250_Accel_DLPFBandwidth_20,            // delay 19.80ms
-	MPU9250_Accel_DLPFBandwidth_10,            // delay 35.70ms
-	MPU9250_Accel_DLPFBandwidth_5,             // delay 66.96ms
-	MPU9250_Accel_DLPFBandwidth_460_2,         // delay 1.94ms
-	MPU9250_Accel_DLPFBandwidth_1_13k = 0x08,  // delay 0.75ms
-
-} MPU9250_Accel_DLPFBandwidth;
-
-typedef enum __MPU9250_Accel_SampleRateDivider {
-	// check reg30, when use lower power mode
-	// Hz
-	// Bandwidth 1.1kHz, Delay 1ms
-	MPU9250_LP_ACCEL_ODR_0_24HZ = 0x00,
-	MPU9250_LP_ACCEL_ODR_0_49HZ,
-	MPU9250_LP_ACCEL_ODR_0_98HZ,
-	MPU9250_LP_ACCEL_ODR_1_95HZ,
-	MPU9250_LP_ACCEL_ODR_3_91HZ,
-	MPU9250_LP_ACCEL_ODR_7_81HZ,
-	MPU9250_LP_ACCEL_ODR_15_63HZ,
-	MPU9250_LP_ACCEL_ODR_31_25HZ,
-	MPU9250_LP_ACCEL_ODR_62_50HZ,
-	MPU9250_LP_ACCEL_ODR_125HZ,
-	MPU9250_LP_ACCEL_ODR_250HZ,
-	MPU9250_LP_ACCEL_ODR_500HZ
-} MPU9250_Accel_SampleRateDivider;
-
-typedef enum __MPU9250_Gyro_DLPFBandwidth {
-	// to use following 2 options, reg27 Bit[1:0](fchoice_b) must be set
-	// these to options are not related to reg26 Bit[2:0](DLPF_CFG), but reg27 Bit[1:0](fchoice_b)
-	// notice: this options can also affect temperature sensor
-	// Hz
-	MPU9250_Gyro_DLPFBandwidth_8800_x = 0x00,    // delay 0.064ms
-	MPU9250_Gyro_DLPFBandwidth_3600_x = 0x00,    // delay 0.11ms
-
-	// follow options can be set to reg26 Bit[2:0](DLPF_CFG) to set DLPFBandwidth
-	MPU9250_Gyro_DLPFBandwidth_250 = 0x00,     // delay 0.97ms
-	MPU9250_Gyro_DLPFBandwidth_184,            // delay 2.9ms
-	MPU9250_Gyro_DLPFBandwidth_92,             // delay 3.9ms
-	MPU9250_Gyro_DLPFBandwidth_41,             // delay 5.9ms
-	MPU9250_Gyro_DLPFBandwidth_20,             // delay 9.9ms
-	MPU9250_Gyro_DLPFBandwidth_10,             // delay 17.85ms
-	MPU9250_Gyro_DLPFBandwidth_5,              // delay 33.48ms
-	MPU9250_Gyro_DLPFBandwidth_3600,           // delay 0.17ms
-
-} MPU9250_Gyro_DLPFBandwidth;
-
-typedef struct __MPU9250_PropTypDef {
-
-
-	SPI_HandleTypeDef *hspi;
 	GPIO_TypeDef *cs_gpio_port;
 	uint16_t cs_gpio_pin;
 } MPU9250_PropTypeDef;
@@ -178,6 +17,9 @@ typedef struct __MPU9250_DataTypeDef {
 	volatile int16_t Gyro_row[3];
 	volatile int16_t Magn_row[3];
 	// store real data in float
+	float Gyro_Bias[3];
+	float Magn_Bias[3];
+	float Accel_Bias[3];
 	float Accel[3];
 	float Gyro[3];
 	float Magn[3];
@@ -190,31 +32,150 @@ typedef struct __MPU9250 {
 	uint8_t is_initialized;
 } MPU9250;
 
-uint8_t mpu_r_ak8963_WhoAmI(MPU9250 *mpu);
-uint8_t mpu_r_WhoAmI(MPU9250 *mpu);
-uint8_t MPU9250_Init(MPU9250 *mpu,SPI_HandleTypeDef *hspi,GPIO_TypeDef *cs_port,uint16_t cs_pin);
-//INIT_ADVANCED?
+//MPU9250 AD0控制脚
+//#define MPU_AD0_CTRL			PAout(15)	//控制AD0电平,从而控制MPU地址
 
-MPU9250* MPU9250_Create(SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_port, uint16_t cs_pin);
-void MPU9250_Destroy(MPU9250 *mpu);
+//#define MPU_ACCEL_OFFS_REG		0X06	//accel_offs寄存器,可读取版本号,寄存器手册未提到
+//#define MPU_PROD_ID_REG			0X0C	//prod id寄存器,在寄存器手册未提到
+#define MPU_SELF_TESTX_REG		0X0D	//自检寄存器X
+#define MPU_SELF_TESTY_REG		0X0E	//自检寄存器Y
+#define MPU_SELF_TESTZ_REG		0X0F	//自检寄存器Z
+#define MPU_SELF_TESTA_REG		0X10	//自检寄存器A
+#define MPU_SAMPLE_RATE_REG		0X19	//采样频率分频器
+#define MPU_CFG_REG				0X1A	//配置寄存器
+#define MPU_GYRO_CFG_REG		0X1B	//陀螺仪配置寄存器
+#define MPU_ACCEL_CFG_REG		0X1C	//加速度计配置寄存器
+#define MPU_MOTION_DET_REG		0X1F	//运动检测阀值设置寄存器
+#define MPU_FIFO_EN_REG			0X23	//FIFO使能寄存器
+#define MPU_I2CMST_CTRL_REG		0X24	//IIC主机控制寄存器
+#define MPU_I2CSLV0_ADDR_REG	0X25	//IIC从机0器件地址寄存器
+#define MPU_I2CSLV0_REG			0X26	//IIC从机0数据地址寄存器
+#define MPU_I2CSLV0_CTRL_REG	0X27	//IIC从机0控制寄存器
+#define MPU_I2CSLV1_ADDR_REG	0X28	//IIC从机1器件地址寄存器
+#define MPU_I2CSLV1_REG			0X29	//IIC从机1数据地址寄存器
+#define MPU_I2CSLV1_CTRL_REG	0X2A	//IIC从机1控制寄存器
+#define MPU_I2CSLV2_ADDR_REG	0X2B	//IIC从机2器件地址寄存器
+#define MPU_I2CSLV2_REG			0X2C	//IIC从机2数据地址寄存器
+#define MPU_I2CSLV2_CTRL_REG	0X2D	//IIC从机2控制寄存器
+#define MPU_I2CSLV3_ADDR_REG	0X2E	//IIC从机3器件地址寄存器
+#define MPU_I2CSLV3_REG			0X2F	//IIC从机3数据地址寄存器
+#define MPU_I2CSLV3_CTRL_REG	0X30	//IIC从机3控制寄存器
+#define MPU_I2CSLV4_ADDR_REG	0X31	//IIC从机4器件地址寄存器
+#define MPU_I2CSLV4_REG			0X32	//IIC从机4数据地址寄存器
+#define MPU_I2CSLV4_DO_REG		0X33	//IIC从机4写数据寄存器
+#define MPU_I2CSLV4_CTRL_REG	0X34	//IIC从机4控制寄存器
+#define MPU_I2CSLV4_DI_REG		0X35	//IIC从机4读数据寄存器
+
+#define MPU_I2CMST_STA_REG		0X36	//IIC主机状态寄存器
+#define MPU_INTBP_CFG_REG		0X37	//中断/旁路设置寄存器
+#define MPU_INT_EN_REG			0X38	//中断使能寄存器
+#define MPU_INT_STA_REG			0X3A	//中断状态寄存器
+
+#define MPU_ACCEL_XOUTH_REG		0X3B	//加速度值,X轴高8位寄存器
+#define MPU_ACCEL_XOUTL_REG		0X3C	//加速度值,X轴低8位寄存器
+#define MPU_ACCEL_YOUTH_REG		0X3D	//加速度值,Y轴高8位寄存器
+#define MPU_ACCEL_YOUTL_REG		0X3E	//加速度值,Y轴低8位寄存器
+#define MPU_ACCEL_ZOUTH_REG		0X3F	//加速度值,Z轴高8位寄存器
+#define MPU_ACCEL_ZOUTL_REG		0X40	//加速度值,Z轴低8位寄存器
+
+#define MPU_TEMP_OUTH_REG		0X41	//温度值高八位寄存器
+#define MPU_TEMP_OUTL_REG		0X42	//温度值低8位寄存器
+
+#define MPU_GYRO_XOUTH_REG		0X43	//陀螺仪值,X轴高8位寄存器
+#define MPU_GYRO_XOUTL_REG		0X44	//陀螺仪值,X轴低8位寄存器
+#define MPU_GYRO_YOUTH_REG		0X45	//陀螺仪值,Y轴高8位寄存器
+#define MPU_GYRO_YOUTL_REG		0X46	//陀螺仪值,Y轴低8位寄存器
+#define MPU_GYRO_ZOUTH_REG		0X47	//陀螺仪值,Z轴高8位寄存器
+#define MPU_GYRO_ZOUTL_REG		0X48	//陀螺仪值,Z轴低8位寄存器
+
+#define MPU_I2CSLV0_DO_REG		0X63	//IIC从机0数据寄存器
+#define MPU_I2CSLV1_DO_REG		0X64	//IIC从机1数据寄存器
+#define MPU_I2CSLV2_DO_REG		0X65	//IIC从机2数据寄存器
+#define MPU_I2CSLV3_DO_REG		0X66	//IIC从机3数据寄存器
+
+#define MPU_I2CMST_DELAY_REG	0X67	//IIC主机延时管理寄存器
+#define MPU_SIGPATH_RST_REG		0X68	//信号通道复位寄存器
+#define MPU_MDETECT_CTRL_REG	0X69	//运动检测控制寄存器
+#define MPU_USER_CTRL_REG		0X6A	//用户控制寄存器
+#define MPU_PWR_MGMT1_REG		0X6B	//电源管理寄存器1
+#define MPU_PWR_MGMT2_REG		0X6C	//电源管理寄存器2 
+#define MPU_FIFO_CNTH_REG		0X72	//FIFO计数寄存器高八位
+#define MPU_FIFO_CNTL_REG		0X73	//FIFO计数寄存器低八位
+#define MPU_FIFO_RW_REG			0X74	//FIFO读写寄存器
+#define MPU_DEVICE_ID_REG		0X75	//器件ID寄存器
+ 
+//如果AD0脚(9脚)接地,IIC地址为0X68(不包含最低位).
+//如果接V3.3,则IIC地址为0X69(不包含最低位).
+#define MPU_ADDR				0X68
+#define MPU6500_ID				0X71  	//MPU6500的器件ID
+
+//AK8963的内部寄存器
+#define MAG_WIA					0x00	//AK8963的器件ID寄存器地址
+#define MAG_CNTL1          	  	0X0A    
+#define MAG_CNTL2            	0X0B
+
+#define MAG_XOUT_L				0X03	
+#define MAG_XOUT_H				0X04
+#define MAG_YOUT_L				0X05
+#define MAG_YOUT_H				0X06
+#define MAG_ZOUT_L				0X07
+#define MAG_ZOUT_H				0X08
+
+////因为模块AD0默认接GND,所以转为读写地址后,为0XD1和0XD0(如果接VCC,则为0XD3和0XD2)  
+//#define MPU_READ    0XD1
+//#define MPU_WRITE   0XD0
+
+uint8_t MPU_Init(void); 								//初始化MPU6050
+uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf);//IIC连续写
+uint8_t MPU_Read_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf); //IIC连续读 
+uint8_t MPU_Write_Byte(uint8_t reg,uint8_t data);				//IIC写一个字节
+uint8_t MPU_Read_Byte(uint8_t reg);						//IIC读一个字节
+uint8_t MPU_Set_Gyro_Fsr(uint8_t fsr);
+uint8_t MPU_Set_Accel_Fsr(uint8_t fsr);
+uint8_t MPU_Set_LPF(uint16_t lpf);
+uint8_t MPU_Set_Rate(uint16_t rate);
+uint8_t MPU_Set_Fifo(uint8_t sens);
 
 
-//ReadFunc
-void MPU9250_ReadAccel(MPU9250 *mpu);
-void MPU9250_ReadGyro(MPU9250 *mpu);
-void MPU9250_ReadMag(MPU9250 *mpu);
-void MPU9250_ReadData(MPU9250 *mpu);
+short MPU_Get_Temperature(void);
+uint8_t MPU_Get_Gyroscope(short *gx,short *gy,short *gz);
+uint8_t MPU_Get_Accelerometer(short *ax,short *ay,short *az);
 
 
-//Functions for initialization and configuration
-static void MPU9250_StructInit(MPU9250 *mpu);
-uint8_t MPU9250_VerifyConnection(MPU9250 *mpu);
-uint8_t MPU9250_ResetDevice(MPU9250 *mpu);
-uint8_t MPU9250_ConfigureIMU(MPU9250 *mpu, MPU9250_AccelRange accel_range, MPU9250_GyroRange gyro_range, MPU9250_Accel_DLPFBandwidth accel_bandwidth, MPU9250_Gyro_DLPFBandwidth gyro_bandwidth, uint8_t sample_rate_divider);
-uint8_t MPU9250_ConfigureMagnetometer(MPU9250 *mpu);
-uint8_t MPU9250_ConfigureClock(MPU9250 *mpu);
-#ifdef __cplusplus
-}
 #endif
 
-#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

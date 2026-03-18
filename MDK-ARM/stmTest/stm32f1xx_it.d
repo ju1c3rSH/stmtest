@@ -25,13 +25,13 @@ stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
-stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 stmtest\stm32f1xx_it.o: ../Core/Inc/stm32f1xx_it.h
-stmtest\stm32f1xx_it.o: ../Core/Inc/Obj/Car.h
-stmtest\stm32f1xx_it.o: ../Core/Inc/Obj/PID.h
+stmtest\stm32f1xx_it.o: ..\Core\Inc\Obj\Car.h
+stmtest\stm32f1xx_it.o: ..\Core\Inc\Obj\PID.h
 stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\stm32f1xx_it.o: ../Hardwares/mpu9250.h
-stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\stm32f1xx_it.o: ../MDK-ARM/softiic9250.h
+stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h

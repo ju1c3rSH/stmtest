@@ -28,13 +28,13 @@
 #include "mpu9250.h"
 #include <math.h>
 #include "delay.h"
-#include "MahonyAHRS.h"
+//#include "MahonyAHRS.h"
 #include "text_utils.h"
 #include "subtask.h"
 #include <stdarg.h >
 #include <string.h>
 // #include "atgm336h.h"
-
+#include "inv_mpu.h"
 #include "oled.h"
 #include "Car.h"
 #include "uart_pid_parse.h"
@@ -62,9 +62,6 @@ volatile uint8_t control_tick = 0;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-SPI_HandleTypeDef hspi1;
-DMA_HandleTypeDef hdma_spi1_rx;
-
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -82,7 +79,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_SPI1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
@@ -145,7 +141,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
-  MX_SPI1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
@@ -153,22 +148,21 @@ int main(void)
   DWT_Delay_Init();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
   // 使能TB6612
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
-  u1_printf("CS HIGH\r\n");
 
-  // HAL_Delay(100);
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET);
-  u1_printf("CS LOW\r\n");
-  // HAL_Delay(100);
-  HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
-  u1_printf("CS TEST DONE\r\n");
+
+   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);
+  //拉高PB15，使能iic的09250
+
+  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET);
+  //拉低pa6，使得iic9250地址为0 68
   // LoadPIDParamsFromFlash();
+
   DWT_Delay_us(20000);
   Car_Init(&mpu);
   car_instance = Car_GetInstance();
   // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
 
-  if (MPU9250_Init(&mpu, &hspi1, MPU9250_CS_GPIO, MPU9250_CS_PIN))
+  if (MPU_Init())
   {
     u1_printf("MPU9250 init SUCCESSFUL\r\n");
   }
@@ -176,6 +170,7 @@ int main(void)
   {
     u1_printf("MPU9250 init FAILED\r\n");
   }
+	  while(mpu_dmp_init());
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
 
@@ -229,7 +224,7 @@ int main(void)
   //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
   //  StartUART1DMAReceive();
 
-  Mahony_Init(200.0f);
+  //Mahony_Init(200.0f);
   // Test_SPI_Communication();
 
   // ATGM336H_Init(&g_gps_data);
@@ -251,7 +246,7 @@ int main(void)
     */
   MX_TIM1_Init();
   uint32_t last_time = HAL_GetTick();
-  const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
+  //const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
 
   while (1)
   {
@@ -339,44 +334,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief SPI1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI1_Init(void)
-{
-
-  /* USER CODE BEGIN SPI1_Init 0 */
-
-  /* USER CODE END SPI1_Init 0 */
-
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI1_Init 2 */
-
-  /* USER CODE END SPI1_Init 2 */
-
 }
 
 /**
@@ -664,10 +621,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5|OLED_SCL_Pin|OLED_SDA_Pin, GPIO_PIN_SET);
@@ -679,6 +636,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PA5 PA7 PA8 PA11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_11;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PB12 PB13 PB14 PB15
                            PB5 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15
@@ -687,13 +651,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PA8 PA11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : OLED_SCL_Pin OLED_SDA_Pin */
   GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin;

@@ -1,451 +1,233 @@
-/*
- ************ https://github.com/sin1111yi ************
- ******************************************************
- *        .__       ____ ____ ____ ____        .__
- *   _____|__| ____/_   /_   /_   /_   |___.__.|__|
- *  /  ___/  |/    \|   ||   ||   ||   <   |  ||  |
- *  \___ \|  |   |  \   ||   ||   ||   |\___  ||  |
- *  /___  >__|___|  /___||___||___||___|/ ____||__|
- *      \/        \/                    \/
- ******************************************************
- * @beginning
- * I don't like over encapsulation, low freedom and less api.
- * After read several projects on Github, I decided to write it by myself.
- *
- * @suggestions
- * If someone want to use SPI to drive MPU9250 to read 9DOF data,
- * I'll suggest him/her to use MPU6500 and another independent magnetometer chip.
- * Because MPU9250 is MPU6500 & AK8963, and AK8963 doesn't support SPI serial.
- * AK8963 must drive by I2C serial, which is put in MPU9250 connect MPU6500 and AK8963.
- * That means to drive AK8963, I need use SPI to drive MPU6500's I2C to drive AK8963.
- * That's troublesome. But it can be much more easier when using I2C.
- *
- * @my own view
- * I think it is stupid to use MPU9250, if PCB space and capital are enough.
- * And I think the designers of MPU9250 are really lazy, cause they name their registers in many different ways.
- *
- * @other
- * Those words above only represent myself. If someone have different views, please ignore my views.
- *
- *
- * @author  sin1111yi
- * @date    2021/12/9   restructure version 1
- *          2021/12/10  restructure version 2
- *
- * @refer   https://github.com/desertkun/MPU9250
- *          https://blog.csdn.net/liuyifanliu/article/details/99309839
- *deselect注释掉是为了测试
- */
-
 #include "mpu9250.h"
-#include "main.h"
-#include "delay.h"
-#include "text_utils.h"
-#define mpu_select() HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET)
-#define mpu_deselect() HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET)
 
-#define DATABUF_SIZ 16
+//MPU9250初始化程序
+//由正点原子MPU6050驱动修改
 
-static uint8_t dataBuf[DATABUF_SIZ] = {0}; // all read data will store in this array
-static uint16_t i = 0;					   // loop control
-
-/*** basic spi operate ***/
-/*** I want to make these functions can be reused ***/
-/*
- * @brief   write a byte through SPI and read feedback
- * @param   byte: byte to write
- * @return  received byte
- * */
-static uint8_t spi_wr_byte(SPI_HandleTypeDef *hspi, uint8_t byte)
-{
-	uint8_t feedback = 0;
-
-	// wait SPI serial free
-	while (HAL_SPI_GetState(hspi) == HAL_SPI_STATE_BUSY_TX_RX)
-		;
-
-	if (HAL_SPI_TransmitReceive(hspi, &byte, &feedback, 1, 0x01f4) != HAL_OK)
+//初始化MPU9250
+//返回值:0,成功
+//    其他,错误代码
+uint8_t MPU_Init(void)
+{ 
+	uint8_t res;
+	Soft_I2C_Init();//初始化IIC总线
+	MPU_Write_Byte(MPU_PWR_MGMT1_REG,0X80);	//复位MPU6050
+	HAL_Delay(100);
+	MPU_Write_Byte(MPU_PWR_MGMT1_REG,0X00);	//唤醒MPU6050 
+	MPU_Set_Gyro_Fsr(3);					//陀螺仪传感器,±2000dps
+	MPU_Set_Accel_Fsr(0);					//加速度传感器,±2g
+	MPU_Set_Rate(50);						//设置采样率50Hz
+	MPU_Write_Byte(MPU_INT_EN_REG,0X00);	//关闭所有中断
+	MPU_Write_Byte(MPU_USER_CTRL_REG,0X00);	//I2C主模式关闭
+	MPU_Write_Byte(MPU_FIFO_EN_REG,0X00);	//关闭FIFO
+	MPU_Write_Byte(MPU_INTBP_CFG_REG,0X80);	//INT引脚低电平有效
+	
+	res=MPU_Read_Byte(MPU_DEVICE_ID_REG);
+	printf("ID:%d\r\n",res);     //十进制接收值为113，十六进制接收值为71
+	if(res==MPU6500_ID)//器件ID正确
 	{
-
-		return 0xff;
-	}
-
-	return feedback;
+		MPU_Write_Byte(MPU_PWR_MGMT1_REG,0X01);	//设置CLKSEL,PLL X轴为参考
+		MPU_Write_Byte(MPU_PWR_MGMT2_REG,0X00);	//加速度与陀螺仪都工作
+		MPU_Set_Rate(50);						//设置采样率为50Hz
+ 	}else return 1;
+	
+	return 0;
 }
-/*
- * @brief   write several bytes  spi
- * @param   address: address of the first reg
- * @param   bytes: number of bytes to write
- * @param   num: number of bytes
- * */
-static void spi_w_bytes(SPI_HandleTypeDef *hspi, uint8_t address,
-						uint8_t *bytes, uint16_t num)
+//设置MPU9250陀螺仪传感器满量程范围
+//fsr:0,±250dps;1,±500dps;2,±1000dps;3,±2000dps
+//返回值:0,设置成功
+//    其他,设置失败 
+uint8_t MPU_Set_Gyro_Fsr(uint8_t fsr)
 {
-	mpu_select();
-
-	spi_wr_byte(hspi, address);
-	for (i = 0; i < num; i++)
-		spi_wr_byte(hspi, bytes[i]);
-
-	mpu_deselect();
+	return MPU_Write_Byte(MPU_GYRO_CFG_REG,fsr<<3);//设置陀螺仪满量程范围  
+}
+//设置MPU9250加速度传感器满量程范围
+//fsr:0,±2g;1,±4g;2,±8g;3,±16g
+//返回值:0,设置成功
+//    其他,设置失败 
+uint8_t MPU_Set_Accel_Fsr(uint8_t fsr)
+{
+	return MPU_Write_Byte(MPU_ACCEL_CFG_REG,fsr<<3);//设置加速度传感器满量程范围  
+}
+//设置MPU9250的数字低通滤波器
+//lpf:数字低通滤波频率(Hz)
+//返回值:0,设置成功
+//    其他,设置失败 
+uint8_t MPU_Set_LPF(uint16_t lpf)
+{
+	uint8_t data=0;
+	if(lpf>=188)data=1;
+	else if(lpf>=98)data=2;
+	else if(lpf>=42)data=3;
+	else if(lpf>=20)data=4;
+	else if(lpf>=10)data=5;
+	else data=6; 
+	return MPU_Write_Byte(MPU_CFG_REG,data);//设置数字低通滤波器  
+}
+//设置MPU9250的采样率(假定Fs=1KHz)
+//rate:4~1000(Hz)
+//返回值:0,设置成功
+//    其他,设置失败 
+uint8_t MPU_Set_Rate(uint16_t rate)
+{
+	uint8_t data;
+	if(rate>1000)rate=1000;
+	if(rate<4)rate=4;
+	data=1000/rate-1;
+	data=MPU_Write_Byte(MPU_SAMPLE_RATE_REG,data);	//设置数字低通滤波器
+ 	return MPU_Set_LPF(rate/2);	//自动设置LPF为采样率的一半
 }
 
-/*
- * @brief   read several bytes through spi
- * @param   address: address of the first reg
- * @param   num: number of bytes to read, number < DATABUF_SIZ
- * @return  data read array
- * */
-static void spi_r_bytes(SPI_HandleTypeDef *hspi, uint8_t address, uint8_t num)
+//得到温度值
+//返回值:温度值(扩大了100倍)
+short MPU_Get_Temperature(void)
 {
-	uint8_t _address = address | 0x80;
-
-	mpu_select();
-
-	// may be can use HAL_SPI_TransmitReceive()
-	HAL_SPI_Transmit(hspi, &_address, 1, 0x01f4);
-	HAL_SPI_Receive(hspi, dataBuf, num, 0x01f4); // store read data to dataBuf
-
-	mpu_deselect();
+    uint8_t buf[2]; 
+    short raw;
+	float temp;
+	MPU_Read_Len(MPU_ADDR,MPU_TEMP_OUTH_REG,2,buf); 
+    raw=((uint16_t)buf[0]<<8)|buf[1];  
+    temp=36.53+((double)raw)/340;  
+    return temp*100;;
 }
-/*** basic mpu9250 operate ***/
-/*
- * @brief   write mpu9250 reg through spi
- * @param   address: address of reg to write
- * @param   byte: byte to write
- * */
-static void mpu_w_reg(uint8_t address, uint8_t byte)
+//得到陀螺仪值(原始值)
+//gx,gy,gz:陀螺仪x,y,z轴的原始读数(带符号)
+//返回值:0,成功
+//    其他,错误代码
+uint8_t MPU_Get_Gyroscope(short *gx,short *gy,short *gz)
 {
-	spi_w_bytes(&hspi1, address, &byte, 1);
-}
-
-/*
- * @brief   read mpu9250 regs through spi
- * @param   address: address of reg to write
- * @param   num: number of byte to read
- * @return  read bytes array
- * */
-static void mpu_r_regs(uint8_t address, uint8_t num)
-{
-	spi_r_bytes(&hspi1, address, num);
-}
-/******* basic ak8963 operate *******/
-/*
- * @brief   write AK8963 regs through I2C in MPU9250
- * @param   address: address of AK8963 reg to write
- * @param   byte: byte to write
- * */
-static void mpu_w_ak8963_reg(uint8_t address, uint8_t byte)
-{
-	mpu_w_reg(I2C_SLV0_ADDR, AK8963_I2C_ADDR);
-	mpu_w_reg(I2C_SLV0_REG, address);
-	mpu_w_reg(I2C_SLV0_DO, byte);
-	mpu_w_reg(I2C_SLV0_CTRL, 0x81);
-}
-/*
- * @brief read AK8963 regs through I2C in MPU9250
- * @param   address: first address of AK8963 regs to read
- * @param   num: number of byte to read
- * @return  read bytes array
- * */
-static void mpu_r_ak8963_regs(uint8_t address, uint8_t num)
-{
-	mpu_w_reg(I2C_SLV0_ADDR, AK8963_I2C_ADDR | 0x80);
-	mpu_w_reg(I2C_SLV0_REG, address);
-	mpu_w_reg(I2C_SLV0_CTRL, 0x80 | num);
-	HAL_Delay(1);
-	mpu_r_regs(EXT_SENS_DATA_00, num);
-}
-/*
- * @brief   read ak8963 WHO_AM_I reg
- * @return  AK8963 WHO_AM_I value, expected to be 0x48
- * */
-uint8_t mpu_r_ak8963_WhoAmI(MPU9250 *mpu)
-{
-	mpu_r_ak8963_regs(AK8963_WHOAMI_REG, 1);
-	return dataBuf[0];
-}
-/*
- * @brief   read mpu9250(mpu6500) WHO_AM_I reg
- * @return  mpu9250(mpu6500) WHO_AM_I value, expected to be 0x48
- * */
-uint8_t mpu_r_WhoAmI(MPU9250 *mpu)
-{
-	mpu_r_regs(WHO_AM_I, 1);
-	return dataBuf[0];
-}
-/*
- * @brief   init origin data
- * */
-static void MPU9250_StructInit(MPU9250 *mpu)
-{
-
-	for (uint8_t i = 0; i < 3; i++)
+    uint8_t buf[6],res;  
+	res=MPU_Read_Len(MPU_ADDR,MPU_GYRO_XOUTH_REG,6,buf);
+	if(res==0)
 	{
-		mpu->mpu_data.Accel[i] = 0;
-		mpu->mpu_data.Gyro[i] = 0;
-		mpu->mpu_data.Magn[i] = 0;
-
-		mpu->mpu_data.Accel_row[i] = 0;
-		mpu->mpu_data.Gyro_row[i] = 0;
-		mpu->mpu_data.Magn_row[i] = 0.0;
-	}
+		*gx=((uint16_t)buf[0]<<8)|buf[1];  
+		*gy=((uint16_t)buf[2]<<8)|buf[3];  
+		*gz=((uint16_t)buf[4]<<8)|buf[5];
+	} 	
+    return res;;
 }
-/*
- * @brief   init mpu9250
- * */
-uint8_t MPU9250_Init(MPU9250 *mpu, SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_port, uint16_t cs_pin)
+//得到加速度值(原始值)
+//gx,gy,gz:陀螺仪x,y,z轴的原始读数(带符号)
+//返回值:0,成功
+//    其他,错误代码
+uint8_t MPU_Get_Accelerometer(short *ax,short *ay,short *az)
 {
-	MPU9250_StructInit(mpu);
-
-	/* INIT PROPS BEGIN*/
-	mpu->mpu_prop.hspi = hspi;
-	mpu->mpu_prop.cs_gpio_pin = cs_pin;
-	mpu->mpu_prop.cs_gpio_port = cs_port;
-
-	/* INIT PROPS END*/
-
-	u1_printf("Now Initializing MPU9250");
-	mpu_w_reg(PWR_MGMT_1, (uint8_t)0x80); // reset MPU9250, reg107
-	DWT_Delay_us(2000);
-	// mpu_w_reg(USER_CTRL, (uint8_t) 0x20); // enable I2C master mode, reg106
-	// mpu_w_reg(I2C_MST_CTRL, (uint8_t) 0x0D); // set I2C clock speed to 400kHz, reg36
-	// mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x00); // set AK8963 to power down
-	mpu_w_reg(PWR_MGMT_1, (uint8_t)0x80); // reset MPU9250, Bit[7] will auto clear
-	DWT_Delay_us(2000);
-	// mpu_w_ak8963_reg(AK8963_CNTL2_REG, AK8963_CNTL2_SRST); // reset AK8963
-	mpu_w_reg(PWR_MGMT_1, (uint8_t)0x01); // select clock source
-	mpu_w_reg(PWR_MGMT_2, (uint8_t)0x00); // enable accel and gyro
-
-	/* init GYRO and ACCEL */
-	mpu_w_reg(SMPLRT_DIV, (uint8_t)0x00);						 // SAMPLE_RATE= Internal_Sample_Rate / (1 + SMPLRT_DIV), Internal_Sample_Rate==8K
-	mpu_w_reg(GYRO_CONFIG, (uint8_t)MPU9250_Gyro_Range_2000dps); // gyro full scale select
-	mpu_w_reg(ACCEL_CONFIG, (uint8_t)MPU9250_Accel_Range_16G);	 // accel full scale select
-	mpu_w_reg(ACCEL_CONFIG_2, (uint8_t)MPU9250_Accel_DLPFBandwidth_460);
-	mpu_w_reg(CONFIG, (uint8_t)MPU9250_Gyro_DLPFBandwidth_250);
-	/* init MAG */
-	/*
-	mpu_w_reg(USER_CTRL, (uint8_t) 0x20); // enable I2C master mode
-	mpu_w_reg(I2C_MST_CTRL, (uint8_t) 0x0D); // set I2C clock speed to 400kHz, reg36
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x00); // set AK8963 to power down
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x0f); // set AK8963 to Fuse ROM access mode
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x00); // set AK8963 to power down
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, (uint8_t) 0x16); // AK8963 working on Continuous measurement mode 2 & 16-bit output
-	HAL_Delay(100);
-	mpu_w_reg(PWR_MGMT_1, (uint8_t) 0x01); // select clock source
-	mpu_r_ak8963_regs(MAG_XOUT_L, 7);
-
-	*/
-	Calibrate_Gyro(&mpu, 100);
-	Calibrate_Accel(&mpu, 100);
-	return 1;
-}
-/*
- * @brief   read accel origin value and calculate real value
- *          data will be stored in mpu
- * */
-void MPU9250_ReadAccel(MPU9250 *mpu)
-{
-	// m/s
-	mpu_r_regs(ACCEL_XOUT_H, 6);
-	// calculate x axis
-	mpu->mpu_data.Accel_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Accel[0] = (float)mpu->mpu_data.Accel_row[0] / 208.980;
-
-	// calculate y axis
-	mpu->mpu_data.Accel_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Accel[1] = (float)mpu->mpu_data.Accel_row[1] / 208.980;
-
-	// calculate z axis
-	mpu->mpu_data.Accel_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Accel[2] = (float)mpu->mpu_data.Accel_row[2] / 208.980;
-}
-/*
- * @brief   read gyro origin value and calculate real value
- *          data will be stored in mpu
- * */
-void MPU9250_ReadGyro(MPU9250 *mpu)
-{
-	// d/s
-	mpu_r_regs(GYRO_XOUT_H, 6);
-	// calculate x axis
-	mpu->mpu_data.Gyro_row[0] = ((int16_t)dataBuf[0] << 8) | dataBuf[1];
-	mpu->mpu_data.Gyro[0] = mpu->mpu_data.Gyro_row[0] / 16.384;
-
-	// calculate y axis
-	mpu->mpu_data.Gyro_row[1] = ((int16_t)dataBuf[2] << 8) | dataBuf[3];
-	mpu->mpu_data.Gyro[1] = mpu->mpu_data.Gyro_row[1] / 16.384;
-
-	// calculate z axis
-	mpu->mpu_data.Gyro_row[2] = ((int16_t)dataBuf[4] << 8) | dataBuf[5];
-	mpu->mpu_data.Gyro[2] = mpu->mpu_data.Gyro_row[2] / 16.384;
-}
-/*
- * @brief   read mag origin value and calculate real value
- *          data will be stored in mpu
- * */
-void MPU9250_ReadMag(MPU9250 *mpu)
-{
-	uint8_t mag_adjust[3] = {0};
-	uint8_t mag_buffer[6] = {0};
-
-	mpu_r_ak8963_regs(AK8963_ASAX, 3);
-	mag_adjust[0] = dataBuf[0];
-	mag_adjust[1] = dataBuf[1];
-	mag_adjust[2] = dataBuf[2];
-
-	// read AK8963_ST2_REG is necessary
-	// ST2 register has a role as data reading end register(on page 51)
-
-	mpu_r_ak8963_regs(MAG_XOUT_L, 1);
-	mag_buffer[0] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1); // data read finish reg
-	mpu_r_ak8963_regs(MAG_XOUT_H, 1);
-	mag_buffer[1] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1);
-
-	mpu_r_ak8963_regs(MAG_YOUT_L, 1);
-	mag_buffer[2] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1);
-	mpu_r_ak8963_regs(MAG_YOUT_H, 1);
-	mag_buffer[3] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1);
-
-	mpu_r_ak8963_regs(MAG_ZOUT_L, 1);
-	mag_buffer[4] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1);
-	mpu_r_ak8963_regs(MAG_ZOUT_H, 1);
-	mag_buffer[5] = dataBuf[0];
-	mpu_r_ak8963_regs(AK8963_ST2_REG, 1);
-
-	mpu->mpu_data.Magn_row[0] = ((int16_t)mag_buffer[1] << 8) | mag_buffer[0];
-	mpu->mpu_data.Magn_row[1] = ((int16_t)mag_buffer[3] << 8) | mag_buffer[2];
-	mpu->mpu_data.Magn_row[2] = ((int16_t)mag_buffer[5] << 8) | mag_buffer[4];
-
-	// calculate real value, check page53
-	mpu->mpu_data.Magn[0] = (float)mpu->mpu_data.Magn_row[0] * (((mag_adjust[0] - 128) / 256.0) + 1);
-	mpu->mpu_data.Magn[0] = mpu->mpu_data.Magn_row[0] * 0.15;
-
-	mpu->mpu_data.Magn[1] = (float)mpu->mpu_data.Magn_row[1] * (((mag_adjust[1] - 128) / 256.0) + 1);
-	mpu->mpu_data.Magn[1] = mpu->mpu_data.Magn_row[1] * 0.15;
-
-	mpu->mpu_data.Magn[2] = (float)mpu->mpu_data.Magn_row[2] * (((mag_adjust[2] - 128) / 256.0) + 1);
-	mpu->mpu_data.Magn[2] = mpu->mpu_data.Magn_row[2] * 0.15;
-}
-/*
- * @brief   read all 9 DOF data
- *          data will be stored in mpu
- * */
-void MPU9250_ReadData(MPU9250 *mpu)
-{
-	MPU9250_ReadAccel(mpu);
-	MPU9250_ReadGyro(mpu);
-	// MPU9250_ReadMag(mpu);
-}
-
-uint8_t MPU9250_ConfigureClock(
-	MPU9250 *mpu)
-{
-	if (mpu == NULL)
+    uint8_t buf[6],res;  
+	res=MPU_Read_Len(MPU_ADDR,MPU_ACCEL_XOUTH_REG,6,buf);
+	if(res==0)
 	{
-		return 0;
-	}
-
-	mpu_w_reg(PWR_MGMT_1, 0x01); // Auto selects the best available clock source – PLL if ready, else use the Internal oscillator
-	mpu_w_reg(PWR_MGMT_2, 0x00); // Enable Accelerometer and Gyroscope
-	return 1;
+		*ax=((uint16_t)buf[0]<<8)|buf[1];  
+		*ay=((uint16_t)buf[2]<<8)|buf[3];  
+		*az=((uint16_t)buf[4]<<8)|buf[5];
+	} 	
+    return res;;
 }
-
-uint8_t MPU9250_ConfigureMagnetometer(
-	MPU9250 *mpu)
+//IIC连续写
+//addr:器件地址 
+//reg:寄存器地址
+//len:写入长度
+//buf:数据区
+//返回值:0,正常
+//    其他,错误代码
+uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
 {
-	if (mpu == NULL)
+	uint8_t i; 
+    Soft_I2C_Start(); 
+	Soft_I2C_SendByte((addr<<1)|0);//发送器件地址+写命令	
+	if(Soft_I2C_WaitAck())	//等待应答
 	{
-		return 0;
+		Soft_I2C_Stop();		 
+		return 1;		
 	}
-
-	mpu_w_reg(USER_CTRL, 0x20);				  // Enable I2C Master mode
-	mpu_w_reg(I2C_MST_CTRL, 0x0D);			  // I2C configuration multi-master 400kHz
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, 0x00); // Power down magnetometer
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, 0x0F); // Enter Fuse ROM access mode
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, 0x00); // Power down magnetometer
-	HAL_Delay(100);
-	mpu_w_ak8963_reg(AK8963_CNTL1_REG, 0x16); // Set magnetometer to continuous measurement mode 2 (100Hz) and 16-bit output
-	HAL_Delay(100);
-
-	return 1;
+    Soft_I2C_SendByte(reg);	//写寄存器地址
+    Soft_I2C_WaitAck();		//等待应答
+	for(i=0;i<len;i++)
+	{
+		Soft_I2C_SendByte(buf[i]);	//发送数据
+		if(Soft_I2C_WaitAck())		//等待ACK
+		{
+			Soft_I2C_Stop();	 
+			return 1;		 
+		}		
+	}    
+    Soft_I2C_Stop();	 
+	return 0;	
+} 
+//IIC连续读
+//addr:器件地址
+//reg:要读取的寄存器地址
+//len:要读取的长度
+//buf:读取到的数据存储区
+//返回值:0,正常
+//    其他,错误代码
+uint8_t MPU_Read_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
+{ 
+ 	Soft_I2C_Start(); 
+	Soft_I2C_SendByte((addr<<1)|0);//发送器件地址+写命令	
+	if(Soft_I2C_WaitAck())	//等待应答
+	{
+		Soft_I2C_Stop();		 
+		return 1;		
+	}
+    Soft_I2C_SendByte(reg);	//写寄存器地址
+    Soft_I2C_WaitAck();		//等待应答
+    Soft_I2C_Start();
+	Soft_I2C_SendByte((addr<<1)|1);//发送器件地址+读命令	
+    Soft_I2C_WaitAck();		//等待应答 
+	while(len)
+	{
+		if(len==1)*buf=Soft_I2C_ReadByte(0);//读数据,发送nACK 
+		else *buf=Soft_I2C_ReadByte(1);		//读数据,发送ACK  
+		len--;
+		buf++; 
+	}    
+    Soft_I2C_Stop();	//产生一个停止条件 
+	return 0;	
 }
-
-void Calibrate_Gyro(MPU9250 *mpu, uint16_t samples)
+//IIC写一个字节 
+//reg:寄存器地址
+//data:数据
+//返回值:0,正常
+//    其他,错误代码
+uint8_t MPU_Write_Byte(uint8_t reg,uint8_t data) 				 
+{ 
+    Soft_I2C_Start(); 
+	Soft_I2C_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(Soft_I2C_WaitAck())	//等待应答
+	{
+		Soft_I2C_Stop();		 
+		return 1;		
+	}
+    Soft_I2C_SendByte(reg);	//写寄存器地址
+    Soft_I2C_WaitAck();		//等待应答 
+	Soft_I2C_SendByte(data);//发送数据
+	if(Soft_I2C_WaitAck())	//等待ACK
+	{
+		Soft_I2C_Stop();	 
+		return 1;		 
+	}		 
+    Soft_I2C_Stop();	 
+	return 0;
+}
+//IIC读一个字节 
+//reg:寄存器地址 
+//返回值:读到的数据
+uint8_t MPU_Read_Byte(uint8_t reg)
 {
-	int32_t gyro_bias[3] = {0};
-	int16_t gyro_temp[3] = {0};
-	// 100次@50Hz=2秒
-	u1_printf("Calibrating Gyro with %d samples...\r\n", samples);
-	for (uint16_t i = 0; i < samples; i++)
+	uint8_t res;
+    Soft_I2C_Start(); 
+	Soft_I2C_SendByte((MPU_ADDR<<1)|0);//发送器件地址+写命令	
+	if(Soft_I2C_WaitAck())	//等待应答
 	{
-		MPU9250_ReadGyro(mpu);
-		gyro_temp[0] = mpu->mpu_data.Gyro_row[0];
-		gyro_temp[1] = mpu->mpu_data.Gyro_row[1];
-		gyro_temp[2] = mpu->mpu_data.Gyro_row[2];
-
-		gyro_bias[0] += gyro_temp[0];
-		gyro_bias[1] += gyro_temp[1];
-		gyro_bias[2] += gyro_temp[2];
-
-		DWT_Delay_us(20000); // 50Hz
+		Soft_I2C_Stop();		 
+		return 1;		
 	}
-
-	gyro_bias[0] /= samples;
-	gyro_bias[1] /= samples;
-	gyro_bias[2] /= samples;
-
-	u1_printf("Gyro Calibration Complete. Biases: X=%d, Y=%d, Z=%d\r\n",
-			  gyro_bias[0], gyro_bias[1], gyro_bias[2]);
-
-	// Store biases for later use
-	mpu->mpu_data.Gyro_Bias[0] = gyro_bias[0];
-	mpu->mpu_data.Gyro_Bias[1] = gyro_bias[1];
-	mpu->mpu_data.Gyro_Bias[2] = gyro_bias[2];
+    Soft_I2C_SendByte(reg);	//写寄存器地址
+    Soft_I2C_WaitAck();		//等待应答
+    Soft_I2C_Start();
+	Soft_I2C_SendByte((MPU_ADDR<<1)|1);//发送器件地址+读命令	
+    Soft_I2C_WaitAck();		//等待应答 
+	res=Soft_I2C_ReadByte(0);//读取数据,发送nACK 
+    Soft_I2C_Stop();			//产生一个停止条件 
+	return res;		
 }
 
-void Calibrate_Accel(MPU9250 *mpu, uint16_t samples)
-{
-	int32_t accel_bias[3] = {0};
-	int16_t accel_temp[3] = {0};
-	// 100次@50Hz=2秒
-	u1_printf("Calibrating Accel with %d samples...\r\n", samples);
-	for (uint16_t i = 0; i < samples; i++)
-	{
-		MPU9250_ReadAccel(mpu);
-		accel_temp[0] = mpu->mpu_data.Accel_row[0];
-		accel_temp[1] = mpu->mpu_data.Accel_row[1];
-		accel_temp[2] = mpu->mpu_data.Accel_row[2];
-
-		accel_bias[0] += accel_temp[0];
-		accel_bias[1] += accel_temp[1];
-		accel_bias[2] += accel_temp[2];
-
-		DWT_Delay_us(20000); // 50Hz
-	}
-
-	accel_bias[0] /= samples;
-	accel_bias[1] /= samples;
-	accel_bias[2] /= samples;
-
-	// Adjust Z-axis bias to account for gravity
-	accel_bias[2] -= 16384; // Assuming 1g = 16384 LSB for ±2g range
-
-	u1_printf("Accel Calibration Complete. Biases: X=%d, Y=%d, Z=%d\r\n",
-			  accel_bias[0], accel_bias[1], accel_bias[2]);
-
-	// Store biases for later use
-	mpu->mpu_data.Accel_Bias[0] = accel_bias[0];
-	mpu->mpu_data.Accel_Bias[1] = accel_bias[1];
-	mpu->mpu_data.Accel_Bias[2] = accel_bias[2];
-}

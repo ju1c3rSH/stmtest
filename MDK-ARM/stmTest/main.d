@@ -25,7 +25,6 @@ stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
-stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
@@ -34,14 +33,14 @@ stmtest\main.o: ../Hardwares/OLED_Data.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\main.o: ../Hardwares/mpu9250.h
-stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+stmtest\main.o: ../MDK-ARM/softiic9250.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\main.o: ../Core/Inc/delay.h
-stmtest\main.o: ../Core/Inc/MahonyAHRS.h
 stmtest\main.o: ../Core/Inc/text_utils.h
 stmtest\main.o: ../Core/Inc/subtask.h
-stmtest\main.o: ../Core/Inc/Obj/Car.h
-stmtest\main.o: ../Core/Inc/Obj/PID.h
+stmtest\main.o: ..\Core\Inc\Obj\Car.h
+stmtest\main.o: ..\Core\Inc\Obj\PID.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h 
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+stmtest\main.o: ..\DMP\eMPL\inv_mpu.h
 stmtest\main.o: ../Core/Inc/uart_pid_parse.h

@@ -66,15 +66,16 @@ void Soft_I2C_Stop(void)
   * @param  无
   * @retval 0：收到应答(ACK)，1：未收到应答(NACK)
   */
+
 uint8_t Soft_I2C_WaitAck(void)
 {
     uint8_t timeout = 0;
 
     /* 释放SDA线，由从机控制 */
     I2C_SDA_HIGH();
-    DWT_Delay_us(2);
+    DWT_Delay_us(5);
     I2C_SCL_HIGH();   // 第9个时钟脉冲，从机拉低SDA表示应答
-    DWT_Delay_us(2);
+    DWT_Delay_us(15);
 
     /* 等待SDA被从机拉低（应答），并增加超时处理 */
     while (I2C_SDA_READ())
@@ -90,6 +91,37 @@ uint8_t Soft_I2C_WaitAck(void)
     I2C_SCL_LOW();  // 拉低SCL，结束应答位
     return 0;       // 返回ACK
 }
+// uint8_t Soft_I2C_WaitAck(void)
+// {
+//     uint8_t timeout = 0;
+
+//     /* 释放SDA线，由从机控制 */
+//     I2C_SDA_HIGH();
+//     DWT_Delay_us(5);
+    
+//     /* 第9个时钟脉冲 */
+//     I2C_SCL_HIGH();
+//     DWT_Delay_us(15);    // 给从机足够时间拉低SDA
+
+//     /* 等待SDA被从机拉低（应答） */
+//     while (I2C_SDA_READ())
+//     {
+//         timeout++;
+//         if (timeout > 500)  // 超时判断
+//         {
+//             I2C_SCL_LOW();
+//             return 1;       // 返回NACK
+//         }
+//         DWT_Delay_us(2);
+//     }
+
+//     /* 收到ACK */
+//     DWT_Delay_us(2);
+//     I2C_SCL_LOW();
+//     DWT_Delay_us(2);
+    
+//     return 0;       // 返回ACK
+// }
 
 /**
   * @brief  主机发送应答信号(ACK)
@@ -197,7 +229,7 @@ int MPU6050_Write(uint8_t addr, uint8_t reg, uint8_t len, uint8_t *data) //向�
     Soft_I2C_WaitAck();
     Soft_I2C_SendByte(reg);
     Soft_I2C_WaitAck();
-	for (i = 0; i < len; i++) 
+	for (i = 0; i < len; ++i)
 	{
         Soft_I2C_SendByte(data[i]);
         Soft_I2C_WaitAck();
