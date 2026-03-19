@@ -59,7 +59,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     // g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = 0.8f;
+    g_car.Prop.Mid_Angle = 0.0f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -206,7 +206,7 @@ void Car_Get_Real_Value(void)
     g_car.Prop.Velocity_Right = (float)(g_car.Prop.Pulse_Right) * Wheel_Radius * __2PI / 13.0f / dt / 30;
 
     g_car.Prop.Distance_Left += g_car.Prop.Velocity_Left * dt;
-    g_car.Prop.Distance_Right += g_car.Prop.Velocity_Right * dt;
+    g_car.Prop.Distance_Right += g_car.Prop.Velocity_Right * dt;  
 
     /*
     //计算轮子路程
@@ -301,8 +301,8 @@ void Car_Get_Real_Value(void)
 //    g_car.Prop.Accel_Y = (short)(ay);
 //    g_car.Prop.Accel_Z = (short)(az);
     //mpu_dmp_get_data(&Blance.Car_Pitch,&Blance.Car_Roll,&Blance.Car_Yaw);//小车角度[°]
-		MPU_Get_Gyroscope((short*)&g_car.Prop.Gyro_X, (short*)&g_car.Prop.Gyro_Y, (short*)&g_car.Prop.Gyro_Z);
-		MPU_Get_Accelerometer((short*)&g_car.Prop.Accel_X, (short*)&g_car.Prop.Accel_Y, (short*)&g_car.Prop.Accel_Z);
+		//MPU_Get_Gyroscope((short*)&g_car.Prop.Gyro_X, (short*)&g_car.Prop.Gyro_Y, (short*)&g_car.Prop.Gyro_Z);
+		//MPU_Get_Accelerometer((short*)&g_car.Prop.Accel_X, (short*)&g_car.Prop.Accel_Y, (short*)&g_car.Prop.Accel_Z);
     mpu_dmp_get_data(&g_car.Prop.Pitch_Angle, &g_car.Prop.Roll_Angle, &g_car.Prop.Yaw_Angle);
     PID_Set_Current(g_car.RollPID, g_car.Prop.Roll_Angle);
     PID_Set_Current(g_car.PitchPID, g_car.Prop.Pitch_Angle);

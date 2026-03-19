@@ -1,4 +1,4 @@
-#include "MPU9250.h"
+#include "mpu9250.h"
 
 //MPU9250初始化程序
 //由正点原子MPU6050驱动修改

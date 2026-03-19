@@ -1,10 +1,10 @@
-stmtest\inv_mpu_dmp_motion_driver.o: ..\DMP\eMPL\inv_mpu_dmp_motion_driver.c
+stmtest\inv_mpu_dmp_motion_driver.o: ..\Hardwares\MPU9250\eMPL\inv_mpu_dmp_motion_driver.c
 stmtest\inv_mpu_dmp_motion_driver.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\inv_mpu_dmp_motion_driver.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
 stmtest\inv_mpu_dmp_motion_driver.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 stmtest\inv_mpu_dmp_motion_driver.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
 stmtest\inv_mpu_dmp_motion_driver.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
-stmtest\inv_mpu_dmp_motion_driver.o: ..\DMP\eMPL\inv_mpu.h
+stmtest\inv_mpu_dmp_motion_driver.o: ..\Hardwares\MPU9250\eMPL\inv_mpu.h
 stmtest\inv_mpu_dmp_motion_driver.o: ../Core/Inc/main.h
 stmtest\inv_mpu_dmp_motion_driver.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 stmtest\inv_mpu_dmp_motion_driver.o: ../Core/Inc/stm32f1xx_hal_conf.h
@@ -33,7 +33,6 @@ stmtest\inv_mpu_dmp_motion_driver.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1
 stmtest\inv_mpu_dmp_motion_driver.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 stmtest\inv_mpu_dmp_motion_driver.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\inv_mpu_dmp_motion_driver.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stmtest\inv_mpu_dmp_motion_driver.o: ..\DMP\eMPL\inv_mpu_dmp_motion_driver.h
-stmtest\inv_mpu_dmp_motion_driver.o: ..\DMP\eMPL\dmpKey.h
-stmtest\inv_mpu_dmp_motion_driver.o: ..\DMP\eMPL\dmpmap.h
-stmtest\inv_mpu_dmp_motion_driver.o: ../Core/Inc/delay.h
+stmtest\inv_mpu_dmp_motion_driver.o: ..\Hardwares\MPU9250\eMPL\inv_mpu_dmp_motion_driver.h
+stmtest\inv_mpu_dmp_motion_driver.o: ..\Hardwares\MPU9250\eMPL\dmpKey.h
+stmtest\inv_mpu_dmp_motion_driver.o: ..\Hardwares\MPU9250\eMPL\dmpmap.h

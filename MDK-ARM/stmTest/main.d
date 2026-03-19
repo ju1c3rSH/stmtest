@@ -32,8 +32,8 @@ stmtest\main.o: ../Hardwares/oled.h
 stmtest\main.o: ../Hardwares/OLED_Data.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
-stmtest\main.o: ../Hardwares/mpu9250.h
-stmtest\main.o: ../MDK-ARM/softiic9250.h
+stmtest\main.o: ..\Hardwares\MPU9250\mpu9250.h
+stmtest\main.o: ..\Hardwares\MPU9250\mpuiic.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\main.o: ../Core/Inc/delay.h
 stmtest\main.o: ../Core/Inc/text_utils.h
@@ -42,5 +42,5 @@ stmtest\main.o: ..\Core\Inc\Obj\Car.h
 stmtest\main.o: ..\Core\Inc\Obj\PID.h
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h 
 stmtest\main.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
-stmtest\main.o: ..\DMP\eMPL\inv_mpu.h
+stmtest\main.o: ..\Hardwares\MPU9250\eMPL\inv_mpu.h
 stmtest\main.o: ../Core/Inc/uart_pid_parse.h

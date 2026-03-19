@@ -3,8 +3,9 @@
 
 #include "main.h"
 #include "PID.h"
-#include "mpu9250.h"
+
 #include <stdbool.h>
+#include "MPU9250.h"
 #define __2PI 6.28318531f
 
 //#define PID_UART1_RX_BUF_SIZE 128

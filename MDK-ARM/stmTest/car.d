@@ -31,11 +31,11 @@ stmtest\car.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 stmtest\car.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 stmtest\car.o: ..\Core\Inc\Obj\PID.h
 stmtest\car.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
-stmtest\car.o: ../Hardwares/mpu9250.h
-stmtest\car.o: ../MDK-ARM/softiic9250.h
+stmtest\car.o: ..\Hardwares\MPU9250\MPU9250.h
+stmtest\car.o: ..\Hardwares\MPU9250\mpuiic.h
 stmtest\car.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 stmtest\car.o: ../Hardwares/motor.h
 stmtest\car.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
 stmtest\car.o: ../Core/Inc/MahonyAHRS.h
-stmtest\car.o: ..\DMP\eMPL\inv_mpu.h
+stmtest\car.o: ..\Hardwares\MPU9250\eMPL\inv_mpu.h
 stmtest\car.o: ../Core/Inc/text_utils.h

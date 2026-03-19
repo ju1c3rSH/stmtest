@@ -6,17 +6,37 @@
 //由正点原子MPU6050驱动修改
 
 
+#include "stm32f1xx_hal.h"  // 根据您的STM32系列调整头文件，例如 stm32f4xx_hal.h
 
-//IO方向设置
-#define MPU_SDA_IN()  {GPIOC->MODER = (GPIOC->MODER & ~(3 << (2*5))) | (0 << (2*5));}
-#define MPU_SDA_OUT() {GPIOC->MODER = (GPIOC->MODER & ~(3 << (2*5))) | (1 << (2*5));}
+/* 引脚定义 */
+#define I2C_SCL_PIN         GPIO_PIN_5
+#define I2C_SDA_PIN         GPIO_PIN_7
+#define I2C_GPIO_PORT       GPIOA
 
-////IO操作函数	 
-#define MPU_IIC_SCL_SET    HAL_GPIO_WritePin(MPU9250_SCL_GPIO_Port,MPU9250_SCL_Pin,GPIO_PIN_SET) 		//SCL
-#define MPU_IIC_SCL_RESET    HAL_GPIO_WritePin(MPU9250_SCL_GPIO_Port,MPU9250_SCL_Pin,GPIO_PIN_RESET)
-#define MPU_IIC_SDA_SET   HAL_GPIO_WritePin(MPU9250_SDA_GPIO_Port,MPU9250_SDA_Pin,GPIO_PIN_SET) 		//SDA	 
-#define MPU_IIC_SDA_RESET    HAL_GPIO_WritePin(MPU9250_SDA_GPIO_Port,MPU9250_SDA_Pin,GPIO_PIN_RESET) 		//SDA
-#define MPU_READ_SDA   HAL_GPIO_ReadPin(MPU9250_SDA_GPIO_Port,MPU9250_SDA_Pin) 		//输入SDA
+#define MPU_SDA_IN()  { \
+    GPIO_InitTypeDef GPIO_InitStruct = {0}; \
+    GPIO_InitStruct.Pin = I2C_SDA_PIN; \
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT; \
+    GPIO_InitStruct.Pull = GPIO_PULLUP; \
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH; \
+    HAL_GPIO_Init(I2C_GPIO_PORT, &GPIO_InitStruct); \
+}
+
+#define MPU_SDA_OUT() { \
+    GPIO_InitTypeDef GPIO_InitStruct = {0}; \
+    GPIO_InitStruct.Pin = I2C_SDA_PIN; \
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD; \
+    GPIO_InitStruct.Pull = GPIO_PULLUP; \
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH; \
+    HAL_GPIO_Init(I2C_GPIO_PORT, &GPIO_InitStruct); \
+}
+
+
+#define MPU_IIC_SCL_SET     HAL_GPIO_WritePin(I2C_GPIO_PORT, I2C_SCL_PIN, GPIO_PIN_SET)
+#define MPU_IIC_SCL_RESET   HAL_GPIO_WritePin(I2C_GPIO_PORT, I2C_SCL_PIN, GPIO_PIN_RESET)
+#define MPU_IIC_SDA_SET     HAL_GPIO_WritePin(I2C_GPIO_PORT, I2C_SDA_PIN, GPIO_PIN_SET)
+#define MPU_IIC_SDA_RESET   HAL_GPIO_WritePin(I2C_GPIO_PORT, I2C_SDA_PIN, GPIO_PIN_RESET)
+#define MPU_READ_SDA        HAL_GPIO_ReadPin(I2C_GPIO_PORT, I2C_SDA_PIN)
 
 //IIC所有操作函数
 void MPU_IIC_Delay(void);				//MPU IIC延时函数	

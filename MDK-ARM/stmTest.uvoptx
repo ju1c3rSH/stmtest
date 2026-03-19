@@ -153,72 +153,7 @@
           <Name>-UC -O2254 -SF10000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P1 -N00("ARM CoreSight SW-DP (ARM Core") -D00(1BA01477) -L00(0) -TO131090 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128.FLM -FS08000000 -FL010000 -FP0($$Device:STM32F103C8$Flash\STM32F10x_128.FLM) -WA0 -WE0 -WVCE4 -WS2710 -WM0 -WP2 -WK0-R0</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>305</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134221034</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\Obj\Car.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../Core/Src/Obj/Car.c\305</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>304</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134221022</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\Obj\Car.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../Core/Src/Obj/Car.c\304</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>13</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134229814</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Hardwares\mpu9250.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../Hardwares/mpu9250.c\13</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>842</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134244860</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\DMP\eMPL\inv_mpu.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stmTest\../DMP/eMPL/inv_mpu.c\842</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -278,7 +213,7 @@
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop.Gyro_Y</ItemText>
+          <ItemText>\\stmTest\../Core/Src/Obj/Car.c\g_car.Prop.Gyro_Y,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
@@ -821,8 +756,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Hardwares\mpu9250.c</PathWithFileName>
-      <FilenameWithoutPath>mpu9250.c</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\motor.c</PathWithFileName>
+      <FilenameWithoutPath>motor.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -833,8 +768,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Hardwares\motor.c</PathWithFileName>
-      <FilenameWithoutPath>motor.c</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\MPU9250\mpuiic.c</PathWithFileName>
+      <FilenameWithoutPath>mpuiic.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -845,20 +780,20 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\softiic9250.c</PathWithFileName>
-      <FilenameWithoutPath>softiic9250.c</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\MPU9250\eMPL\inv_mpu.c</PathWithFileName>
+      <FilenameWithoutPath>inv_mpu.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
       <FileNumber>29</FileNumber>
-      <FileType>5</FileType>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\softiic9250.h</PathWithFileName>
-      <FilenameWithoutPath>softiic9250.h</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\MPU9250\eMPL\inv_mpu_dmp_motion_driver.c</PathWithFileName>
+      <FilenameWithoutPath>inv_mpu_dmp_motion_driver.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -869,20 +804,32 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\DMP\eMPL\inv_mpu.c</PathWithFileName>
-      <FilenameWithoutPath>inv_mpu.c</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\MPU9250\MPU9250.c</PathWithFileName>
+      <FilenameWithoutPath>MPU9250.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
       <FileNumber>31</FileNumber>
-      <FileType>1</FileType>
+      <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\DMP\eMPL\inv_mpu_dmp_motion_driver.c</PathWithFileName>
-      <FilenameWithoutPath>inv_mpu_dmp_motion_driver.c</FilenameWithoutPath>
+      <PathWithFileName>..\Hardwares\MPU9250\MPU9250.h</PathWithFileName>
+      <FilenameWithoutPath>MPU9250.h</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>5</GroupNumber>
+      <FileNumber>32</FileNumber>
+      <FileType>5</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\Hardwares\MPU9250\mpuiic.h</PathWithFileName>
+      <FilenameWithoutPath>mpuiic.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -890,13 +837,13 @@
 
   <Group>
     <GroupName>Application/User/Core/Obj</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
-      <FileNumber>32</FileNumber>
+      <FileNumber>33</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -908,9 +855,9 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
-      <FileNumber>33</FileNumber>
+      <FileNumber>34</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\Core\Src\Obj\Car.c</PathWithFileName>

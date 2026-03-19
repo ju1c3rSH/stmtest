@@ -32,6 +32,6 @@ stmtest\stm32f1xx_it.o: ../Core/Inc/stm32f1xx_it.h
 stmtest\stm32f1xx_it.o: ..\Core\Inc\Obj\Car.h
 stmtest\stm32f1xx_it.o: ..\Core\Inc\Obj\PID.h
 stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
-stmtest\stm32f1xx_it.o: ../Hardwares/mpu9250.h
-stmtest\stm32f1xx_it.o: ../MDK-ARM/softiic9250.h
+stmtest\stm32f1xx_it.o: ..\Hardwares\MPU9250\MPU9250.h
+stmtest\stm32f1xx_it.o: ..\Hardwares\MPU9250\mpuiic.h
 stmtest\stm32f1xx_it.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h

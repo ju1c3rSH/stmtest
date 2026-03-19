@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB,EMPL</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;..\DMP\eMPL;..\Core\Inc\Obj</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;..\DMP\eMPL;..\Core\Inc\Obj;..\Hardwares\MPU9250;..\Hardwares\MPU9250\eMPL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -519,6 +519,75 @@
         </Group>
         <Group>
           <GroupName>Hardwares</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>2</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath>..\Hardwares\MPU9250</IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>ascii16.c</FileName>
@@ -531,34 +600,39 @@
               <FilePath>..\Hardwares\ascii16.h</FilePath>
             </File>
             <File>
-              <FileName>mpu9250.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\mpu9250.c</FilePath>
-            </File>
-            <File>
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardwares\motor.c</FilePath>
             </File>
             <File>
-              <FileName>softiic9250.c</FileName>
+              <FileName>mpuiic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\softiic9250.c</FilePath>
-            </File>
-            <File>
-              <FileName>softiic9250.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\softiic9250.h</FilePath>
+              <FilePath>..\Hardwares\MPU9250\mpuiic.c</FilePath>
             </File>
             <File>
               <FileName>inv_mpu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\DMP\eMPL\inv_mpu.c</FilePath>
+              <FilePath>..\Hardwares\MPU9250\eMPL\inv_mpu.c</FilePath>
             </File>
             <File>
               <FileName>inv_mpu_dmp_motion_driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\DMP\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+              <FilePath>..\Hardwares\MPU9250\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>MPU9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardwares\MPU9250\MPU9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>MPU9250.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Hardwares\MPU9250\MPU9250.h</FilePath>
+            </File>
+            <File>
+              <FileName>mpuiic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Hardwares\MPU9250\mpuiic.h</FilePath>
             </File>
           </Files>
         </Group>
