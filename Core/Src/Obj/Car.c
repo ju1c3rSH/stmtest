@@ -6,7 +6,7 @@
 #include "inv_mpu.h"
 Car_TypeDef g_car;
 #define CONTROL_DT (1.0f / 300.0f)
-#define PWM_ARR 3599
+#define PWM_ARR 7199
 #define PI 3.14159265358979323846f
 #include "text_utils.h"
 extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
@@ -59,7 +59,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SetDistance = 0.0f;
     g_car.SetYaw = 0.0f;
     // g_car.SetMid_Angle = 0.0f;
-    g_car.Prop.Mid_Angle = 0.0f;
+    g_car.Prop.Mid_Angle = 1.0f;
     // 初始化状态
     g_car.Flag.Enable_Accelerate = false;
     g_car.Flag.Stop_PWM = false;
@@ -113,8 +113,8 @@ void Car_Init(MPU9250 *mpu)
     g_car.SpeedPID->Kd = g_stored_pid_params[PID_TYPE_SPEED].Kd; // 不需要用到D
     g_car.SpeedPID->a = g_stored_pid_params[PID_TYPE_SPEED].a;
     // g_car.SpeedPID->Kd = 0.01f;
-    g_car.SpeedPID->I_Max = 30.0f;
-    g_car.SpeedPID->Out_Max = 3000.0f;
+    g_car.SpeedPID->I_Max = 10000.0f;
+    g_car.SpeedPID->Out_Max = 5000.0f;
     g_car.SpeedPID->Out = 0.0f;
     g_car.SpeedPID->Error = 0;
     g_car.SpeedPID->Last_Error = 0;

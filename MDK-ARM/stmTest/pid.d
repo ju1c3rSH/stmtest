@@ -1,5 +1,5 @@
 stmtest\pid.o: ..\Core\Src\Obj\PID.c
-stmtest\pid.o: ..\Core\Inc\Obj\PID.h
+stmtest\pid.o: ../Core/Inc/Obj/PID.h
 stmtest\pid.o: G:\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
 stmtest\pid.o: ../Core/Inc/main.h
 stmtest\pid.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h

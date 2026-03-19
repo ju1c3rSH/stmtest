@@ -99,11 +99,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     if (car_instance != NULL)
     {
-      //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
       Get_Data_SubTask();
-			//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+//			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
       Normal_Balance_SubTask(car_instance);
-      //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
     }
   }
 }
@@ -144,6 +144,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
@@ -254,11 +255,11 @@ int main(void)
       //         g_car.Prop.Pitch_Angle,
       //         g_car.Prop.Roll_Angle,
       //         g_car.Prop.Full_Yaw);
-      u1_printf("%.2f,%.2f,%.2f,%.2f\r\n",
+      u1_printf("%.2f,%.2f,%.2f\r\n",
               g_car.Prop.Pitch_Angle,
-              g_car.Prop.Roll_Angle,
-              g_car.Prop.Full_Yaw,
-              g_car.PitchPID->Out);
+              g_car.SpeedPID->Error,
+              g_car.SpeedPID->I_Out
+            );
 
     //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     /*

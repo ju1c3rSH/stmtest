@@ -82,7 +82,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
+            <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB,EMPL</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;..\DMP\eMPL;..\Core\Inc\Obj;..\Hardwares\MPU9250;..\Hardwares\MPU9250\eMPL</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;../DMP/eMPL;../Core/Inc/Obj;../Hardwares/MPU9250;../Hardwares/MPU9250/eMPL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -441,6 +441,16 @@
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f1xx_hal_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_tim_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f1xx_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</FilePath>
@@ -489,16 +499,6 @@
               <FileName>stm32f1xx_hal_exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_tim_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32f1xx_hal_uart.c</FileName>
