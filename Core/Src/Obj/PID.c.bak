@@ -3,7 +3,7 @@
 
 #define  kpo 2.75537f
 PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT] = {
-    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-140.0f, .Ki = 0.0f, .Kd = -3.955f},
+    [PID_TYPE_BALANCE_PITCH] = {.pid_type = PID_TYPE_BALANCE_PITCH, .Kp =-137.2f, .Ki = 0.0f, .Kd = -4.273f},
     [PID_TYPE_BALANCE_YAW] = {.pid_type = PID_TYPE_BALANCE_YAW, .Kp = -300.0, .Ki = 0.0f, .Kd = -1.0f,.a = 0.0f},
 		//[PID_TYPE_SPEED] = {.pid_type = PID_TYPE_SPEED, .Kp = 3.354f, .Ki  = 0.01681f, .Kd = 0.00f,.a = 0.9f},
     

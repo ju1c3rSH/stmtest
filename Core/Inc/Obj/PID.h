@@ -38,8 +38,8 @@ typedef struct
     float Out;
     float Out_Max;
     float Current;
-    float a;
-    uint8_t Clear;
+    float filter_alpha;     // 误差低通滤波系数 (0~1)
+    uint8_t Clear;          // 清除标志 (保留未使用)
     PID_Type_t pid_type;
 
 } PID_TypeDef;

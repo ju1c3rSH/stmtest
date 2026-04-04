@@ -111,7 +111,7 @@ void Car_Init(MPU9250 *mpu)
     g_car.SpeedPID->Kp = g_stored_pid_params[PID_TYPE_SPEED].Kp;
     g_car.SpeedPID->Ki = g_stored_pid_params[PID_TYPE_SPEED].Ki;
     g_car.SpeedPID->Kd = g_stored_pid_params[PID_TYPE_SPEED].Kd; // 不需要用到D
-    g_car.SpeedPID->a = g_stored_pid_params[PID_TYPE_SPEED].a;
+    g_car.SpeedPID->filter_alpha = g_stored_pid_params[PID_TYPE_SPEED].filter_alpha;
     // g_car.SpeedPID->Kd = 0.01f;
     g_car.SpeedPID->I_Max = 10000.0f;
     g_car.SpeedPID->Out_Max = 5000.0f;
