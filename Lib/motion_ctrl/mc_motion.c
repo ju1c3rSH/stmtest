@@ -153,7 +153,8 @@ void mc_tick(mc_ctx_t *ctx)
         yaw_set += ctx->pid_line.out_value;
     }
 
-    /* ---- 4. Yaw PID (500 Hz) ---- */
+    /* ---- 4. Yaw PID (skip in spin mode) ---- */
+    if (path_out.mode != MC_CTRL_SPIN)
     {
         uint32_t yaw_period = ctx->control_freq / MC_PID_YAW_FREQ_HZ;
         if (yaw_period < 1) yaw_period = 1;
@@ -164,10 +165,20 @@ void mc_tick(mc_ctx_t *ctx)
     }
 
     /* ---- 5. Differential steering ---- */
-    float spd_rpm = path_out.speed_rpm;
-    float yaw_corr = ctx->pid_yaw.out_value;
-    float r_set = spd_rpm + yaw_corr;
-    float l_set = spd_rpm - yaw_corr;
+    float r_set, l_set;
+
+    if (path_out.mode == MC_CTRL_SPIN)
+    {
+        r_set =  path_out.spin_rpm;
+        l_set = -path_out.spin_rpm;
+    }
+    else
+    {
+        float spd_rpm = path_out.speed_rpm;
+        float yaw_corr = ctx->pid_yaw.out_value;
+        r_set = spd_rpm + yaw_corr;
+        l_set = spd_rpm - yaw_corr;
+    }
 
     /* ---- 6. Wheel PID (1 kHz) ---- */
     mc_pid_parallel(&ctx->pid_wheel_r, r_set, ctx->fusion.wheel_spd[1]);

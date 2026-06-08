@@ -174,8 +174,10 @@ void mc_path_tick(mc_path_ctx_t *ctx, float m_yaw, float m_pos,
                   float wheel_d, mc_path_output_t *out)
 {
     /* Default: zero output */
+    out->mode = MC_CTRL_NORMAL;
     out->speed_rpm = 0.0f;
     out->yaw_set = m_yaw;
+    out->spin_rpm = 0.0f;
     out->line_pid_en = 0;
 
     if (ctx->state == MC_PATH_IDLE || ctx->state == MC_PATH_DONE)
@@ -300,17 +302,20 @@ void mc_path_tick(mc_path_ctx_t *ctx, float m_yaw, float m_pos,
 
         case MC_SEG_SPIN:
         {
-            out->speed_rpm = 0.0f;
+            out->mode = MC_CTRL_SPIN;
             float remaining = seg->p.spin.target_heading - m_yaw;
             float step = seg->p.spin.spin_speed * MC_CONTROL_PERIOD_S;
             if (mc_abs(remaining) < step)
             {
+                out->spin_rpm = 0.0f;
                 out->yaw_set = seg->p.spin.target_heading;
                 advance_segment(ctx);
             }
             else
             {
-                out->yaw_set = m_yaw + mc_sign(remaining) * step;
+                float base_rpm = seg->p.spin.spin_speed * MC_WHEEL_BASE / (6.0f * wheel_d);
+                out->spin_rpm = - base_rpm * mc_sign(remaining);
+                out->yaw_set = seg->p.spin.target_heading;
             }
             break;
         }

@@ -181,6 +181,14 @@ typedef struct
 
 } mc_path_ctx_t;
 
+/* ========== Control Mode ========== */
+
+typedef enum
+{
+    MC_CTRL_NORMAL = 0,
+    MC_CTRL_SPIN,
+} mc_ctrl_mode_t;
+
 /* ========== Path Executor Output ========== */
 
 /**
@@ -188,8 +196,10 @@ typedef struct
  */
 typedef struct
 {
+    mc_ctrl_mode_t mode;
     float speed_rpm;        /* forward speed in RPM */
     float yaw_set;          /* yaw setpoint in degrees */
+    float spin_rpm;         /* direct spin diff RPM (MC_CTRL_SPIN only) */
     uint8_t line_pid_en;    /* 1 = apply line-follow PID overlay */
 } mc_path_output_t;
 

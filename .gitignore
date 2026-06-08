@@ -1,2 +1,15 @@
 *.bak
 MDK-ARM/stmTest/
+
+# 编译中间文件
+*.o
+*.crf
+*.d
+*.map
+*.lnp
+*.htm
+*.dep
+
+# MDK 工程备份
+*.uvoptx.bak
+*.uvprojx.bak
