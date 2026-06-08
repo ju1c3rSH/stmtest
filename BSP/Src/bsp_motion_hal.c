@@ -15,13 +15,13 @@ static void motor_set(float left, float right)
 }
 
 /* ------------------------------------------------------------------ */
-/*  Encoder: A on right wheel, B on left wheel                         */
-/*  B inverted to match forward-positive convention                    */
+/*  Encoder: B = left wheel (counts up for forward)                   */
+/*           A = right wheel (counts down for forward → negated)      */
 /* ------------------------------------------------------------------ */
 static void encoder_read(int32_t *left, int32_t *right)
 {
-    *left  = (int16_t)(-(int16_t)Encoder_Get_B());  /* B = left  encoder, negated */
-    *right = (int16_t)Encoder_Get_A();               /* A = right encoder         */
+    *left  = (int16_t)Encoder_Get_B();
+    *right = (int16_t)(-(int16_t)Encoder_Get_A());
 }
 
 /* ------------------------------------------------------------------ */

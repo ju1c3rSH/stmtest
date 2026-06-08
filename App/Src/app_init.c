@@ -61,7 +61,7 @@ void App_Init(void)
     BSP_Motion_Init();
 
     mc_init(&g_mc_ctx);
-    mc_set_params(&g_mc_ctx, 0.064f, 0.1657f, 200);
+    mc_set_params(&g_mc_ctx, 0.068f, 0.176f, 200);
 
     mc_start_path(&g_mc_ctx, s_test_path);
     u1_printf("motion_ctrl test started\r\n");
@@ -69,13 +69,12 @@ void App_Init(void)
 
 void App_MainLoop(void)
 {
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
     const mc_fusion_t *f = mc_get_fusion(&g_mc_ctx);
     u1_printf("%.1f,%.1f,%.3f,%u,%u\r\n",
-              f->yaw_multi,
-              f->wheel_spd[0],
-              f->forward_speed,
-              mc_get_seg_index(&g_mc_ctx),
-              mc_get_state(&g_mc_ctx));
+              f->yaw_multi, f->wheel_spd[0], f->forward_speed,
+              mc_get_seg_index(&g_mc_ctx), mc_get_state(&g_mc_ctx));
 
     HAL_Delay(50);
 }

@@ -11,11 +11,11 @@
 
 /* ========== Physical Constants ========== */
 #ifndef MC_WHEEL_DIAMETER
-#define MC_WHEEL_DIAMETER           0.064f      /* wheel diameter (m), Wheel_Radius=0.032 */
+#define MC_WHEEL_DIAMETER           0.068f      /* wheel diameter (m), Wheel_Radius=0.034 */
 #endif
 
 #ifndef MC_WHEEL_BASE
-#define MC_WHEEL_BASE               0.1657f     /* track width (m) */
+#define MC_WHEEL_BASE               0.176f      /* track width (m) */
 #endif
 
 #ifndef MC_GEAR_RATIO
@@ -23,7 +23,7 @@
 #endif
 
 #ifndef MC_ENCODER_PPR
-#define MC_ENCODER_PPR              2000        /* encoder pulses per revolution */
+#define MC_ENCODER_PPR              52          /* encoder pulses per revolution (hall, motor shaft, 4× quadrature) */
 #endif
 
 /* ========== Control Frequencies ========== */
@@ -72,7 +72,7 @@
 
 /* ========== PID Defaults ========== */
 #ifndef MC_PID_WHEEL_KP
-#define MC_PID_WHEEL_KP             20.0f
+#define MC_PID_WHEEL_KP             40.0f
 #endif
 #ifndef MC_PID_WHEEL_KI
 #define MC_PID_WHEEL_KI             10.0f
