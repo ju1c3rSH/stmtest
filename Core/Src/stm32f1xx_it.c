@@ -23,8 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-// #include "atgm336h.h"
-#include "Car.h"
+// #include "bsp_gnss.h"
+#include "car_model.h"
 #include "stdint.h"
 
 
@@ -264,7 +264,7 @@ void USART1_IRQHandler(void)
     rx_data.length = len;
   
 
-    return; //返回，避免再进 HAL_UART_IRQHandler
+    return; //返回，避免再�?HAL_UART_IRQHandler
   }
   /*
   if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)) {
@@ -281,7 +281,7 @@ void USART1_IRQHandler(void)
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
-  // 如果不是 IDLE 中断，交给 HAL 处理其他中断（如错误）
+  // 如果不是 IDLE 中断，交�?HAL 处理其他中断（如错误�?
   /* USER CODE END USART1_IRQn 1 */
 }
 

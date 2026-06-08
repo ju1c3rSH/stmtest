@@ -66,6 +66,7 @@ void Error_Handler(void);
 #define OLED_SDA_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+#define PI 3.14159265358979323846f
 #define GY_CS_Pin GPIO_PIN_15
 #define GY_CS_GPIO_Port GPIOB
 #define PID_UART1_RX_BUF_SIZE 128

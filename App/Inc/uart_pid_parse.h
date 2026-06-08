@@ -1,0 +1,42 @@
+#ifndef __UART_PID_PARSE_H__
+#define __UART_PID_PARSE_H__
+#include <stdint.h>
+#include <stdbool.h>
+#include "pid_controller.h"
+#include "car_model.h"
+//统一引用上层上下文
+//#define UART1_PID_BUFFER_SIZE 256
+//static uint8_t s_uart1_rx_buf[UART1_PID_BUFFER_SIZE];
+typedef struct
+{
+    uint32_t buffer[PID_UART1_RX_BUF_SIZE];
+    float kp;
+    float ki;
+    float kd;
+    PID_Type_t pid_type;
+    // uint32_t checkSum;
+} PID_UART_PARSE_Params_t;
+
+extern PID_TypeDef g_stored_pid_params[PID_TYPE_COUNT];
+typedef struct
+{
+    uint32_t magic_number;
+    float kp;
+    float ki;
+    float kd;
+    PID_Type_t pid_type;
+} PID_Flash_Params_t;
+
+extern float g_kp;
+extern float g_ki;
+extern float g_kd;
+
+
+//void Callback_ParsePID(uint8_t *buf, uint16_t len);;
+
+void LoadPIDParamsFromFlash(void);
+bool SavePIDParamsToFlash(PID_Type_t pid_type, float kp, float ki, float kd);
+void SetPIDParams(PID_Type_t pid_type,float kp, float ki, float kd);
+bool UART1_ParsePIDData(uint8_t *buf, uint16_t len, PID_UART_PARSE_Params_t *pid_params);
+
+#endif // __UART_PID_PARSE_H

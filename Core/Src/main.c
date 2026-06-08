@@ -1,43 +1,27 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2025 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define PI 3.14159265358979323846f
-#include "oled.h"
-#include <stdio.h>
-#include <stdbool.h>
-#include "mpu9250.h"
-#include <math.h>
-#include "delay.h"
-//#include "MahonyAHRS.h"
-#include "text_utils.h"
-#include "subtask.h"
-#include <stdarg.h >
-#include <string.h>
-// #include "atgm336h.h"
-#include "inv_mpu.h"
-#include "oled.h"
-#include "Car.h"
-#include "uart_pid_parse.h"
+#include "app_init.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,18 +31,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// GPS_PropTypeDef g_gps_data = {0};
 extern uint8_t s_pid_uart_rx_buf[PID_UART1_RX_BUF_SIZE];
-
-// extern SemaphoreHandle_t xGnssMutex;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-MPU9250 mpu = {0};
-Car_TypeDef *car_instance;
-volatile uint8_t control_tick = 0;
-#define CONTROL_RATIO 5 // 1000Hz / 5 = 200Hz
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -85,28 +63,10 @@ static void MX_TIM4_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
-int fputc(int ch, FILE *file)
-{
-  return HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100);
-}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if (htim->Instance == TIM1)
-  {
-    if (car_instance != NULL)
-    {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
-      Get_Data_SubTask();
-//			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
-      Normal_Balance_SubTask(car_instance);
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
-    }
-  }
-}
 
 /* USER CODE END 0 */
 
@@ -146,156 +106,22 @@ int main(void)
   MX_TIM4_Init();
 
   /* USER CODE BEGIN 2 */
-  DWT_Delay_Init();
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-  // 使能TB6612
-
-
-   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);
-  //拉高PB15，使能iic的09250
-
-  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET);
-  //拉低pa6，使得iic9250地址为0 68
-  // LoadPIDParamsFromFlash();
-
-  DWT_Delay_us(20000);
-  Car_Init(&mpu);
-  car_instance = Car_GetInstance();
-  // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
-
-  if (MPU_Init())
-  {
-    u1_printf("MPU9250 init SUCCESSFUL\r\n");
-  }
-  else
-  {
-    u1_printf("MPU9250 init FAILED\r\n");
-  }
-	  while(mpu_dmp_init());
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-
-  u1_printf("Bias X=%.2f Y=%.2f Z=%.2f\n",
-            mpu.mpu_data.Gyro_Bias[0],
-            mpu.mpu_data.Gyro_Bias[1],
-            mpu.mpu_data.Gyro_Bias[2]);
-
-  /*  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-    */
-  // initPIDMutex();
-
-  Set_PID(&g_stored_pid_params[PID_TYPE_BALANCE_PITCH], // pitch
-          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
-          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
-          g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd);
-  Set_PID(&g_stored_pid_params[PID_TYPE_BALANCE_YAW], // yaw
-          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
-          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
-          g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd);
-  Set_PID(&g_stored_pid_params[PID_TYPE_SPEED], // speed
-          g_stored_pid_params[PID_TYPE_SPEED].Kp,
-          g_stored_pid_params[PID_TYPE_SPEED].Ki,
-          g_stored_pid_params[PID_TYPE_SPEED].Kd);
-
-  u1_printf("{\"data\":{"
-            "\"pitch_kp\":%.3f,\"pitch_ki\":%.3f,\"pitch_kd\":%.3f,"
-            "\"yaw_kp\":%.3f,\"yaw_ki\":%.3f,\"yaw_kd\":%.3f,"
-            "\"speed_kp\":%.3f,\"speed_ki\":%.3f,\"speed_kd\":%.3f"
-            "}}\n",
-            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kp,
-            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Ki,
-            g_stored_pid_params[PID_TYPE_BALANCE_PITCH].Kd,
-            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kp,
-            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Ki,
-            g_stored_pid_params[PID_TYPE_BALANCE_YAW].Kd,
-            g_stored_pid_params[PID_TYPE_SPEED].Kp,
-            g_stored_pid_params[PID_TYPE_SPEED].Ki,
-            g_stored_pid_params[PID_TYPE_SPEED].Kd);
-  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);   // AIN1 = 1
-  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // AIN2 = 0
-  // uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3);   // 获取当前周期值 (ARR)
-  // uint32_t pulse_value = (period + 1) / 2;              //(CCR = ARR/2)
-  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulse_value);
-  //  StartUART1DMAReceive();
-
-  //Mahony_Init(200.0f);
-  // Test_SPI_Communication();
-
-  // ATGM336H_Init(&g_gps_data);
-  /*
-     OLED_PropTypeDef oled_cfg = {
-          .scl_gpio_port = OLED_SCL_GPIO_Port,
-          .scl_gpio_pin  = OLED_SCL_Pin,
-          .sda_gpio_port = OLED_SDA_GPIO_Port,
-          .sda_gpio_pin  = OLED_SDA_Pin
-      };
-
-      // 初始化 OLED（内部会创建 mutex + 发送初始化命令）
-      OLED_InitWithConfig(&oled_cfg);
-      OLED_Init();        // 发送 SSD1306 初始化序列
-
-      OLED_Clear();
-      OLED_ShowString(0, 0, "OLED OK!", 8);
-      OLED_Update();
-    */
+  App_Init();
   MX_TIM1_Init();
-  uint32_t last_time = HAL_GetTick();
-  //const uint32_t CONTROL_PERIOD_MS = 5; // 200 Hz
-
-  while (1)
-  {
-      // u1_printf("{\"sensor\":\"mpu9250\",\"data\":{\"attitude\":{\"pitch\":%.2f,\"roll\":%.2f,\"yaw\":%.2f}}}\r\n",
-      //         g_car.Prop.Pitch_Angle,
-      //         g_car.Prop.Roll_Angle,
-      //         g_car.Prop.Full_Yaw);
-      u1_printf("%.2f,%.2f,%.2f\r\n",
-              g_car.Prop.Pitch_Angle,
-              g_car.SpeedPID->Error,
-              g_car.SpeedPID->I_Out
-            );
-
-    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    /*
-     static uint32_t debug_cnt = 0;
-     if (HAL_GetTick() - debug_cnt > 1000)
-     {
-       debug_cnt = HAL_GetTick();
-       uint32_t tim1_cnt = __HAL_TIM_GET_COUNTER(&htim1);
-       u1_printf("TIM1 Counter: %d\r\n", tim1_cnt); // 若计数一直增长，说明定时器在运行
-     }
-
-     uint32_t current_time = HAL_GetTick();
-       if (current_time - last_time >= CONTROL_PERIOD_MS)
-       {
-           last_time = current_time;
-           HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-           Get_Data_SubTask();
-           Normal_Balance_SubTask(car_instance);
-       }
-   }
-
-     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-     Get_Data_SubTask();
-     Normal_Balance_SubTask(car_instance);
-     */
-  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    App_MainLoop();
+    /* USER CODE END 3 */
+  }
+  /* USER CODE END 2 */
 
-  /* USER CODE END 3 */
 }
 
 /**

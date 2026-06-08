@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB,EMPL</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardwares;../MDK-ARM;../DMP/eMPL;../Core/Inc/Obj;../Hardwares/MPU9250;../Hardwares/MPU9250/eMPL</IncludePath>
+              <IncludePath>../App/Inc;../BSP/Inc;../BSP/Src/eMPL;../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Lib/Inc;../Lib/motion_ctrl;../Middlewares/MahonyAHRS</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -393,33 +393,38 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/Core</GroupName>
+          <GroupName>Application/App</GroupName>
           <Files>
-            <File>
-              <FileName>text_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\text_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>text_utils.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\text_utils.h</FilePath>
-            </File>
-            <File>
-              <FileName>delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>subtask.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\subtask.c</FilePath>
-            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
+            <File>
+              <FileName>subtask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/subtask.c</FilePath>
+            </File>
+            <File>
+              <FileName>text_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/text_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_pid_parse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/uart_pid_parse.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/app_init.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/Core</GroupName>
+          <Files>
             <File>
               <FileName>stm32f1xx_it.c</FileName>
               <FileType>1</FileType>
@@ -429,6 +434,131 @@
               <FileName>stm32f1xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f1xx_hal_msp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>BSP</GroupName>
+          <Files>
+            <File>
+              <FileName>bsp_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled_font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_oled_font.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_mpu9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_mpu9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_mpu9250_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_mpu9250_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gnss.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_gnss.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_motion_hal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/bsp_motion_hal.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>BSP/eMPL</GroupName>
+          <Files>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/eMPL/inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/Src/eMPL/inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Lib</GroupName>
+          <Files>
+            <File>
+              <FileName>car_model.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/Src/car_model.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid_controller.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/Src/pid_controller.c</FilePath>
+            </File>
+            <File>
+              <FileName>speed_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/Src/speed_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_motion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_motion.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_fusion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_fusion.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_path.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_path.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_bezier.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_bezier.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_spline.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_spline.c</FilePath>
+            </File>
+            <File>
+              <FileName>mc_platform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Lib/motion_ctrl/mc_platform.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares</GroupName>
+          <Files>
+            <File>
+              <FileName>MahonyAHRS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/MahonyAHRS/MahonyAHRS.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -514,140 +644,6 @@
               <FileName>system_stm32f1xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/system_stm32f1xx.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Hardwares</GroupName>
-          <GroupOption>
-            <CommonProperty>
-              <UseCPPCompiler>0</UseCPPCompiler>
-              <RVCTCodeConst>0</RVCTCodeConst>
-              <RVCTZI>0</RVCTZI>
-              <RVCTOtherData>0</RVCTOtherData>
-              <ModuleSelection>0</ModuleSelection>
-              <IncludeInBuild>2</IncludeInBuild>
-              <AlwaysBuild>2</AlwaysBuild>
-              <GenerateAssemblyFile>2</GenerateAssemblyFile>
-              <AssembleAssemblyFile>2</AssembleAssemblyFile>
-              <PublicsOnly>2</PublicsOnly>
-              <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
-              <ComprImg>1</ComprImg>
-            </CommonProperty>
-            <GroupArmAds>
-              <Cads>
-                <interw>2</interw>
-                <Optim>0</Optim>
-                <oTime>2</oTime>
-                <SplitLS>2</SplitLS>
-                <OneElfS>2</OneElfS>
-                <Strict>2</Strict>
-                <EnumInt>2</EnumInt>
-                <PlainCh>2</PlainCh>
-                <Ropi>2</Ropi>
-                <Rwpi>2</Rwpi>
-                <wLevel>0</wLevel>
-                <uThumb>2</uThumb>
-                <uSurpInc>2</uSurpInc>
-                <uC99>2</uC99>
-                <uGnu>2</uGnu>
-                <useXO>2</useXO>
-                <v6Lang>0</v6Lang>
-                <v6LangP>0</v6LangP>
-                <vShortEn>2</vShortEn>
-                <vShortWch>2</vShortWch>
-                <v6Lto>2</v6Lto>
-                <v6WtE>2</v6WtE>
-                <v6Rtti>2</v6Rtti>
-                <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath>..\Hardwares\MPU9250</IncludePath>
-                </VariousControls>
-              </Cads>
-              <Aads>
-                <interw>2</interw>
-                <Ropi>2</Ropi>
-                <Rwpi>2</Rwpi>
-                <thumb>2</thumb>
-                <SplitLS>2</SplitLS>
-                <SwStkChk>2</SwStkChk>
-                <NoWarn>2</NoWarn>
-                <uSurpInc>2</uSurpInc>
-                <useXO>2</useXO>
-                <ClangAsOpt>0</ClangAsOpt>
-                <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
-                </VariousControls>
-              </Aads>
-            </GroupArmAds>
-          </GroupOption>
-          <Files>
-            <File>
-              <FileName>ascii16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\ascii16.c</FilePath>
-            </File>
-            <File>
-              <FileName>ascii16.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardwares\ascii16.h</FilePath>
-            </File>
-            <File>
-              <FileName>motor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\motor.c</FilePath>
-            </File>
-            <File>
-              <FileName>mpuiic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\MPU9250\mpuiic.c</FilePath>
-            </File>
-            <File>
-              <FileName>inv_mpu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\MPU9250\eMPL\inv_mpu.c</FilePath>
-            </File>
-            <File>
-              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\MPU9250\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
-            </File>
-            <File>
-              <FileName>MPU9250.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardwares\MPU9250\MPU9250.c</FilePath>
-            </File>
-            <File>
-              <FileName>MPU9250.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardwares\MPU9250\MPU9250.h</FilePath>
-            </File>
-            <File>
-              <FileName>mpuiic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardwares\MPU9250\mpuiic.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/User/Core/Obj</GroupName>
-          <Files>
-            <File>
-              <FileName>PID.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\Obj\PID.c</FilePath>
-            </File>
-            <File>
-              <FileName>Car.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\Obj\Car.c</FilePath>
             </File>
           </Files>
         </Group>
