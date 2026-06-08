@@ -10,18 +10,18 @@ static void motor_set(float left, float right)
 {
     int16_t l = (int16_t)(left  * 3599.0f);
     int16_t r = (int16_t)(right * 3599.0f);
-    Set_Motor_A_Speed(l);
-    Set_Motor_B_Speed(r);
+    Set_Motor_A_Speed(r);    /* A = right wheel */
+    Set_Motor_B_Speed(l);    /* B = left wheel  */
 }
 
 /* ------------------------------------------------------------------ */
-/*  Encoder: read delta and reset counter                              */
-/*  NOTE: right encoder is inverted to match forward-positive conv     */
+/*  Encoder: A on right wheel, B on left wheel                         */
+/*  B inverted to match forward-positive convention                    */
 /* ------------------------------------------------------------------ */
 static void encoder_read(int32_t *left, int32_t *right)
 {
-    *left  = (int16_t)Encoder_Get_A();
-    *right = (int16_t)(-(int16_t)Encoder_Get_B());
+    *left  = (int16_t)(-(int16_t)Encoder_Get_B());  /* B = left  encoder, negated */
+    *right = (int16_t)Encoder_Get_A();               /* A = right encoder         */
 }
 
 /* ------------------------------------------------------------------ */

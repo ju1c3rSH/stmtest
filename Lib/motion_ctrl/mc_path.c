@@ -314,7 +314,7 @@ void mc_path_tick(mc_path_ctx_t *ctx, float m_yaw, float m_pos,
             else
             {
                 float base_rpm = seg->p.spin.spin_speed * MC_WHEEL_BASE / (6.0f * wheel_d);
-                out->spin_rpm = - base_rpm * mc_sign(remaining);
+                out->spin_rpm = base_rpm * mc_sign(remaining);
                 out->yaw_set = seg->p.spin.target_heading;
             }
             break;
